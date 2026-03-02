@@ -4,14 +4,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../constants/colors';
 
 interface Props {
-  label: string;
+  label?: string; // Cho phép không truyền label
   iconName: string;
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
-  isPassword?: boolean;                 // Có phải là mật khẩu không?
-  isPasswordVisible?: boolean;          // Đang hiện hay ẩn?
-  onTogglePassword?: () => void;        // Hàm bật tắt mắt
+  isPassword?: boolean;
+  isPasswordVisible?: boolean;
+  onTogglePassword?: () => void;
+  error?: boolean; // (MỚI) Có lỗi hay không?
 }
 
 const CustomInput = ({
@@ -23,12 +24,21 @@ const CustomInput = ({
   isPassword = false,
   isPasswordVisible = false,
   onTogglePassword,
+  error = false, // Mặc định là không lỗi
 }: Props) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputWrapper}>
-        <Ionicons name={iconName} size={20} color={COLORS.inputIcon} style={styles.icon} />
+      {label && <Text style={styles.label}>{label}</Text>}
+      <View style={[
+        styles.inputWrapper, 
+        error && { borderColor: COLORS.errorBorder, borderWidth: 1.5 } // Đổi màu viền nếu lỗi
+      ]}>
+        <Ionicons 
+          name={iconName} 
+          size={20} 
+          color={error ? COLORS.errorBorder : COLORS.inputIcon} 
+          style={styles.icon} 
+        />
         <TextInput
           style={styles.input}
           placeholder={placeholder}
@@ -69,7 +79,6 @@ const styles = StyleSheet.create({
     height: 52,
     borderWidth: 1,
     borderColor: COLORS.inputBorder,
-    // Shadow
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,

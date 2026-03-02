@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +27,10 @@ const AppNav = () => {
         {userToken ? (
           <Stack.Screen name="Home" component={HomeScreen} />
         ) : (
-          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+          <> 
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

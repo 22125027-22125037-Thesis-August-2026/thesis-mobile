@@ -1,13 +1,24 @@
 export const COLORS = {
-  primary: '#9FB57A',      // Màu xanh Olive chủ đạo
-  background: '#F9F9F9',   // Màu nền xám nhẹ
-  text: '#2F2119',         // Màu chữ nâu đen
-  textLight: '#666666',    // Màu chữ phụ
+  primary: '#9FB57A',      // Xanh Olive
+  background: '#F9F9F9',
+  text: '#2F2119',
+  textLight: '#666666',
   white: '#FFFFFF',
+  
+  // Màu Input
   inputBorder: '#E0E0E0',
   inputIcon: '#555555',
-  socialBg: '#EFE6DD',     // Nền nút Social
-  link: '#FF7F50',         // Màu cam (Coral) cho link
+  
+  // Màu báo lỗi (Mới)
+  errorBorder: '#FF7F50',  // Viền cam khi lỗi
+  errorBg: '#FFECE5',      // Nền hộp lỗi
+  errorText: '#FF4500',    // Chữ lỗi
+  
+  // Social & Button
+  socialBg: '#EFE6DD',
+  buttonRegister: '#C0A08C', // Màu nâu nhạt của nút Đăng ký
+  link: '#FF7F50',
+  
   facebook: '#3b5998',
   google: '#DB4437',
   instagram: '#C13584',

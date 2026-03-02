@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   StatusBar,
   Alert,
   KeyboardAvoidingView,
@@ -10,6 +9,8 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 // Import Logic & Components
@@ -28,6 +29,7 @@ const LoginScreen = () => {
 
   // Lấy context
   const auth = useContext(AuthContext);
+  const navigation = useNavigation<any>();
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -103,7 +105,7 @@ const LoginScreen = () => {
             <View style={styles.footer}>
               <Text style={styles.footerText}>
                 Chưa có tài khoản?{' '}
-                <Text style={styles.linkText} onPress={() => Alert.alert('Nav', 'Sang trang Đăng ký')}>
+                <Text style={styles.linkText} onPress={() => navigation.navigate('Register')}>
                   Đăng kí
                 </Text>
               </Text>
