@@ -1,25 +1,44 @@
 export const COLORS = {
-  primary: '#9FB57A',      // Xanh Olive
-  background: '#F9F9F9',
-  text: '#2F2119',
-  textLight: '#666666',
+  primary: '#97AF61',
+  background: '#F3F1F0',
+  surface: '#FFFFFF',
+  text: '#2A1D16',
+  textPrimary: '#2A1D16',
+  textSecondary: '#7B7069',
+  placeholder: '#B7B0AB',
+  textLight: '#7B7069',
   white: '#FFFFFF',
-  
-  // Màu Input
-  inputBorder: '#E0E0E0',
-  inputIcon: '#555555',
-  
-  // Màu báo lỗi (Mới)
-  errorBorder: '#FF7F50',  // Viền cam khi lỗi
-  errorBg: '#FFECE5',      // Nền hộp lỗi
-  errorText: '#FF4500',    // Chữ lỗi
-  
-  // Social & Button
+  border: '#CFC6C0',
+  borderSubtle: '#DDD6D1',
+  inputBackground: '#ECE9E7',
+  inputBorder: '#D9D1CB',
+  inputIcon: '#5A4A41',
+  buttonPrimary: '#2B1A10',
+  buttonPrimaryText: '#FFFFFF',
+  buttonRegister: '#C0A08C',
+  accentPositive: '#97AF61',
+  accentNeutral: '#99694C',
+  accentNegative: '#F9844A',
   socialBg: '#EFE6DD',
-  buttonRegister: '#C0A08C', // Màu nâu nhạt của nút Đăng ký
-  link: '#FF7F50',
-  
-  facebook: '#3b5998',
+  link: '#F9844A',
+  errorBorder: '#F9844A',
+  errorBg: '#FFECE5',
+  errorText: '#D85A2B',
+  facebook: '#3B5998',
   google: '#DB4437',
   instagram: '#C13584',
+  journalBackground: '#EDEAE8',
+  journalPillBackground: '#F3F1F0',
+  journalToolbarPill: '#E8E5E3',
+  journalIconStroke: '#2E2018',
+  journalContentBorder: '#736258',
+  journalInputText: '#B7B0AB',
+  journalCounter: '#B49A8A',
+  journalMoodActive: '#D8D1FF',
+  journalMoodFace: '#3C2F2A',
+  journalMoodTerrible: '#EF4444',
+  journalMoodBad: '#F97316',
+  journalMoodNeutral: '#EAB308',
+  journalMoodGood: '#84CC16',
+  journalMoodExcellent: '#22C55E',
 };

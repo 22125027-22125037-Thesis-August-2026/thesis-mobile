@@ -7,6 +7,7 @@ import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/auth/RegisterScreen';
+import DiaryEntryScreen from './src/screens/tracking/DiaryEntryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,9 +40,14 @@ const AppNav = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <AppNav />
-    </AuthProvider>
+    <View style={{ flex: 1 }}>
+      {/*
+      <AuthProvider>
+        <AppNav />
+      </AuthProvider>
+      */}
+      <DiaryEntryScreen />
+    </View>
   );
 };
 
