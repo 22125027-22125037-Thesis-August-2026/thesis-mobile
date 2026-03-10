@@ -1,3 +1,14 @@
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ActivityIndicator, View } from 'react-native';
+
+import { AuthProvider, AuthContext } from './src/context/AuthContext';
+import LoginScreen from './src/screens/auth/LoginScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
+import TrackingStackNavigator from './src/navigation/TrackingStackNavigator';
+
 const Stack = createNativeStackNavigator();
 
 const AppNav = () => {

@@ -13,6 +13,7 @@ export interface MediaAttachmentResponse {
 
 export interface DiaryEntryResponse {
   id: string;
+  title?: string | null;
   content: string;
   moodTag: string | null;
   positivityScore: number | null;

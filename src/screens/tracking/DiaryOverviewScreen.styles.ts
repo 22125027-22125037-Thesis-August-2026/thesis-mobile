@@ -1,0 +1,213 @@
+import { StyleSheet } from 'react-native';
+
+import { COLORS } from '../../constants/colors';
+import { BORDER_RADIUS, FONT_SIZES, SPACING } from '../../constants/theme';
+
+export const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    rowGap: SPACING.sm,
+  },
+  loadingText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+  },
+  scrollContent: {
+    paddingBottom: SPACING.xl,
+  },
+  headerWrap: {
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: COLORS.background,
+    height: 420,
+  },
+  headerBackground: {
+    backgroundColor: COLORS.accentNeutral,
+    paddingHorizontal: 22,
+    paddingTop: SPACING.screenTop,
+    height: 390,
+    borderBottomLeftRadius: 240,
+    borderBottomRightRadius: 240,
+    transform: [{ scaleX: 1.35 }],
+  },
+  headerInner: {
+    transform: [{ scaleX: 0.74 }],
+    flex: 1,
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: SPACING.sm,
+  },
+  backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: BORDER_RADIUS.full,
+    borderWidth: SPACING.borderWidth,
+    borderColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    color: COLORS.white,
+    fontSize: 40,
+    fontWeight: '700',
+  },
+  centerWrap: {
+    marginTop: 42,
+    alignItems: 'center',
+  },
+  scoreText: {
+    color: COLORS.white,
+    fontSize: 70,
+    lineHeight: 78,
+    fontWeight: '800',
+  },
+  subtitle: {
+    color: COLORS.white,
+    textAlign: 'center',
+    fontSize: 38,
+    lineHeight: 44,
+    marginTop: SPACING.xs,
+    maxWidth: 320,
+    fontWeight: '500',
+  },
+  headerRing: {
+    position: 'absolute',
+    borderWidth: SPACING.borderWidth,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: BORDER_RADIUS.full,
+  },
+  headerRingTopLeft: {
+    width: 110,
+    height: 110,
+    top: -26,
+    left: 12,
+  },
+  headerRingTopRight: {
+    width: 260,
+    height: 260,
+    top: -92,
+    right: -32,
+  },
+  headerRingMidRight: {
+    width: 120,
+    height: 120,
+    top: 210,
+    right: 18,
+  },
+  headerRingBottomLeft: {
+    width: 240,
+    height: 240,
+    top: 126,
+    left: -84,
+  },
+  headerRingSmall: {
+    width: 56,
+    height: 56,
+    top: 120,
+    left: '49%',
+  },
+  fabButton: {
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    width: 82,
+    height: 82,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.buttonPrimary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: COLORS.textPrimary,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  contentWrap: {
+    paddingTop: 56,
+    paddingHorizontal: SPACING.screenHorizontal,
+    rowGap: SPACING.lg,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    color: COLORS.textPrimary,
+    fontSize: 36,
+    fontWeight: '700',
+  },
+  monthHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  monthNavButton: {
+    width: 32,
+    height: 32,
+    borderRadius: BORDER_RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surface,
+    borderWidth: SPACING.borderWidth,
+    borderColor: COLORS.borderSubtle,
+  },
+  monthTitle: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.md,
+    fontWeight: '600',
+    marginTop: -2,
+  },
+  weekdayRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.xs,
+  },
+  weekdayText: {
+    width: 40,
+    textAlign: 'center',
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+  },
+  gridWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: SPACING.xs,
+    columnGap: SPACING.xs,
+    justifyContent: 'flex-start',
+  },
+  moodDot: {
+    width: 40,
+    height: 40,
+    borderRadius: BORDER_RADIUS.full,
+    borderWidth: SPACING.borderWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moodDotInactive: {
+    borderColor: COLORS.borderSubtle,
+    backgroundColor: COLORS.background,
+  },
+  dayText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
+  },
+  dayTextInactive: {
+    color: COLORS.placeholder,
+  },
+  dayTextFilled: {
+    color: COLORS.white,
+    fontWeight: '600',
+  },
+});
