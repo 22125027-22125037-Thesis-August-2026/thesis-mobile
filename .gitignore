@@ -214,3 +214,4 @@ yarn-error.log
 !.yarn/sdks
 !.yarn/versions
 App.tsx
+App.tsx

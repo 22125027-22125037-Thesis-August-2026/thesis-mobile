@@ -41,4 +41,5 @@ export const COLORS = {
   journalMoodNeutral: '#EAB308',
   journalMoodGood: '#84CC16',
   journalMoodExcellent: '#22C55E',
+  chipSelected: '#B2C9AD',
 };
