@@ -1,19 +1,41 @@
-// Example: App.tsx (React Native with React Navigation)
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-// Importing the necessary types for stack navigation
-import { createNativeStackNavigator } from '@react-navigation/native-stack'; // Updated import  
-import TherapistFilterScreen from './src/screens/booking/TherapistFilterScreen';  
-
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+const AppNav = () => {
+  const { isLoading, userToken } = useContext(AuthContext)!;
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="TherapistFilter">
-        <Stack.Screen name="TherapistFilter" component={TherapistFilterScreen} />
-        {/* other screens */}
+      <Stack.Navigator>
+        {userToken ? (
+          <Stack.Screen name="Home" component={HomeScreen} />
+        ) : (
+          <> 
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
+
+const App = () => {
+  return (
+
+
+      <AuthProvider>
+        <AppNav />
+      </AuthProvider>
+
+
+
+  );
+};
