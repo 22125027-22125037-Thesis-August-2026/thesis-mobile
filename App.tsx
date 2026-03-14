@@ -1,41 +1,56 @@
-// Example: App.tsx (React Native with React Navigation)
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-// Importing the necessary types for stack navigation
-import { createNativeStackNavigator } from '@react-navigation/native-stack'; // Updated import  
-import TherapistFilterScreen from './src/screens/booking/TherapistFilterScreen';  
-import MatchingFormScreen from './src/screens/booking/MatchingFormScreen';
-import TherapistDetailScreen from './src/screens/booking/TherapistDetailScreen';
-import BookingScreen from './src/screens/booking/BookingScreen';
-import WaitingRoomScreen from './src/screens/booking/WaitingRoomScreen';
-import ConsultationDetailScreen from './src/screens/booking/ConsultationDetailScreen';
-import VideoConsultationScreen from './src/screens/booking/VideoConsultationScreen';
+
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ActivityIndicator, View } from 'react-native';
+
+import { AuthProvider, AuthContext } from './src/context/AuthContext';
+import LoginScreen from './src/screens/auth/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
-import { RootStackParamList } from './src/navigation/types';
-import { ZoomVideoSdkProvider } from '@zoom/react-native-videosdk';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
+import TrackingStackNavigator from './src/navigation/TrackingStackNavigator';
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function App() {
+const AppNav = () => {
+  const { isLoading, userToken } = useContext(AuthContext)!;
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
-    <ZoomVideoSdkProvider config={{ domain: 'zoom.us', enableLog: true }}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="TherapistFilter" screenOptions={{ headerShown: false }}>
+
+    <NavigationContainer>
+      <Stack.Navigator>
+        {userToken ? (
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="TherapistFilter" component={TherapistFilterScreen} />
-          <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
-          <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />
-          <Stack.Screen name="Booking" component={BookingScreen} />
-          <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
-          <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
-          <Stack.Screen
-            name="WaitingRoom"
-            component={WaitingRoomScreen}
-            options={{ headerShown: false }}
-          />
-          {/* other screens */}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </ZoomVideoSdkProvider>
+        ) : (
+          <> 
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+
   );
-}
+};
+
+const App = () => {
+  return (
+
+
+      <AuthProvider>
+        <AppNav />
+      </AuthProvider>
+
+
+
+  );
+};
