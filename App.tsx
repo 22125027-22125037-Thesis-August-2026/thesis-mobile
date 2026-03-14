@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -9,7 +10,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/auth/RegisterScreen';
 import TrackingStackNavigator from './src/navigation/TrackingStackNavigator';
 
-const Stack = createNativeStackNavigator();
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNav = () => {
   const { isLoading, userToken } = useContext(AuthContext)!;
@@ -23,6 +25,7 @@ const AppNav = () => {
   }
 
   return (
+
     <NavigationContainer>
       <Stack.Navigator>
         {userToken ? (
@@ -35,6 +38,7 @@ const AppNav = () => {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+
   );
 };
 

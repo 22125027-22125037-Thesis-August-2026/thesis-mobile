@@ -1,0 +1,203 @@
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/colors';
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: COLORS.chipSelected,
+  },
+  header: {
+    backgroundColor: COLORS.primary,
+    paddingTop: 48,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  backButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    color: COLORS.white,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  headerSpacer: {
+    width: 32,
+    height: 32,
+  },
+  contentContainer: {
+    padding: 16,
+    paddingBottom: 120,
+  },
+  therapistCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 15,
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  therapistImage: {
+    width: 74,
+    height: 74,
+    borderRadius: 12,
+    backgroundColor: COLORS.inputBackground,
+  },
+  therapistInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  therapistName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 3,
+  },
+  therapistSpecialty: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    marginBottom: 6,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationText: {
+    marginLeft: 4,
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  statItem: {
+    width: '23.5%',
+    backgroundColor: COLORS.white,
+    borderRadius: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    alignItems: 'center',
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  statIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.inputBackground,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  statValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  sectionCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 15,
+    padding: 14,
+    marginBottom: 16,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 10,
+  },
+  sectionBody: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: COLORS.textSecondary,
+  },
+  workingHourRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  workingHourText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+  },
+  reviewItem: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+  },
+  reviewAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.inputBackground,
+  },
+  reviewContent: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  reviewHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  reviewName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  starRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  starIcon: {
+    marginLeft: 1,
+  },
+  reviewComment: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: COLORS.textSecondary,
+  },
+  footer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 18,
+    backgroundColor: COLORS.chipSelected,
+  },
+});
+
+export default styles;
