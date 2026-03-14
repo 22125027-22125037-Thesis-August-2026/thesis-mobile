@@ -15,6 +15,7 @@ import { COLORS } from '../../constants/colors';
 import styles from './TherapistFilterScreen.styles';
 import { RootStackParamList } from '../../navigation/types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import CustomButton from '../../components/CustomButton';
 
 const SPECIALTIES = [
   'Tâm lý học lâm sàng',
@@ -29,7 +30,7 @@ const SPECIALTIES = [
 const YEARS = ['1-3', '4-7', '8+'];
 const GENDERS = ['Nam', 'Nữ', 'Khác'];
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'TherapistList'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'TherapistFilter'>;
 
 const TherapistFilterScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -57,11 +58,7 @@ const TherapistFilterScreen: React.FC = () => {
   const resetGender = () => setSelectedGender(null);
 
   const handleSubmit = () => {
-    navigation.navigate('TherapistList', {
-      specialties: selectedSpecialties,
-      year: selectedYear,
-      gender: selectedGender,
-    } as any);
+    navigation.navigate('TherapistDetails', { id: '1' });
   };
 
   const renderChips = (
@@ -179,8 +176,8 @@ const TherapistFilterScreen: React.FC = () => {
             <TouchableOpacity
               style={styles.modalBtnPrimary}
               onPress={() => {
-                console.log('Navigate to Matching Form');
                 setShowUpdateModal(false);
+                navigation.navigate('MatchingForm');
               }}
               activeOpacity={0.7}
             >
@@ -194,9 +191,7 @@ const TherapistFilterScreen: React.FC = () => {
 
       {/* Footer Button - Green Pill */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerButton} onPress={handleSubmit} activeOpacity={0.8}>
-          <Text style={styles.footerButtonText}>Trò chuyện với chuyên gia</Text>
-        </TouchableOpacity>
+        <CustomButton title="Trò chuyện với chuyên gia" onPress={handleSubmit} />
       </View>
     </View>
   );

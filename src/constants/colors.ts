@@ -42,4 +42,10 @@ export const COLORS = {
   journalMoodGood: '#84CC16',
   journalMoodExcellent: '#22C55E',
   chipSelected: '#B2C9AD',
+  videoBackground: '#111111',
+  videoSurface: '#1E1E1E',
+  videoPipSurface: '#2B2B2B',
+  videoPipBorder: '#454545',
+  videoControlBackground: '#2A2A2A',
+  videoEndCall: '#D9534F',
 };

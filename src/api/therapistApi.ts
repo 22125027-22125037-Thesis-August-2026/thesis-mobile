@@ -2,6 +2,7 @@
 
 // ✅ Correct
 import axiosClient from './axiosClient';
+import { MatchingFormData } from '../types/matching';
 
 
 export enum Specialty {
@@ -57,6 +58,14 @@ export const getTherapists = async (): Promise<Therapist[]> => {
     try {
       const response = await axiosClient.post('/bookings', data);
       return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const saveMatchingData = async (data: MatchingFormData): Promise<void> => {
+    try {
+      await axiosClient.post('/therapists/matching', data);
     } catch (error) {
       throw error;
     }
