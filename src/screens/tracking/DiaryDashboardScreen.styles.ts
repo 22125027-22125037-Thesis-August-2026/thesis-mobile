@@ -199,7 +199,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.socialBg,
   },
   statValue: {
-    fontSize: 36,
+    fontSize: FONT_SIZES.xl,
     fontWeight: '800',
     color: COLORS.textPrimary,
     lineHeight: 42,
@@ -210,7 +210,7 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   statValueCompact: {
-    fontSize: FONT_SIZES.xl,
+    fontSize: FONT_SIZES.lg,
     fontWeight: '800',
     color: COLORS.textPrimary,
   },

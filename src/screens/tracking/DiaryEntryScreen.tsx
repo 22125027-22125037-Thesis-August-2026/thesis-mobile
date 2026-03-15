@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -13,7 +13,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { NavigationContext, NavigationProp, ParamListBase } from '@react-navigation/native';
+import { NavigationContext, NavigationProp, RouteProp, useRoute } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,58 +21,11 @@ import { launchImageLibrary } from 'react-native-image-picker';
 
 import * as diaryApi from '../../api/diaryApi';
 import { COLORS } from '../../constants/colors';
+import { t } from '../../constants/i18n';
+import { MOOD_SELECTOR_OPTIONS, MoodTag, getMoodScore, getMoodTag } from '../../constants/moods';
+import { TrackingStackParamList } from '../../navigation/types';
 import { BORDER_RADIUS, FONT_SIZES, SPACING } from '../../constants/theme';
 import { AttachmentFile } from '../../types/media';
-
-type MoodTag = 'TERRIBLE' | 'BAD' | 'NEUTRAL' | 'GOOD' | 'EXCELLENT';
-
-type MoodOption = {
-  value: MoodTag;
-  icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-  activeIcon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-  color: string;
-};
-
-const MOOD_OPTIONS: MoodOption[] = [
-  {
-    value: 'TERRIBLE',
-    icon: 'emoticon-cry-outline',
-    activeIcon: 'emoticon-cry',
-    color: COLORS.journalMoodTerrible,
-  },
-  {
-    value: 'BAD',
-    icon: 'emoticon-sad-outline',
-    activeIcon: 'emoticon-sad',
-    color: COLORS.journalMoodBad,
-  },
-  {
-    value: 'NEUTRAL',
-    icon: 'emoticon-neutral-outline',
-    activeIcon: 'emoticon-neutral',
-    color: COLORS.journalMoodNeutral,
-  },
-  {
-    value: 'GOOD',
-    icon: 'emoticon-happy-outline',
-    activeIcon: 'emoticon-happy',
-    color: COLORS.journalMoodGood,
-  },
-  {
-    value: 'EXCELLENT',
-    icon: 'emoticon-excited-outline',
-    activeIcon: 'emoticon-excited',
-    color: COLORS.journalMoodExcellent,
-  },
-];
-
-const MOOD_SCORE_MAP: Record<MoodTag, number> = {
-  TERRIBLE: 2,
-  BAD: 4,
-  NEUTRAL: 6,
-  GOOD: 8,
-  EXCELLENT: 10,
-};
 
 const MAX_CONTENT_LENGTH = 300;
 const MAX_ATTACHMENTS = 5;
@@ -84,8 +37,10 @@ const DiaryEntryScreen: React.FC = () => {
     type?: string;
   };
 
+  const route = useRoute<RouteProp<TrackingStackParamList, 'DiaryEntry'>>();
+  const entryId = route.params?.entryId;
   const navigation = useContext(NavigationContext) as
-    | NavigationProp<ParamListBase>
+    | NavigationProp<TrackingStackParamList>
     | undefined;
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
@@ -93,11 +48,61 @@ const DiaryEntryScreen: React.FC = () => {
   const [positivityScore, setPositivityScore] = useState<number>(8);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isLoadingEntry, setIsLoadingEntry] = useState<boolean>(false);
 
   const canSubmit = useMemo(
-    () => content.trim().length > 0 && !isSubmitting,
-    [content, isSubmitting],
+    () => content.trim().length > 0 && !isSubmitting && !isLoadingEntry,
+    [content, isSubmitting, isLoadingEntry],
   );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const hydrateEntry = async (): Promise<void> => {
+      if (!entryId) {
+        return;
+      }
+
+      setIsLoadingEntry(true);
+
+      try {
+        const entry = await diaryApi.getDiaryEntryById(entryId);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setTitle(entry.title ?? '');
+        setContent(entry.content ?? '');
+
+        const resolvedMood = getMoodTag(entry.moodTag);
+        setMoodTag(resolvedMood);
+        setPositivityScore(getMoodScore(resolvedMood));
+
+        const mappedAttachments: AttachmentFile[] = (entry.attachments ?? []).map(
+          attachment => ({
+            uri: attachment.fileUrl,
+            name: attachment.fileName,
+            type: 'image/jpeg',
+          }),
+        );
+
+        setAttachments(mappedAttachments);
+      } catch (error) {
+        console.error('[DiaryEntry] Failed to fetch entry detail:', error);
+      } finally {
+        if (isMounted) {
+          setIsLoadingEntry(false);
+        }
+      }
+    };
+
+    hydrateEntry();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [entryId]);
 
   const handlePickImage = async (): Promise<void> => {
     const response = await launchImageLibrary({
@@ -128,7 +133,7 @@ const DiaryEntryScreen: React.FC = () => {
     }
 
     if (attachments.length >= MAX_ATTACHMENTS) {
-      Alert.alert('Selection limit', 'You can attach up to 5 images.');
+      Alert.alert(t('entry.selectionLimitTitle'), t('entry.selectionLimitMessage'));
       return;
     }
 
@@ -136,7 +141,10 @@ const DiaryEntryScreen: React.FC = () => {
     const filesToAppend = mappedFiles.slice(0, availableSlots);
 
     if (filesToAppend.length < mappedFiles.length) {
-      Alert.alert('Selection limit', 'Only the first 5 images were added.');
+      Alert.alert(
+        t('entry.selectionLimitTitle'),
+        t('entry.selectionLimitTruncatedMessage'),
+      );
     }
 
     setAttachments(previous => [...previous, ...filesToAppend]);
@@ -144,12 +152,12 @@ const DiaryEntryScreen: React.FC = () => {
 
   const handleSubmit = async (): Promise<void> => {
     if (!content.trim()) {
-      Alert.alert('Validation', 'Please enter your diary content.');
+      Alert.alert(t('entry.validationTitle'), t('entry.validationContentRequired'));
       return;
     }
 
     setIsSubmitting(true);
-    const mappedScore = MOOD_SCORE_MAP[moodTag];
+    const mappedScore = getMoodScore(moodTag);
     setPositivityScore(mappedScore);
 
     const diaryPayload = {
@@ -161,15 +169,19 @@ const DiaryEntryScreen: React.FC = () => {
     const imageUris = attachments.map(attachment => attachment.uri);
 
     try {
-      const response = await diaryApi.createDiaryEntry(diaryPayload, imageUris);
-      Alert.alert('Success!', `Diary entry ID: ${response.id}`);
+      const response = entryId
+        ? await diaryApi.updateDiaryEntry(entryId, diaryPayload, imageUris)
+        : await diaryApi.createDiaryEntry(diaryPayload, imageUris);
+
+      Alert.alert(t('entry.successTitle'), t('entry.successDiaryId', { id: response.id }));
       setTitle('');
       setContent('');
       setAttachments([]);
       setMoodTag('TERRIBLE');
       setPositivityScore(8);
+      navigation?.navigate('DiaryDashboard');
     } catch {
-      Alert.alert('Error', 'Failed to create diary entry.');
+      Alert.alert(t('entry.errorTitle'), t('entry.errorCreateDiary'));
     } finally {
       setIsSubmitting(false);
     }
@@ -187,22 +199,24 @@ const DiaryEntryScreen: React.FC = () => {
             <View style={styles.headerRow}>
               <Pressable
                 style={styles.headerBackButton}
-                onPress={() => navigation?.goBack()}
-                disabled={isSubmitting || !navigation?.canGoBack?.()}>
+                onPress={() => navigation?.navigate('DiaryDashboard')}
+                disabled={isSubmitting || isLoadingEntry}>
                 <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
               </Pressable>
-              <Text style={styles.screenTitle}>Hôm nay bạn thế nào?</Text>
+              <Text style={styles.screenTitle}>
+                {entryId ? t('entry.editTitle') : t('entry.screenTitle')}
+              </Text>
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>Tiêu đề</Text>
+              <Text style={styles.sectionLabel}>{t('entry.titleLabel')}</Text>
               <View style={styles.titleInputContainer}>
                 <Feather name="file-text" size={18} color={COLORS.inputIcon} />
                 <TextInput
                   style={styles.titleInput}
                   value={title}
                   onChangeText={setTitle}
-                  placeholder="Lại cảm thấy tồi tệ"
+                  placeholder={t('entry.titlePlaceholder')}
                   placeholderTextColor={COLORS.placeholder}
                   editable={!isSubmitting}
                 />
@@ -211,9 +225,9 @@ const DiaryEntryScreen: React.FC = () => {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>Chọn cảm xúc</Text>
+              <Text style={styles.sectionLabel}>{t('entry.moodLabel')}</Text>
               <View style={styles.moodRow}>
-                {MOOD_OPTIONS.map(mood => {
+                {MOOD_SELECTOR_OPTIONS.map(mood => {
                   const isSelected = mood.value === moodTag;
 
                   return (
@@ -243,14 +257,14 @@ const DiaryEntryScreen: React.FC = () => {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>Bạn đang nghĩ gì? Hãy viết ra đây nhé...</Text>
+              <Text style={styles.sectionLabel}>{t('entry.contentLabel')}</Text>
               <View style={styles.contentCard}>
                 <TextInput
                   style={styles.contentInput}
                   multiline
                   value={content}
                   onChangeText={setContent}
-                  placeholder="Tôi đang buồn lắm nhưng tôi không muốn làm to chuyện. Tôi không biết bắt đầu từ đâu."
+                  placeholder={t('entry.contentPlaceholder')}
                   placeholderTextColor={COLORS.placeholder}
                   textAlignVertical="top"
                   editable={!isSubmitting}
@@ -272,12 +286,12 @@ const DiaryEntryScreen: React.FC = () => {
                     onPress={handlePickImage}
                     disabled={isSubmitting}>
                     <Feather name="camera" size={16} color={COLORS.journalCounter} />
-                    <Text style={styles.addPhotoText}>Add Photo</Text>
+                    <Text style={styles.addPhotoText}>{t('entry.addPhoto')}</Text>
                   </Pressable>
 
                   <View style={styles.counterRow}>
                     <Feather name="file-text" size={14} color={COLORS.journalCounter} />
-                    <Text style={styles.counterText}>{content.length}/300</Text>
+                    <Text style={styles.counterText}>{t('entry.counter', { count: content.length })}</Text>
                   </View>
                 </View>
 
@@ -308,7 +322,7 @@ const DiaryEntryScreen: React.FC = () => {
                 <ActivityIndicator color={COLORS.buttonPrimaryText} />
               ) : (
                 <View style={styles.submitContent}>
-                  <Text style={styles.submitText}>Ghi lại cảm xúc</Text>
+                  <Text style={styles.submitText}>{t('entry.submitButton')}</Text>
                   <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
                 </View>
               )}
