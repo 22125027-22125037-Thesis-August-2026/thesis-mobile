@@ -12,13 +12,13 @@ import ConsultationDetailScreen from './src/screens/booking/ConsultationDetailSc
 import VideoConsultationScreen from './src/screens/booking/VideoConsultationScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import { RootStackParamList } from './src/navigation/types';
-import { ZoomVideoSdkProvider } from '@zoom/react-native-videosdk';
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <ZoomVideoSdkProvider config={{ domain: 'zoom.us', enableLog: true }}>
+    
       <NavigationContainer>
         <Stack.Navigator initialRouteName="TherapistFilter" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={HomeScreen} />
@@ -36,6 +36,6 @@ export default function App() {
           {/* other screens */}
         </Stack.Navigator>
       </NavigationContainer>
-    </ZoomVideoSdkProvider>
+  
   );
 }

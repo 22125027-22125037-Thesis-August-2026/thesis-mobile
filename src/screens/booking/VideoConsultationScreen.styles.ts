@@ -38,6 +38,11 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
+  errorText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.errorText,
+    textAlign: 'center',
+  },
   primaryButton: {
     width: '100%',
     minHeight: SPACING.submitButtonHeight,

@@ -15,7 +15,8 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="${usesCleartextTraffic}"
-      tools:replace="android:usesCleartextTraffic"
+      android:networkSecurityConfig="@xml/rn_debug_network_security_config"
+      tools:replace="android:usesCleartextTraffic,android:networkSecurityConfig"
       android:supportsRtl="true">
       <activity
         android:name=".MainActivity"

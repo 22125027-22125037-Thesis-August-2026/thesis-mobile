@@ -1,7 +1,9 @@
 declare module 'react-native-zoom-us' {
   export interface ZoomInitializeOptions {
-    clientKey: string;
-    clientSecret: string;
+    jwtToken: string;
+    domain?: string;
+    clientKey?: string;
+    clientSecret?: string;
   }
 
   export interface ZoomJoinMeetingOptions {
@@ -11,7 +13,7 @@ declare module 'react-native-zoom-us' {
   }
 
   interface ZoomUsModule {
-    initialize(options: ZoomInitializeOptions): Promise<void>;
+    initialize(options: ZoomInitializeOptions): Promise<string>;
     joinMeeting(options: ZoomJoinMeetingOptions): Promise<void>;
   }
 
