@@ -7,8 +7,9 @@ import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
-import RegisterScreen from './src/screens/auth/RegisterScreen';
-import TrackingStackNavigator from './src/navigation/TrackingStackNavigator';
+
+import { RootStackParamList } from './src/navigation/types';
+
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -26,18 +27,25 @@ const AppNav = () => {
 
   return (
 
-    <NavigationContainer>
-      <Stack.Navigator>
-        {userToken ? (
+    
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="TherapistFilter" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={HomeScreen} />
-        ) : (
-          <> 
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen name="TherapistFilter" component={TherapistFilterScreen} />
+          <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
+          <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />
+          <Stack.Screen name="Booking" component={BookingScreen} />
+          <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
+          <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
+          <Stack.Screen
+            name="WaitingRoom"
+            component={WaitingRoomScreen}
+            options={{ headerShown: false }}
+          />
+          {/* other screens */}
+        </Stack.Navigator>
+      </NavigationContainer>
+  
 
   );
 };

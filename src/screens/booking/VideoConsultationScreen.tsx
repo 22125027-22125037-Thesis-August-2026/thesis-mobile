@@ -1,184 +1,138 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useZoom } from '@zoom/react-native-videosdk';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { sign } from 'react-native-pure-jwt';
+import ZoomUs from 'react-native-zoom-us';
 import { COLORS } from '../../constants/colors';
-import { RootStackParamList } from '../../navigation/types';
+import styles from './VideoConsultationScreen.styles';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'VideoConsultation'>;
+const ZOOM_APP_KEY = '_fpH9UMMQqWNyO7NS2rhBg';
+const ZOOM_APP_SECRET = 'PGVVtMBsIl5DmXEUdcnfwhquvMpeeysX';
+const ZOOM_MEETING_NUMBER = '7075120473';
+const ZOOM_MEETING_PASSWORD = 'N212sP';
+
+type ZoomTestingJwtPayload = {
+  appKey: string;
+  sdkKey: string;
+  mn: string;
+  role: number;
+  iat: number;
+  exp: number;
+  tokenExp: number;
+};
+
+const generateTestingToken = async (): Promise<string> => {
+  const iat = Math.floor(Date.now() / 1000);
+  const exp = iat + 172800;
+
+  const payload: ZoomTestingJwtPayload = {
+    appKey: ZOOM_APP_KEY,
+    sdkKey: ZOOM_APP_KEY,
+    mn: ZOOM_MEETING_NUMBER,
+    role: 0,
+    iat,
+    exp,
+    tokenExp: exp,
+  };
+
+  return sign(payload, ZOOM_APP_SECRET, { alg: 'HS256' });
+};
 
 const VideoConsultationScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
-  const zoom = useZoom();
-  const [isInSession, setIsInSession] = useState<boolean>(false);
+  const [isZoomInitialized, setIsZoomInitialized] = useState<boolean>(false);
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
+  const [initializationError, setInitializationError] = useState<string | null>(null);
 
   useEffect(() => {
-    const joinSession = async () => {
-      try {
-        if (Platform.OS === 'android') {
-          const cameraGranted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.CAMERA
-          );
-          const micGranted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-          );
+    let isMounted = true;
 
-          if (
-            cameraGranted !== PermissionsAndroid.RESULTS.GRANTED ||
-            micGranted !== PermissionsAndroid.RESULTS.GRANTED
-          ) {
-            setIsInSession(false);
-            return;
-          }
+    const initializeZoom = async (): Promise<void> => {
+      let generatedToken = '';
+
+      try {
+        if (isMounted) {
+          setIsInitializing(true);
+          setInitializationError(null);
         }
 
-        await zoom.joinSession({
-          sessionName: 'ThesisConsultation',
-          token: 'DUMMY_JWT_TOKEN',
-          userName: 'User',
-          sessionIdleTimeoutMins: 40,
-          audioOptions: { connect: true, mute: false },
-          videoOptions: { localVideoOn: true },
+        // 1. Comment out the library generator
+        // generatedToken = await generateTestingToken();
+
+        // 2. Hardcode your jwt.io token here
+        generatedToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBLZXkiOiJfZnBIOVVNTVFxV055TzdOUzJyaEJnIiwic2RrS2V5IjoiX2ZwSDlVTU1RcVdOeU83TlMycmhCZyIsIm1uIjoiNzA3NTEyMDQ3MyIsInJvbGUiOjAsImlhdCI6MTc3MzU2MjkyMCwiZXhwIjoxNzczNzM1NzIwLCJ0b2tlbkV4cCI6MTc3MzczNTcyMH0.Y4ahDX0ShaoLAXls08xqpxE7fi41hjgdtWmE7rJATa4';
+
+        await ZoomUs.initialize({
+          jwtToken: generatedToken,
         });
-        setIsInSession(true);
-      } catch {
-        setIsInSession(false);
+
+        if (isMounted) {
+          setIsZoomInitialized(true);
+          setIsInitializing(false);
+        }
+      } catch (error: unknown) {
+        console.error('[Zoom Debug] Initialization Error:', error);
+
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const isTokenCredentialError = errorMessage.includes('internalErrorCode=124');
+        const sanitizedMeetingNumber = ZOOM_MEETING_NUMBER.replace(/\s/g, '');
+
+        console.error('[Zoom Debug] Init Context:', {
+          appKey: ZOOM_APP_KEY,
+          meetingNumber: sanitizedMeetingNumber,
+          jwtTokenLength: generatedToken.length,
+          jwtTokenPreview: generatedToken
+            ? `${generatedToken.slice(0, 12)}...${generatedToken.slice(-8)}`
+            : 'not-generated',
+        });
+
+        if (isMounted) {
+          setIsZoomInitialized(false);
+          setIsInitializing(false);
+          setInitializationError(
+            isTokenCredentialError
+              ? 'JWT token không hợp lệ hoặc không khớp Meeting SDK credentials. Vui lòng tạo lại SDK JWT từ backend.'
+              : 'Không thể khởi tạo Zoom. Vui lòng kiểm tra JWT token và thử lại.',
+          );
+        }
       }
     };
 
-    void joinSession();
+    void initializeZoom();
 
     return () => {
-      void zoom.leaveSession(false);
+      isMounted = false;
     };
-  }, [zoom]);
+  }, []);
 
-  const handleEndCall = async () => {
-    await zoom.leaveSession(true);
-    navigation.navigate('Home');
+  const handleJoinMeeting = async (): Promise<void> => {
+    await ZoomUs.joinMeeting({
+      userName: 'Bệnh nhân',
+      meetingNumber: ZOOM_MEETING_NUMBER.replace(/\s/g, ''),
+      password: ZOOM_MEETING_PASSWORD,
+    });
   };
-
-  if (!isInSession) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>Đang kết nối với chuyên gia...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
-      <View style={styles.remoteVideoPlaceholder}>
-        <Text style={styles.placeholderText}>Therapist Stream</Text>
-      </View>
+      <View style={styles.content}>
+        <Text style={styles.title}>Sẵn sàng kết nối với chuyên gia</Text>
 
-      <View style={styles.localPipPlaceholder}>
-        <Text style={styles.pipText}>You</Text>
-      </View>
-
-      <View style={styles.controlBar}>
-        <TouchableOpacity style={styles.controlButton} activeOpacity={0.8}>
-          <Ionicons name="mic-outline" size={22} color={COLORS.white} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.controlButton} activeOpacity={0.8}>
-          <Ionicons name="videocam-outline" size={22} color={COLORS.white} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.endCallButton} activeOpacity={0.8} onPress={handleEndCall}>
-          <Ionicons name="call-outline" size={22} color={COLORS.white} />
-        </TouchableOpacity>
+        {isInitializing ? (
+          <View style={styles.loadingWrapper}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+            <Text style={styles.loadingText}>Đang khởi tạo Zoom...</Text>
+          </View>
+        ) : isZoomInitialized ? (
+          <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleJoinMeeting}>
+            <Text style={styles.primaryButtonText}>Mở Zoom & Tham gia</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.loadingWrapper}>
+            <Text style={styles.errorText}>{initializationError ?? 'Không thể khởi tạo Zoom.'}</Text>
+          </View>
+        )}
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.videoBackground,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.background,
-    paddingHorizontal: 24,
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: COLORS.text,
-    textAlign: 'center',
-  },
-  remoteVideoPlaceholder: {
-    flex: 1,
-    backgroundColor: COLORS.videoSurface,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  localPipPlaceholder: {
-    position: 'absolute',
-    top: 24,
-    right: 16,
-    width: 110,
-    height: 160,
-    borderRadius: 12,
-    backgroundColor: COLORS.videoPipSurface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.videoPipBorder,
-  },
-  pipText: {
-    color: COLORS.white,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  controlBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
-    paddingBottom: 30,
-    paddingTop: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-  },
-  controlButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: COLORS.videoControlBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  endCallButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: COLORS.videoEndCall,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default VideoConsultationScreen;
