@@ -1,7 +1,23 @@
 export type RootStackParamList = {
-
-  TherapistList: undefined; // No params needed to open the list
-  TherapistDetails: { id: string }; // MUST have an 'id' string to open details
+  Login: undefined;
+  Register: undefined;
+  Home: undefined;
+  TherapistFilter: { matchingSuccess?: boolean } | undefined;
+  MatchingForm: undefined;
+  TherapistList: undefined;
+  TherapistDetails: { id: string };
+  Booking: { therapistId: string };
+  ConsultationDetail: {
+    selectedDate: string;
+    selectedTime: string;
+  };
+  WaitingRoom: {
+    date: string;
+    time: string;
+    method: 'Video' | 'Chat';
+    reason?: string;
+  };
+  VideoConsultation: undefined;
 };
 
 export type TrackingStackParamList = {
