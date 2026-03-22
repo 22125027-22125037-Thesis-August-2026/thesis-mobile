@@ -24,7 +24,8 @@ export type TrackingStackParamList = {
   DiaryOverview: undefined;
   DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;
-
+  SleepOverview: undefined;
+  SleepEntry: undefined;
 };
 
 declare global {
