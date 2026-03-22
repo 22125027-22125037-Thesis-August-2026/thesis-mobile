@@ -18,14 +18,22 @@ export type RootStackParamList = {
     reason?: string;
   };
   VideoConsultation: undefined;
+  SleepOverview: undefined;
+  SleepEntry: undefined;
+  DiaryOverview: undefined;
+  FoodOverview: undefined;
+  FoodEntry: undefined;
 };
 
 export type TrackingStackParamList = {
+  Home: undefined;
   DiaryOverview: undefined;
   DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;
   SleepOverview: undefined;
   SleepEntry: undefined;
+  FoodOverview: undefined;
+  FoodEntry: undefined;
 };
 
 declare global {

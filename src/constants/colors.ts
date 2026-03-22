@@ -56,4 +56,7 @@ export const COLORS = {
   sleepQualityTerrible: '#A855F7',
   sleepChartEmpty: '#F1F1F1',
   sleepFab: '#1E1A16',
+  foodHeaderOrange: '#FF8C00',
+  foodChartEmpty: '#F1F1F1',
+  foodFab: '#1E1A16',
 };
