@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomeScreen from '../screens/HomeScreen';
+import ChatScreen from '../screens/ChatScreen';
 import SleepEntryScreen from '../screens/tracking/sleep/SleepEntryScreen';
 import SleepOverviewScreen from '../screens/tracking/sleep/SleepOverviewScreen';
 import DiaryOverviewScreen from '../screens/tracking/DiaryOverviewScreen';
@@ -17,6 +18,7 @@ const TrackingStackNavigator: React.FC = () => {
       initialRouteName="Home"
       screenOptions={{ headerShown: false }}>
       <TrackingStack.Screen name="Home" component={HomeScreen} />
+      <TrackingStack.Screen name="Chat" component={ChatScreen} />
       <TrackingStack.Screen name="SleepOverview" component={SleepOverviewScreen} />
       <TrackingStack.Screen name="SleepEntry" component={SleepEntryScreen} />
       <TrackingStack.Screen name="DiaryOverview" component={DiaryOverviewScreen} />

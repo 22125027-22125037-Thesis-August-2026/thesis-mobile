@@ -27,6 +27,7 @@ export type RootStackParamList = {
 
 export type TrackingStackParamList = {
   Home: undefined;
+  Chat: undefined;
   DiaryOverview: undefined;
   DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;
