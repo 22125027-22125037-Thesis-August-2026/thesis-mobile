@@ -5,7 +5,7 @@ import {
   mapImageUrisToAttachmentFiles,
 } from '../utils/formDataUtils';
 
-const DIARY_BASE_PATH = '/tracking/diaries';
+const DIARY_BASE_PATH = '/api/v1/tracking/diaries';
 
 export const getDiaryEntries = async (): Promise<DiaryEntryResponse[]> => {
   const response = await axiosClient.get<DiaryEntryResponse[]>(

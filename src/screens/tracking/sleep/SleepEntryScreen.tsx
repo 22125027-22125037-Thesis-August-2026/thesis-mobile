@@ -1,0 +1,309 @@
+import React, { useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import * as sleepApi from '../../../api/sleepApi';
+import { COLORS } from '../../../constants/colors';
+import { SleepLogRequest } from '../../../types/sleep';
+import { styles } from './SleepEntryScreen.styles';
+
+type PickerTarget = 'bedTime' | 'wakeTime' | null;
+
+type SleepQualityOption = {
+  value: number;
+  title: string;
+  subtitle: string;
+  icon: string;
+  color: string;
+};
+
+const SLEEP_QUALITY_OPTIONS: SleepQualityOption[] = [
+  {
+    value: 5,
+    title: 'Rất tốt',
+    subtitle: '7-9 TIẾNG',
+    icon: 'emoticon-excited-outline',
+    color: COLORS.journalMoodExcellent,
+  },
+  {
+    value: 4,
+    title: 'Tốt',
+    subtitle: '6-7 TIẾNG',
+    icon: 'emoticon-happy-outline',
+    color: COLORS.journalMoodNeutral,
+  },
+  {
+    value: 3,
+    title: 'Bình thường',
+    subtitle: '5 TIẾNG',
+    icon: 'emoticon-neutral-outline',
+    color: COLORS.textSecondary,
+  },
+  {
+    value: 2,
+    title: 'Tệ',
+    subtitle: '3-4 TIẾNG',
+    icon: 'emoticon-sad-outline',
+    color: COLORS.journalMoodBad,
+  },
+  {
+    value: 1,
+    title: 'Rất tệ',
+    subtitle: '<3 TIẾNG',
+    icon: 'emoticon-cry-outline',
+    color: COLORS.journalMoodActive,
+  },
+];
+
+const getDefaultBedTime = (): Date => {
+  const defaultDate = new Date();
+  defaultDate.setDate(defaultDate.getDate() - 1);
+  defaultDate.setHours(22, 0, 0, 0);
+  return defaultDate;
+};
+
+const getDefaultWakeTime = (): Date => {
+  const defaultDate = new Date();
+  defaultDate.setHours(6, 0, 0, 0);
+  return defaultDate;
+};
+
+const formatHourMinute = (date: Date): string => {
+  return date.toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+};
+
+const SleepEntryScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
+
+  const [bedTime, setBedTime] = useState<Date>(getDefaultBedTime);
+  const [wakeTime, setWakeTime] = useState<Date>(getDefaultWakeTime);
+  const [sleepQuality, setSleepQuality] = useState<number>(3);
+  const [note, setNote] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [pickerTarget, setPickerTarget] = useState<PickerTarget>(null);
+
+  const canSubmit = useMemo(() => !isSubmitting, [isSubmitting]);
+
+  const openPicker = (target: Exclude<PickerTarget, null>): void => {
+    setPickerTarget(target);
+  };
+
+  const closePicker = (): void => {
+    setPickerTarget(null);
+  };
+
+  const currentPickerValue = pickerTarget === 'wakeTime' ? wakeTime : bedTime;
+
+  const updateTargetTime = (nextDate: Date): void => {
+    if (pickerTarget === 'bedTime') {
+      setBedTime(nextDate);
+      return;
+    }
+
+    if (pickerTarget === 'wakeTime') {
+      setWakeTime(nextDate);
+    }
+  };
+
+  const handlePickerChange = (
+    event: DateTimePickerEvent,
+    selectedDate?: Date,
+  ): void => {
+    if (event.type === 'dismissed') {
+      closePicker();
+      return;
+    }
+
+    if (selectedDate) {
+      updateTargetTime(selectedDate);
+    }
+
+    if (Platform.OS !== 'ios') {
+      closePicker();
+    }
+  };
+
+  const handleSubmit = async (): Promise<void> => {
+    setIsSubmitting(true);
+
+    const payload: SleepLogRequest = {
+      bedTime: bedTime.toISOString(),
+      wakeTime: wakeTime.toISOString(),
+      sleepQuality,
+      note: note.trim(),
+    };
+
+    try {
+      await sleepApi.createSleepLog(payload);
+      Alert.alert('Thành công', 'Đã cập nhật giấc ngủ của bạn.');
+      navigation.goBack();
+    } catch {
+      Alert.alert('Thất bại', 'Không thể cập nhật giấc ngủ. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <View style={styles.screen}>
+          <ScrollView
+            contentContainerStyle={styles.contentContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            <View style={styles.headerRow}>
+              <Pressable style={styles.backButton} onPress={navigation.goBack}>
+                <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
+              </Pressable>
+              <Text style={styles.headerLabel}>Chất lượng giấc ngủ</Text>
+            </View>
+
+            <Text style={styles.title}>Hôm qua bạn ngủ ngon chứ?</Text>
+
+            <View style={styles.timeRow}>
+              <Pressable style={styles.timeCard} onPress={() => openPicker('bedTime')}>
+                <Text style={styles.timeLabel}>Giờ đi ngủ</Text>
+                <View style={styles.timeValueRow}>
+                  <Text style={styles.timeValue}>{formatHourMinute(bedTime)}</Text>
+                  <Feather name="clock" size={18} color={COLORS.textSecondary} />
+                </View>
+              </Pressable>
+
+              <Pressable style={styles.timeCard} onPress={() => openPicker('wakeTime')}>
+                <Text style={styles.timeLabel}>Giờ thức dậy</Text>
+                <View style={styles.timeValueRow}>
+                  <Text style={styles.timeValue}>{formatHourMinute(wakeTime)}</Text>
+                  <Feather name="sun" size={18} color={COLORS.textSecondary} />
+                </View>
+              </Pressable>
+            </View>
+
+            <View style={styles.selectorSection}>
+              {SLEEP_QUALITY_OPTIONS.map(option => {
+                const isSelected = sleepQuality === option.value;
+
+                return (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[styles.qualityRow, isSelected && styles.qualityRowSelected]}
+                    onPress={() => setSleepQuality(option.value)}
+                    activeOpacity={0.85}>
+                    <View style={styles.qualityTextBlock}>
+                      <Text style={styles.qualityTitle}>{option.title}</Text>
+                      <Text style={styles.qualitySubtitle}>{option.subtitle}</Text>
+                    </View>
+
+                    <View style={styles.timelineHolder}>
+                      <View style={styles.timelineTrack}>
+                        {isSelected ? (
+                          <View
+                            style={[styles.timelineKnob, { backgroundColor: option.color }]}
+                          />
+                        ) : null}
+                      </View>
+                    </View>
+
+                    <View style={styles.iconHolder}>
+                      <MaterialCommunityIcons
+                        name={option.icon}
+                        size={26}
+                        color={option.color}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <View>
+              <Text style={styles.sectionTitle}>Ghi chú thêm</Text>
+              <View style={styles.noteCard}>
+                <TextInput
+                  style={styles.noteInput}
+                  placeholder="Mô tả nhanh cảm giác khi thức dậy..."
+                  placeholderTextColor={COLORS.placeholder}
+                  multiline
+                  value={note}
+                  onChangeText={setNote}
+                  editable={!isSubmitting}
+                />
+              </View>
+            </View>
+          </ScrollView>
+
+          <View style={styles.footer}>
+            <Pressable
+              style={[styles.submitButton, !canSubmit && styles.submitButtonDisabled]}
+              onPress={handleSubmit}
+              disabled={!canSubmit}>
+              {isSubmitting ? (
+                <ActivityIndicator color={COLORS.buttonPrimaryText} />
+              ) : (
+                <View style={styles.submitContent}>
+                  <Text style={styles.submitText}>Cập nhật giấc ngủ</Text>
+                  <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
+                </View>
+              )}
+            </Pressable>
+          </View>
+
+          {pickerTarget && Platform.OS !== 'ios' ? (
+            <DateTimePicker
+              value={currentPickerValue}
+              mode="time"
+              is24Hour
+              display="default"
+              onChange={handlePickerChange}
+            />
+          ) : null}
+
+          {pickerTarget && Platform.OS === 'ios' ? (
+            <>
+              <Pressable style={styles.iosPickerBackdrop} onPress={closePicker} />
+              <View style={styles.iosPickerCard}>
+                <View style={styles.iosPickerHeader}>
+                  <Pressable onPress={closePicker}>
+                    <Text style={styles.iosPickerDone}>Xong</Text>
+                  </Pressable>
+                </View>
+                <DateTimePicker
+                  value={currentPickerValue}
+                  mode="time"
+                  is24Hour
+                  display="spinner"
+                  onChange={handlePickerChange}
+                />
+              </View>
+            </>
+          ) : null}
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default SleepEntryScreen;

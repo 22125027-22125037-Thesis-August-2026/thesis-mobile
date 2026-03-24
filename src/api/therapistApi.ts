@@ -37,7 +37,7 @@ export interface BookSessionData {
 
 export const getTherapists = async (): Promise<Therapist[]> => {
     try {
-      const response = await axiosClient.get<Therapist[]>('/therapists');
+      const response = await axiosClient.get<Therapist[]>('/api/v1/therapists');
       return response.data;
     } catch (error) {
       // Handle or rethrow error
@@ -47,7 +47,7 @@ export const getTherapists = async (): Promise<Therapist[]> => {
   
   export const getTherapistDetails = async (id: string): Promise<Therapist> => {
     try {
-      const response = await axiosClient.get<Therapist>(`/therapists/${id}`);
+      const response = await axiosClient.get<Therapist>(`/api/v1/therapists/${id}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -56,7 +56,7 @@ export const getTherapists = async (): Promise<Therapist[]> => {
   
   export const bookSession = async (data: BookSessionData): Promise<any> => {
     try {
-      const response = await axiosClient.post('/bookings', data);
+      const response = await axiosClient.post('/api/v1/bookings', data);
       return response.data;
     } catch (error) {
       throw error;

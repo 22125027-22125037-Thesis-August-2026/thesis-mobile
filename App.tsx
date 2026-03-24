@@ -14,6 +14,11 @@ import TherapistDetailScreen from './src/screens/booking/TherapistDetailScreen';
 import TherapistFilterScreen from './src/screens/booking/TherapistFilterScreen';
 import VideoConsultationScreen from './src/screens/booking/VideoConsultationScreen';
 import WaitingRoomScreen from './src/screens/booking/WaitingRoomScreen';
+import SleepOverviewScreen from './src/screens/tracking/sleep/SleepOverviewScreen';
+import SleepEntryScreen from './src/screens/tracking/sleep/SleepEntryScreen';
+import DiaryOverviewScreen from './src/screens/tracking/DiaryOverviewScreen';
+import FoodOverviewScreen from './src/screens/tracking/food/FoodOverviewScreen';
+import FoodEntryScreen from './src/screens/tracking/food/FoodEntryScreen';
 import { RootStackParamList } from './src/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,7 +34,8 @@ const AppNav: React.FC = () => {
     );
   }
 
-  const { userToken } = auth;
+  // Skip login for testing
+  const userToken = true;
 
   return (
     <NavigationContainer>
@@ -44,6 +50,11 @@ const AppNav: React.FC = () => {
             <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
             <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
             <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
+            <Stack.Screen name="SleepOverview" component={SleepOverviewScreen} />
+            <Stack.Screen name="SleepEntry" component={SleepEntryScreen} />
+            <Stack.Screen name="DiaryOverview" component={DiaryOverviewScreen} />
+            <Stack.Screen name="FoodOverview" component={FoodOverviewScreen} />
+            <Stack.Screen name="FoodEntry" component={FoodEntryScreen} />
           </>
         ) : (
           <>
