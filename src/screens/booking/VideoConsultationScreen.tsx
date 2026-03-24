@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { sign } from 'react-native-pure-jwt';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import CryptoJS from 'crypto-js';
 import ZoomUs from 'react-native-zoom-us';
 import { COLORS } from '../../constants/colors';
+import { RootStackParamList } from '../../navigation/types';
 import styles from './VideoConsultationScreen.styles';
 
 const ZOOM_APP_KEY = '_fpH9UMMQqWNyO7NS2rhBg';
@@ -12,32 +15,50 @@ const ZOOM_MEETING_PASSWORD = 'N212sP';
 
 type ZoomTestingJwtPayload = {
   appKey: string;
-  sdkKey: string;
-  mn: string;
-  role: number;
   iat: number;
   exp: number;
   tokenExp: number;
 };
 
+type VideoConsultationNavigationProp = NativeStackNavigationProp<RootStackParamList, 'VideoConsultation'>;
+
+const base64url = (source: CryptoJS.lib.WordArray): string => {
+  let encodedSource = CryptoJS.enc.Base64.stringify(source);
+  encodedSource = encodedSource.replace(/=+$/, '');
+  encodedSource = encodedSource.replace(/\+/g, '-');
+  encodedSource = encodedSource.replace(/\//g, '_');
+  return encodedSource;
+};
+
 const generateTestingToken = async (): Promise<string> => {
-  const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + 172800;
+  // Buffer iat slightly to avoid device clock drift issues vs Zoom servers.
+  const iat = Math.floor(Date.now() / 1000) - 30;
+  // Keep token lifetime short to stay under strict SDK JWT validation limits.
+  const exp = iat + 7200;
 
   const payload: ZoomTestingJwtPayload = {
     appKey: ZOOM_APP_KEY,
-    sdkKey: ZOOM_APP_KEY,
-    mn: ZOOM_MEETING_NUMBER,
-    role: 0,
     iat,
     exp,
     tokenExp: exp,
   };
 
-  return sign(payload, ZOOM_APP_SECRET, { alg: 'HS256' });
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
+  const encodedHeader = base64url(stringifiedHeader);
+
+  const stringifiedPayload = CryptoJS.enc.Utf8.parse(JSON.stringify(payload));
+  const encodedPayload = base64url(stringifiedPayload);
+
+  const signatureInput = `${encodedHeader}.${encodedPayload}`;
+  const signed = CryptoJS.HmacSHA256(signatureInput, ZOOM_APP_SECRET);
+  const encodedSignature = base64url(signed);
+
+  return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
 };
 
 const VideoConsultationScreen: React.FC = () => {
+  const navigation = useNavigation<VideoConsultationNavigationProp>();
   const [isZoomInitialized, setIsZoomInitialized] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [initializationError, setInitializationError] = useState<string | null>(null);
@@ -54,11 +75,13 @@ const VideoConsultationScreen: React.FC = () => {
           setInitializationError(null);
         }
 
-        // 1. Comment out the library generator
-        // generatedToken = await generateTestingToken();
+        generatedToken = await generateTestingToken();
 
-        // 2. Hardcode your jwt.io token here
-        generatedToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBLZXkiOiJfZnBIOVVNTVFxV055TzdOUzJyaEJnIiwic2RrS2V5IjoiX2ZwSDlVTU1RcVdOeU83TlMycmhCZyIsIm1uIjoiNzA3NTEyMDQ3MyIsInJvbGUiOjAsImlhdCI6MTc3MzU2MjkyMCwiZXhwIjoxNzczNzM1NzIwLCJ0b2tlbkV4cCI6MTc3MzczNTcyMH0.Y4ahDX0ShaoLAXls08xqpxE7fi41hjgdtWmE7rJATa4';
+        // --- ADD THIS DEBUG BLOCK ---
+        console.log('\n=== TOKEN DEBUG ===');
+        console.log('1. Device Time:', new Date().toISOString());
+        console.log('2. Generated Token:', generatedToken);
+        console.log('===================\n');
 
         await ZoomUs.initialize({
           jwtToken: generatedToken,
@@ -111,6 +134,22 @@ const VideoConsultationScreen: React.FC = () => {
     });
   };
 
+  const handleEndMeeting = (): void => {
+    /*
+     * TODO: Implement logic to trigger this navigation automatically if the user exits
+     * the Zoom meeting less than 5 minutes before the scheduled end time, marking
+     * the session as complete.
+     *
+     * Suggested business flow:
+     * 1. Subscribe to Zoom meeting leave/end callbacks and capture actual exit timestamp.
+     * 2. Compare actual exit timestamp with scheduled end timestamp from backend booking data.
+     * 3. If delta is <= 5 minutes, call session-completion API and persist completion status.
+     * 4. If completion API succeeds, navigate to ConsultationFeedback for post-session review.
+     * 5. If completion API fails, show retry/error state and avoid navigating prematurely.
+     */
+    navigation.navigate('ConsultationFeedback');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -122,9 +161,15 @@ const VideoConsultationScreen: React.FC = () => {
             <Text style={styles.loadingText}>Đang khởi tạo Zoom...</Text>
           </View>
         ) : isZoomInitialized ? (
-          <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleJoinMeeting}>
-            <Text style={styles.primaryButtonText}>Mở Zoom & Tham gia</Text>
-          </TouchableOpacity>
+          <View style={styles.loadingWrapper}>
+            <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleJoinMeeting}>
+              <Text style={styles.primaryButtonText}>Mở Zoom & Tham gia</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.endMeetingButton} activeOpacity={0.85} onPress={handleEndMeeting}>
+              <Text style={styles.primaryButtonText}>End Meeting</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <View style={styles.loadingWrapper}>
             <Text style={styles.errorText}>{initializationError ?? 'Không thể khởi tạo Zoom.'}</Text>

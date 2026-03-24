@@ -18,6 +18,7 @@ export type RootStackParamList = {
     reason?: string;
   };
   VideoConsultation: undefined;
+  ConsultationFeedback: undefined;
 };
 
 export type TrackingStackParamList = {
