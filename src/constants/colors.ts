@@ -48,6 +48,14 @@ export const COLORS = {
   videoPipBorder: '#454545',
   videoControlBackground: '#2A2A2A',
   videoEndCall: '#D9534F',
+  // Resolved from Therapist-Feature
+  consultationFeedbackBackground: '#CDE4B4',
+  consultationFeedbackPrimary: '#3D8056',
+  consultationFeedbackTitle: '#1E2A36',
+  consultationFeedbackSecondary: '#6B7280',
+  consultationFeedbackAvatar: '#E5E7EB',
+  consultationFeedbackDivider: '#D1D5DB',
+  // Resolved from main
   sleepHeaderPurple: '#7E5BEF',
   sleepQualityExcellent: '#84CC16',
   sleepQualityGood: '#FACC15',

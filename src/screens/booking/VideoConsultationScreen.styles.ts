@@ -59,6 +59,17 @@ const styles = StyleSheet.create({
     color: COLORS.buttonPrimaryText,
     textAlign: 'center',
   },
+  endMeetingButton: {
+    width: '100%',
+    minHeight: SPACING.submitButtonHeight,
+    borderRadius: BORDER_RADIUS.button,
+    backgroundColor: COLORS.videoEndCall,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    marginTop: SPACING.md,
+  },
 });
 
 export default styles;

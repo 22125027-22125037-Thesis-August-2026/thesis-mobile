@@ -18,6 +18,9 @@ export type RootStackParamList = {
     reason?: string;
   };
   VideoConsultation: undefined;
+  // Resolved from Therapist-Feature
+  ConsultationFeedback: undefined;
+  // Resolved from main
   SleepOverview: undefined;
   SleepEntry: undefined;
   DiaryOverview: undefined;
