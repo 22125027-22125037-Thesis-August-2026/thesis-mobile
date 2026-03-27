@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axiosClient from '../api/axiosClient';
 import { AuthResponse, User } from '../types/auth';
 
+const AUTH_BASE_PATH = '/api/v1/auth';
+
 interface AuthContextType {
   isLoading: boolean;
   userToken: string | null;
@@ -22,13 +24,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, pass: string) => {
     setIsLoading(true);
     try {
-      const res = await axiosClient.post<AuthResponse>('/auth/login', { email, password: pass });
+      const res = await axiosClient.post<AuthResponse>(`${AUTH_BASE_PATH}/login`, { email, password: pass });
       const { token } = res.data;
 
       setUserToken(token);
       await AsyncStorage.setItem('userToken', token);
 
-      const userRes = await axiosClient.get<User>('/auth/me');
+      const userRes = await axiosClient.get<User>(`${AUTH_BASE_PATH}/me`);
       setUserInfo(userRes.data);
       
     } catch (error) {
@@ -52,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       let token = await AsyncStorage.getItem('userToken');
       if (token) {
         setUserToken(token);
-        const userRes = await axiosClient.get<User>('/auth/me');
+        const userRes = await axiosClient.get<User>(`${AUTH_BASE_PATH}/me`);
         setUserInfo(userRes.data);
       }
     } catch (e) {

@@ -19,6 +19,9 @@ import SleepEntryScreen from './src/screens/tracking/sleep/SleepEntryScreen';
 import DiaryOverviewScreen from './src/screens/tracking/DiaryOverviewScreen';
 import FoodOverviewScreen from './src/screens/tracking/food/FoodOverviewScreen';
 import FoodEntryScreen from './src/screens/tracking/food/FoodEntryScreen';
+import ChatScreen from './src/screens/ChatScreen';
+import TherapyOverviewScreen from './src/screens/TherapyOverviewScreen'; 
+
 import { RootStackParamList } from './src/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -35,14 +38,18 @@ const AppNav: React.FC = () => {
   }
 
   // Skip login for testing
-  const userToken = true;
+  const userToken = auth.userToken;
 
   return (
     <NavigationContainer>
+      {/* 2. ĐỔI initialRouteName THÀNH TherapyOverview */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken ? (
           <>
+            {/* 3. ĐĂNG KÝ CẢ 2 MÀN HÌNH VÀO STACK */}
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
+            <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="TherapistFilter" component={TherapistFilterScreen} />
             <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
             <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />

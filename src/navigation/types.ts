@@ -2,6 +2,13 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Home: undefined;
+  
+  // Nâng cấp: Màn hình Chat giờ đây có thể nhận sessionId (phiên cũ) hoặc không có (phiên mới)
+  Chat: { sessionId?: string | null } | undefined; 
+  
+  // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
+  TherapyOverview: undefined; 
+
   TherapistFilter: { matchingSuccess?: boolean } | undefined;
   MatchingForm: undefined;
   TherapistList: undefined;
@@ -30,7 +37,11 @@ export type RootStackParamList = {
 
 export type TrackingStackParamList = {
   Home: undefined;
-  Chat: undefined;
+  
+  // Nâng cấp tương tự cho Stack Tracking (nếu bạn dùng nested navigation)
+  Chat: { sessionId?: string | null } | undefined;
+  TherapyOverview: undefined; 
+
   DiaryOverview: undefined;
   DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;

@@ -8,13 +8,13 @@ export interface Message {
 }
 
 export interface AiChatRequest {
-  session_id: string | null;
+  sessionId: string | null;
   content: string;
 }
 
 export interface AIChatResponse {
-  session_id?: string;
+  sessionId?: string;
   content: string;
-  sentiment_detected: string;
-  crisis_detected: boolean;
+  sentimentDetected: string;
+  crisisDetected: boolean;
 }

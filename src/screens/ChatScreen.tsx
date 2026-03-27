@@ -13,8 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
-} from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+} from 'react-native';import { NavigationProp, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { aiApi } from '../api/aiApi';
@@ -34,10 +33,12 @@ const INITIAL_MESSAGE: Message = {
 
 const ChatScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
+  const route = useRoute<RouteProp<TrackingStackParamList, 'Chat'>>();
+  const incomingSessionId = route.params?.sessionId || null;
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(incomingSessionId);
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [inputText, setInputText] = useState<string>('');
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const flatListRef = useRef<FlatList>(null);
 
   // Scroll to bottom on new messages
@@ -73,13 +74,13 @@ const ChatScreen: React.FC = () => {
     try {
       // Call backend API with session_id (ping-pong logic)
       const response = await aiApi.sendMessage({
-        session_id: currentSessionId,
+        sessionId: currentSessionId,
         content: userMessage.text,
       });
 
       // If this is the first message (no session established), capture session_id
-      if (currentSessionId === null && response.session_id) {
-        setCurrentSessionId(response.session_id);
+      if (currentSessionId === null && response.sessionId) {
+        setCurrentSessionId(response.sessionId);
       }
 
       // Create AI message
@@ -94,8 +95,8 @@ const ChatScreen: React.FC = () => {
       setMessages(prev => [aiMessage, ...prev]);
 
       // Handle crisis detection if needed (you can add notifications here)
-      if (response.crisis_detected) {
-        console.warn('⚠️ Crisis detected:', response.sentiment_detected);
+      if (response.crisisDetected) {
+        console.warn('⚠️ Crisis detected:', response.sentimentDetected);
         // TODO: Show crisis alert or notification
       }
     } catch (error) {

@@ -35,6 +35,10 @@ const HomeScreen: React.FC = () => {
     navigation.navigate('FoodOverview');
   };
 
+  const handleNavigateChatbot = (): void => {
+    navigation.navigate('TherapyOverview');
+  };
+
   const today = new Date();
   const dateString = today.toLocaleDateString('vi-VN', {
     month: 'numeric',
@@ -238,7 +242,12 @@ const HomeScreen: React.FC = () => {
         {/* ===== AI CHATBOT SECTION ===== */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Bạn Tâm giao</Text>
-          <View style={styles.chatbotCard}>
+          
+          {/* ĐỔI VIEW THÀNH PRESSABLE VÀ GẮN ONPRESS */}
+          <Pressable 
+            style={styles.chatbotCard}
+            onPress={handleNavigateChatbot} 
+          >
             <View style={styles.chatbotContent}>
               <View style={styles.robotIllustration}>
                 <MaterialCommunityIcons
@@ -260,14 +269,17 @@ const HomeScreen: React.FC = () => {
                 </View>
               </View>
             </View>
+            
             <View style={styles.chatbotActions}>
-              <Pressable style={styles.actionButton}>
+              {/* GẮN ONPRESS VÀO NÚT CỘNG LUÔN */}
+              <Pressable style={styles.actionButton} onPress={handleNavigateChatbot}>
                 <MaterialCommunityIcons
                   name="plus"
                   size={24}
                   color={COLORS.accentPositive}
                 />
               </Pressable>
+              
               <Pressable style={styles.actionButton}>
                 <MaterialCommunityIcons
                   name="cog-outline"
@@ -276,7 +288,7 @@ const HomeScreen: React.FC = () => {
                 />
               </Pressable>
             </View>
-          </View>
+          </Pressable>
         </View>
 
         {/* ===== GROUP SESSIONS SECTION ===== */}
