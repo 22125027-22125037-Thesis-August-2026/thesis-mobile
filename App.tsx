@@ -37,8 +37,8 @@ const AppNav: React.FC = () => {
     );
   }
 
-  // Skip login for testing
   const userToken = auth.userToken;
+  console.log('User Token in AppNav:', userToken);
 
   return (
     <NavigationContainer>

@@ -34,3 +34,27 @@ axiosClient.interceptors.request.use(async config => {
 });
 
 export default axiosClient;
+
+// Interceptor: Tự động logout khi token hết hạn (401)
+import { Alert } from 'react-native';
+import { NavigationContainerRef } from '@react-navigation/native';
+let logoutHandler: (() => void) | null = null;
+
+export const setLogoutHandler = (handler: () => void) => {
+  logoutHandler = handler;
+};
+
+axiosClient.interceptors.response.use(
+  response => response,
+  async error => {
+    if (error.response && error.response.status === 401) {
+      // Xóa token hết hạn khỏi AsyncStorage
+      await AsyncStorage.removeItem('userToken');
+      if (logoutHandler) {
+        logoutHandler();
+      }
+      Alert.alert('Phiên đăng nhập đã hết hạn', 'Vui lòng đăng nhập lại.');
+    }
+    return Promise.reject(error);
+  },
+);

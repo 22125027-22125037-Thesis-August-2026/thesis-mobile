@@ -61,10 +61,17 @@ const RegisterScreen = ({ navigation }: any) => {
       return;
     }
 
-    // Gọi API Register (Giả định hàm register có trong context)
-    // await auth?.register(email, password);
-    Alert.alert('Thành công', 'Đăng ký tài khoản thành công!');
-    navigation.navigate('Login'); // Chuyển về trang đăng nhập
+    // Gọi API Register thông qua Context
+    try {
+      // Dùng await để chờ API chạy xong
+      await auth?.register(email, password); 
+      
+      Alert.alert('Thành công', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập.');
+      navigation.navigate('Login'); // Chuyển về trang đăng nhập
+    } catch (error) {
+      // Nếu Backend báo lỗi (vd: Email đã tồn tại) thì nó sẽ nhảy vào đây
+      Alert.alert('Đăng ký thất bại', 'Email này có thể đã được sử dụng. Vui lòng thử lại.');
+    }
   };
 
   return (
