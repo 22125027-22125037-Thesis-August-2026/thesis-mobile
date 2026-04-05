@@ -231,7 +231,7 @@ const DiaryOverviewScreen: React.FC = () => {
                 <Pressable
                   style={styles.backButton}
                   onPress={() => navigation?.goBack()}
-                  disabled={!navigation?.navigate('Home')}>
+                  disabled={!navigation}>
                   <Feather name="chevron-left" size={24} color={COLORS.white} />
                 </Pressable>
                 <Text style={styles.headerTitle}>{t('overview.headerTitle')}</Text>

@@ -98,6 +98,27 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: SPACING.md,
   },
+  weekNavigatorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.md,
+  },
+  weekNavButton: {
+    width: 34,
+    height: 34,
+    borderRadius: BORDER_RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: SPACING.borderWidth,
+    borderColor: COLORS.borderSubtle,
+    backgroundColor: COLORS.surface,
+  },
+  weekRangeLabel: {
+    color: COLORS.textPrimary,
+    fontSize: FONT_SIZES.md,
+    fontWeight: '600',
+  },
   sectionTitle: {
     color: COLORS.textPrimary,
     fontSize: FONT_SIZES.lg,

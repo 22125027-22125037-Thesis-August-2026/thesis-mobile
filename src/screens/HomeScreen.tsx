@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  RefreshControl,
   ScrollView,
   View,
   Text,
@@ -8,10 +9,11 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 
+import { getDashboardSummary, DashboardSummary } from '../api/trackingApi';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../constants/colors';
 import { BORDER_RADIUS, FONT_SIZES, SPACING } from '../constants/theme';
@@ -19,9 +21,51 @@ import { TrackingStackParamList } from '../navigation/types';
 
 type NavigationPropType = NavigationProp<TrackingStackParamList>;
 
+const getMoodDisplay = (dominantMood: string): { emoji: string; text: string } => {
+  switch (dominantMood?.toUpperCase()) {
+    case 'SAD':
+      return { emoji: '😢', text: 'Buồn' };
+    case 'HAPPY':
+      return { emoji: '😊', text: 'Vui' };
+    case 'ANXIOUS':
+      return { emoji: '😟', text: 'Lo âu' };
+    case 'ANGRY':
+      return { emoji: '😠', text: 'Giận' };
+    default:
+      return { emoji: '🙂', text: 'Ổn' };
+  }
+};
+
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
   const { userInfo } = useContext(AuthContext)!;
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchSummary = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+
+    try {
+      const data = await getDashboardSummary();
+      setSummary(data);
+    } catch (error) {
+      console.error('[HomeScreen] Failed to load dashboard summary:', error);
+      setSummary(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSummary();
+    }, [fetchSummary]),
+  );
+
+  const moodDisplay = useMemo(
+    () => getMoodDisplay(summary?.dominantMood ?? ''),
+    [summary?.dominantMood],
+  );
 
   const handleNavigateSleep = (): void => {
     navigation.navigate('SleepOverview');
@@ -55,6 +99,9 @@ const HomeScreen: React.FC = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={fetchSummary} />
+        }
         contentContainerStyle={styles.scrollContent}>
         {/* ===== HEADER SECTION ===== */}
         <View style={styles.headerContainer}>
@@ -125,8 +172,10 @@ const HomeScreen: React.FC = () => {
                 />
               </View>
               <View style={styles.scoreDisplay}>
-                <Text style={styles.scoreValue}>80</Text>
-                <Text style={styles.scoreLabel}>Tích cực</Text>
+                <Text style={styles.scoreValue}>{summary?.emotionScore ?? '--'}</Text>
+                <Text style={styles.scoreLabel}>
+                  {summary?.dominantMood ? moodDisplay.text : 'Đang cập nhật'}
+                </Text>
               </View>
             </View>
 
@@ -134,9 +183,9 @@ const HomeScreen: React.FC = () => {
             <View style={[styles.healthCard, styles.healthCardOrange]}>
               <Text style={styles.moodLabel}>Mood</Text>
               <View style={styles.moodFace}>
-                <Text style={styles.moodFaceEmoji}>😢</Text>
+                <Text style={styles.moodFaceEmoji}>{moodDisplay.emoji}</Text>
               </View>
-              <Text style={styles.moodText}>Buồn</Text>
+              <Text style={styles.moodText}>{moodDisplay.text}</Text>
             </View>
           </ScrollView>
         </View>
@@ -165,12 +214,14 @@ const HomeScreen: React.FC = () => {
               </View>
               <View style={styles.logCardText}>
                 <Text style={styles.logCardTitle}>Chất lượng giấc mơ</Text>
-                <Text style={styles.logCardSubtitle}>Rất tốt</Text>
+                <Text style={styles.logCardSubtitle}>
+                  {summary?.sleepQuality || 'Chưa có dữ liệu'}
+                </Text>
               </View>
             </View>
             <View style={styles.logCardRight}>
               <View style={styles.progressCircle}>
-                <Text style={styles.progressValue}>7/9</Text>
+                <Text style={styles.progressValue}>{summary?.sleepScore || '--'}</Text>
               </View>
             </View>
           </Pressable>
@@ -186,7 +237,9 @@ const HomeScreen: React.FC = () => {
               </View>
               <View style={styles.logCardText}>
                 <Text style={styles.logCardTitle}>Góc tâm tư</Text>
-                <Text style={styles.logCardSubtitle}>64 ngày chuỗi</Text>
+                <Text style={styles.logCardSubtitle}>
+                  {summary?.diaryStreak ? `${summary.diaryStreak} ngày chuỗi` : 'Chưa có chuỗi'}
+                </Text>
               </View>
             </View>
             <View style={styles.logCardRight}>
@@ -225,7 +278,9 @@ const HomeScreen: React.FC = () => {
               </View>
               <View style={styles.logCardText}>
                 <Text style={styles.logCardTitle}>Nhật ký dinh dưỡng</Text>
-                <Text style={styles.logCardSubtitle}>Nuông chiều</Text>
+                <Text style={styles.logCardSubtitle}>
+                  {summary?.foodStatus || 'Chưa có dữ liệu'}
+                </Text>
               </View>
             </View>
             <View style={styles.logCardRight}>
@@ -257,7 +312,7 @@ const HomeScreen: React.FC = () => {
                 />
               </View>
               <View style={styles.chatbotText}>
-                <Text style={styles.chatbotNumber}>2541</Text>
+                <Text style={styles.chatbotNumber}>{summary?.totalAiSessions ?? 0}</Text>
                 <Text style={styles.chatbotLabel}>lần tâm sự</Text>
                 <View style={styles.chatbotMetaRow}>
                   <MaterialCommunityIcons
@@ -265,7 +320,9 @@ const HomeScreen: React.FC = () => {
                     size={12}
                     color={COLORS.white}
                   />
-                  <Text style={styles.chatbotMeta}>83 cơn tâm tư này tháng</Text>
+                  <Text style={styles.chatbotMeta}>
+                    {summary?.monthlyAiSessions ?? 0} cơn tâm tư này tháng
+                  </Text>
                 </View>
               </View>
             </View>

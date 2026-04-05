@@ -4,11 +4,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,6 +18,13 @@ import { COLORS } from '../../../constants/colors';
 import { SLEEP_QUALITY_UI_MAP, SLEEP_WEEKDAY_LABELS } from '../../../constants/sleep';
 import { TrackingStackParamList } from '../../../navigation/types';
 import { SleepLogResponse } from '../../../types/sleep';
+import {
+  endOfWeekSunday,
+  formatWeekRangeLabel,
+  isSameDate,
+  shiftWeek,
+  startOfWeekMonday,
+} from '../../../utils/weekCalendar';
 import { styles } from './SleepOverviewScreen.styles';
 
 type SleepDayStat = {
@@ -29,22 +36,6 @@ type SleepDayStat = {
 
 const MAX_CHART_DURATION_MINUTES = 600;
 const MIN_BAR_HEIGHT_PERCENT = 20;
-
-const startOfCurrentWeek = (today: Date): Date => {
-  const start = new Date(today);
-  const day = start.getDay();
-  const mondayOffset = day === 0 ? -6 : 1 - day;
-  start.setDate(start.getDate() + mondayOffset);
-  start.setHours(0, 0, 0, 0);
-  return start;
-};
-
-const endOfCurrentWeek = (weekStart: Date): Date => {
-  const end = new Date(weekStart);
-  end.setDate(end.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
-  return end;
-};
 
 const formatAverageDuration = (minutes: number | null): string => {
   if (minutes === null || minutes <= 0) {
@@ -79,7 +70,10 @@ const parseLogDate = (log: SleepLogResponse): Date => {
 const SleepOverviewScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
 
-  const [weeklyLogs, setWeeklyLogs] = useState<SleepLogResponse[]>([]);
+  const [allLogs, setAllLogs] = useState<SleepLogResponse[]>([]);
+  const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(
+    startOfWeekMonday(new Date()),
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -92,16 +86,7 @@ const SleepOverviewScreen: React.FC = () => {
           return;
         }
 
-        const today = new Date();
-        const weekStart = startOfCurrentWeek(today);
-        const weekEnd = endOfCurrentWeek(weekStart);
-
-        const currentWeekLogs = logs.filter(log => {
-          const logDate = parseLogDate(log);
-          return logDate >= weekStart && logDate <= weekEnd;
-        });
-
-        setWeeklyLogs(currentWeekLogs);
+        setAllLogs(logs);
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -116,21 +101,28 @@ const SleepOverviewScreen: React.FC = () => {
     };
   }, []);
 
-  const dayStats = useMemo<SleepDayStat[]>(() => {
-    const today = new Date();
-    const weekStart = startOfCurrentWeek(today);
+  const weeklyLogs = useMemo<SleepLogResponse[]>(() => {
+    const weekEnd = endOfWeekSunday(selectedWeekStart);
 
+    return allLogs.filter(log => {
+      const logDate = parseLogDate(log);
+      return logDate >= selectedWeekStart && logDate <= weekEnd;
+    });
+  }, [allLogs, selectedWeekStart]);
+
+  const weekRangeLabel = useMemo(
+    () => formatWeekRangeLabel(selectedWeekStart),
+    [selectedWeekStart],
+  );
+
+  const dayStats = useMemo<SleepDayStat[]>(() => {
     return Array.from({ length: 7 }, (_, index) => {
-      const dayDate = new Date(weekStart);
-      dayDate.setDate(weekStart.getDate() + index);
+      const dayDate = new Date(selectedWeekStart);
+      dayDate.setDate(selectedWeekStart.getDate() + index);
 
       const dayLog = weeklyLogs.find(log => {
         const logDate = parseLogDate(log);
-        return (
-          logDate.getFullYear() === dayDate.getFullYear() &&
-          logDate.getMonth() === dayDate.getMonth() &&
-          logDate.getDate() === dayDate.getDate()
-        );
+        return isSameDate(logDate, dayDate);
       });
 
       return {
@@ -140,7 +132,7 @@ const SleepOverviewScreen: React.FC = () => {
         sleepQuality: dayLog?.sleepQuality ?? null,
       };
     });
-  }, [weeklyLogs]);
+  }, [selectedWeekStart, weeklyLogs]);
 
   const averageDurationMinutes = useMemo<number | null>(() => {
     if (weeklyLogs.length === 0) {
@@ -173,11 +165,29 @@ const SleepOverviewScreen: React.FC = () => {
             <View style={styles.body}>
               <Text style={styles.sectionTitle}>Thống kê giấc ngủ</Text>
 
+              <View style={styles.weekNavigatorRow}>
+                <Pressable
+                  style={styles.weekNavButton}
+                  onPress={() =>
+                    setSelectedWeekStart(previous => shiftWeek(previous, -1))
+                  }>
+                  <Feather name="chevron-left" size={18} color={COLORS.textPrimary} />
+                </Pressable>
+                <Text style={styles.weekRangeLabel}>{weekRangeLabel}</Text>
+                <Pressable
+                  style={styles.weekNavButton}
+                  onPress={() =>
+                    setSelectedWeekStart(previous => shiftWeek(previous, 1))
+                  }>
+                  <Feather name="chevron-right" size={18} color={COLORS.textPrimary} />
+                </Pressable>
+              </View>
+
               <View style={styles.chartCard}>
                 {isLoading ? (
                   <View style={styles.loadingWrap}>
                     <ActivityIndicator color={COLORS.primary} />
-                    <Text style={styles.loadingText}>Đang tải dữ liệu tuần này...</Text>
+                    <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
                   </View>
                 ) : (
                   <View style={styles.chartArea}>
