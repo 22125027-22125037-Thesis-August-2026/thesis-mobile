@@ -1,15 +1,35 @@
-// Dữ liệu User trả về từ API /me
+export type UserRole = 'TEEN' | 'PARENT' | 'THERAPIST' | 'ADMIN';
+
+// Base profile data returned by /api/v1/auth/me
 export interface User {
-  id: string;
-  email: string;
+  profileId: string;
+  role: UserRole;
   fullName: string;
-  role: 'PATIENT' | 'DOCTOR' | 'MANAGER';
-  creditsBalance: number;
+  avatarUrl?: string;
+  email?: string;
 }
 
 // Dữ liệu trả về khi Login thành công
 export interface AuthResponse {
   token: string;
+  profileId: string;
+  role: UserRole;
+}
+
+export interface RegisterPayload {
+  fullName: string;
+  avatarUrl?: string;
   email: string;
-  role: string;
+  password: string;
+  phoneNumber?: string;
+  dob?: string;
+  role: UserRole;
+  school?: string;
+  emergencyContact?: string;
+  specialization?: string;
+  bio?: string;
+  yearsOfExperience?: number;
+  consultationFee?: number;
+  verified?: boolean;
+  linkedTeenId?: string;
 }

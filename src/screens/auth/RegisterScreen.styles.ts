@@ -13,14 +13,22 @@ export const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   headerBackground: {
-    position: 'absolute', top: 0, left: 0, right: 0, height: 200, overflow: 'hidden', zIndex: -1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+    overflow: 'hidden',
+    zIndex: -1,
   },
   circle: {
     width: width * 1.5,
     height: 400,
     borderRadius: 1000,
     backgroundColor: COLORS.primary,
-    position: 'absolute', top: -220, left: -(width * 1.5 - width) / 2,
+    position: 'absolute',
+    top: -220,
+    left: -(width * 1.5 - width) / 2,
   },
   title: {
     fontSize: 28,
@@ -33,7 +41,7 @@ export const styles = StyleSheet.create({
   formContainer: {
     paddingHorizontal: 24,
   },
-  
+
   // Hộp báo lỗi đặc biệt (giống hình thiết kế)
   errorBox: {
     backgroundColor: COLORS.errorBg,
@@ -66,6 +74,41 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.text,
     marginLeft: 10,
+  },
+  roleSectionTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginTop: 4,
+    marginBottom: 10,
+  },
+  roleSelectorContainer: {
+    marginBottom: 16,
+    gap: 10,
+  },
+  roleCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: COLORS.white,
+  },
+  roleCardSelected: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primary,
+  },
+  roleCardText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+  },
+  roleCardTextSelected: {
+    color: COLORS.primary,
+    fontWeight: '700',
   },
   linkText: {
     color: COLORS.primary, // Hoặc màu xanh lá mạ của link điều khoản

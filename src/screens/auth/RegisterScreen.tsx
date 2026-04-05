@@ -19,12 +19,30 @@ import CustomInput from '../../components/CustomInput';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './RegisterScreen.styles';
 import CustomButton from '../../components/CustomButton';
+import { RegisterPayload, UserRole } from '../../types/auth';
 
 const RegisterScreen = ({ navigation }: any) => {
+  const ROLE_OPTIONS: Array<{ label: string; value: UserRole }> = [
+    { label: 'Học sinh/Sinh viên', value: 'TEEN' },
+    { label: 'Phụ huynh/Người thân', value: 'PARENT' },
+    { label: 'Bác sĩ tâm lý', value: 'THERAPIST' },
+  ];
+
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [dob, setDob] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerm, setAgreeTerm] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>('TEEN');
+  const [school, setSchool] = useState('');
+  const [emergencyContact, setEmergencyContact] = useState('');
+  const [specialization, setSpecialization] = useState('');
+  const [bio, setBio] = useState('');
+  const [yearsOfExperience, setYearsOfExperience] = useState('');
+  const [consultationFee, setConsultationFee] = useState('');
+  const [linkedTeenId, setLinkedTeenId] = useState('');
   
   // State hiển thị mật khẩu
   const [showPass, setShowPass] = useState(false);
@@ -35,12 +53,115 @@ const RegisterScreen = ({ navigation }: any) => {
 
   const auth = useContext(AuthContext);
 
+  const getRoleSpecificPayload = (): Partial<RegisterPayload> => {
+    if (selectedRole === 'TEEN') {
+      return {
+        school: school.trim() || undefined,
+        emergencyContact: emergencyContact.trim() || undefined,
+      };
+    }
+
+    if (selectedRole === 'THERAPIST') {
+      const normalizedYears = yearsOfExperience.trim();
+      const normalizedFee = consultationFee.trim();
+
+      return {
+        specialization: specialization.trim() || undefined,
+        bio: bio.trim() || undefined,
+        yearsOfExperience: normalizedYears
+          ? Number(normalizedYears)
+          : undefined,
+        consultationFee: normalizedFee ? Number(normalizedFee) : undefined,
+      };
+    }
+
+    if (selectedRole === 'PARENT') {
+      return {
+        linkedTeenId: linkedTeenId.trim() || undefined,
+      };
+    }
+
+    return {};
+  };
+
+  const renderRoleSpecificFields = () => {
+    if (selectedRole === 'TEEN') {
+      return (
+        <>
+          <CustomInput
+            label="Trường học"
+            iconName="school-outline"
+            placeholder="Nhập trường học (không bắt buộc)"
+            value={school}
+            onChangeText={setSchool}
+          />
+          <CustomInput
+            label="Liên hệ khẩn cấp"
+            iconName="call-outline"
+            placeholder="Số điện thoại hoặc người liên hệ"
+            value={emergencyContact}
+            onChangeText={setEmergencyContact}
+          />
+        </>
+      );
+    }
+
+    if (selectedRole === 'THERAPIST') {
+      return (
+        <>
+          <CustomInput
+            label="Chuyên môn"
+            iconName="medkit-outline"
+            placeholder="Ví dụ: Tâm lý học lâm sàng"
+            value={specialization}
+            onChangeText={setSpecialization}
+          />
+          <CustomInput
+            label="Giới thiệu"
+            iconName="document-text-outline"
+            placeholder="Tóm tắt kinh nghiệm và phương pháp"
+            value={bio}
+            onChangeText={setBio}
+          />
+          <CustomInput
+            label="Số năm kinh nghiệm"
+            iconName="stats-chart-outline"
+            placeholder="Ví dụ: 5"
+            value={yearsOfExperience}
+            onChangeText={setYearsOfExperience}
+          />
+          <CustomInput
+            label="Phí tư vấn (VND)"
+            iconName="cash-outline"
+            placeholder="Ví dụ: 300000"
+            value={consultationFee}
+            onChangeText={setConsultationFee}
+          />
+        </>
+      );
+    }
+
+    if (selectedRole === 'PARENT') {
+      return (
+        <CustomInput
+          label="Linked Teen ID"
+          iconName="link-outline"
+          placeholder="UUID hồ sơ teen (không bắt buộc)"
+          value={linkedTeenId}
+          onChangeText={setLinkedTeenId}
+        />
+      );
+    }
+
+    return null;
+  };
+
   const handleRegister = async () => {
     // Reset lỗi
     setEmailError(false);
 
     // Validate cơ bản
-    if (!email || !password || !confirmPassword) {
+    if (!fullName.trim() || !email || !password || !confirmPassword) {
       Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin');
       return;
     }
@@ -63,8 +184,37 @@ const RegisterScreen = ({ navigation }: any) => {
 
     // Gọi API Register thông qua Context
     try {
-      // Dùng await để chờ API chạy xong
-      await auth?.register(email, password); 
+      const roleSpecificPayload = getRoleSpecificPayload();
+
+      if (
+        selectedRole === 'THERAPIST' &&
+        yearsOfExperience.trim() &&
+        Number.isNaN(Number(yearsOfExperience.trim()))
+      ) {
+        Alert.alert('Lỗi', 'Số năm kinh nghiệm phải là số hợp lệ');
+        return;
+      }
+
+      if (
+        selectedRole === 'THERAPIST' &&
+        consultationFee.trim() &&
+        Number.isNaN(Number(consultationFee.trim()))
+      ) {
+        Alert.alert('Lỗi', 'Phí tư vấn phải là số hợp lệ');
+        return;
+      }
+
+      const payload: RegisterPayload = {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        password,
+        role: selectedRole,
+        phoneNumber: phoneNumber.trim() || undefined,
+        dob: dob.trim() || undefined,
+        ...roleSpecificPayload,
+      };
+
+      await auth?.register(payload);
       
       Alert.alert('Thành công', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập.');
       navigation.navigate('Login'); // Chuyển về trang đăng nhập
@@ -91,6 +241,30 @@ const RegisterScreen = ({ navigation }: any) => {
           <Text style={styles.title}>Đăng kí</Text>
 
           <View style={styles.formContainer}>
+            <CustomInput
+              label="Họ và tên"
+              iconName="person-outline"
+              placeholder="Nhập họ và tên"
+              value={fullName}
+              onChangeText={setFullName}
+            />
+
+            <CustomInput
+              label="Số điện thoại"
+              iconName="call-outline"
+              placeholder="Nhập số điện thoại (không bắt buộc)"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+            />
+
+            <CustomInput
+              label="Ngày sinh"
+              iconName="calendar-outline"
+              placeholder="YYYY-MM-DD (không bắt buộc)"
+              value={dob}
+              onChangeText={setDob}
+            />
+
             {/* Input Email */}
             <CustomInput
               label="Email"
@@ -133,6 +307,39 @@ const RegisterScreen = ({ navigation }: any) => {
               onTogglePassword={() => setShowConfirmPass(!showConfirmPass)}
             />
 
+            <Text style={styles.roleSectionTitle}>Bạn đăng ký với vai trò:</Text>
+            <View style={styles.roleSelectorContainer}>
+              {ROLE_OPTIONS.map(option => {
+                const isSelected = selectedRole === option.value;
+
+                return (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[
+                      styles.roleCard,
+                      isSelected && styles.roleCardSelected,
+                    ]}
+                    activeOpacity={0.85}
+                    onPress={() => setSelectedRole(option.value)}>
+                    <Ionicons
+                      name={isSelected ? 'radio-button-on' : 'radio-button-off'}
+                      size={20}
+                      color={isSelected ? COLORS.primary : COLORS.textSecondary}
+                    />
+                    <Text
+                      style={[
+                        styles.roleCardText,
+                        isSelected && styles.roleCardTextSelected,
+                      ]}>
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {renderRoleSpecificFields()}
+
             {/* Checkbox Điều khoản */}
             <TouchableOpacity 
               style={styles.checkboxContainer} 
@@ -151,7 +358,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
             {/* Link đã có tài khoản */}
             <View style={{flexDirection: 'row', marginBottom: 20}}>
-               <Text style={{color: '#666'}}>Đã có tài khoản? </Text>
+              <Text style={{color: COLORS.textSecondary}}>Đã có tài khoản? </Text>
                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                   <Text style={styles.loginLink}>Đăng nhập.</Text>
                </TouchableOpacity>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
 const BASE_URL = 'http://localhost:8080';
 
@@ -7,6 +8,7 @@ const BASE_URL = 'http://localhost:8080';
 const HARDCODED_TEST_TOKEN = '';
 
 const HAS_HARDCODED_TEST_TOKEN = HARDCODED_TEST_TOKEN.trim().length > 0;
+const AUTH_STORAGE_KEYS = ['userToken', 'userRole', 'profileId'];
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,
@@ -35,9 +37,7 @@ axiosClient.interceptors.request.use(async config => {
 
 export default axiosClient;
 
-// Interceptor: Tự động logout khi token hết hạn (401)
-import { Alert } from 'react-native';
-import { NavigationContainerRef } from '@react-navigation/native';
+// Interceptor: Tự động logout khi token hết hạn
 let logoutHandler: (() => void) | null = null;
 
 export const setLogoutHandler = (handler: () => void) => {
@@ -47,9 +47,11 @@ export const setLogoutHandler = (handler: () => void) => {
 axiosClient.interceptors.response.use(
   response => response,
   async error => {
-    if (error.response && error.response.status === 401) {
-      // Xóa token hết hạn khỏi AsyncStorage
-      await AsyncStorage.removeItem('userToken');
+    if (
+      error.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
+      await AsyncStorage.multiRemove(AUTH_STORAGE_KEYS);
       if (logoutHandler) {
         logoutHandler();
       }
