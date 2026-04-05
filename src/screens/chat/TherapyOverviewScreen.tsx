@@ -1,4 +1,4 @@
-// src/screens/TherapyOverviewScreen.tsx
+// src/screens/chat/TherapyOverviewScreen.tsx
 
 import React, { useCallback, useState } from 'react';
 import {
@@ -12,12 +12,13 @@ import {
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import { COLORS } from '../constants/colors';
-import { TrackingStackParamList } from '../navigation/types';
-import { aiApi } from '../api/aiApi';
-import { ChatSessionOverview } from '../types/chat';
-import TherapySessionCard from '../components/TherapySessionCard';
-import { styles } from './TherapyOverviewScreen.styles';
+import { COLORS } from '../../constants/colors';
+import { EMPTY_CHAT_TEXT } from '../../constants/chat';
+import { TrackingStackParamList } from '../../navigation/types';
+import { aiApi } from '../../api/aiApi';
+import { ChatSessionOverview } from '../../types/chat';
+import TherapySessionCard from '../../components/TherapySessionCard';
+import { styles } from '../TherapyOverviewScreen.styles';
 
 type NavigationPropType = NavigationProp<TrackingStackParamList>;
 
@@ -100,7 +101,7 @@ const TherapyOverviewScreen: React.FC = () => {
             </View>
           ) : sessions.length === 0 ? (
             <View style={styles.centerStateContainer}>
-              <Text style={styles.emptyStateText}>Chưa có cuộc trò chuyện nào.</Text>
+              <Text style={styles.emptyStateText}>{EMPTY_CHAT_TEXT}</Text>
             </View>
           ) : (
             <FlatList

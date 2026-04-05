@@ -1,5 +1,7 @@
 // src/types/chat.ts
 
+import { ChatSender } from '../constants/chat';
+
 export interface Message {
   id: string;
   text: string;
@@ -17,4 +19,19 @@ export interface AIChatResponse {
   content: string;
   sentimentDetected: string;
   crisisDetected: boolean;
+}
+
+export interface ChatSessionOverview {
+  sessionId: string;
+  updatedAt: string;
+  preview: string;
+  emotion: string;
+}
+
+export interface BackendChatMessage {
+  messageId: string;
+  sessionId: string;
+  sender: ChatSender;
+  content: string;
+  sentAt: string;
 }

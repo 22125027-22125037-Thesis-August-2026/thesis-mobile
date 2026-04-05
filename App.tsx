@@ -19,8 +19,8 @@ import SleepEntryScreen from './src/screens/tracking/sleep/SleepEntryScreen';
 import DiaryOverviewScreen from './src/screens/tracking/DiaryOverviewScreen';
 import FoodOverviewScreen from './src/screens/tracking/food/FoodOverviewScreen';
 import FoodEntryScreen from './src/screens/tracking/food/FoodEntryScreen';
-import ChatScreen from './src/screens/ChatScreen';
-import TherapyOverviewScreen from './src/screens/TherapyOverviewScreen'; 
+import ChatScreen from './src/screens/chat/ChatScreen';
+import TherapyOverviewScreen from './src/screens/chat/TherapyOverviewScreen'; 
 
 import { RootStackParamList } from './src/navigation/types';
 
