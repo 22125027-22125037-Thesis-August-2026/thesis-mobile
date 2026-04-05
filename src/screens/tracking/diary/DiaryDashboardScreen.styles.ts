@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
-import { COLORS } from '../../constants/colors';
-import { BORDER_RADIUS, FONT_SIZES, SPACING } from '../../constants/theme';
+import { COLORS } from '../../../constants/colors';
+import { BORDER_RADIUS, FONT_SIZES, SPACING } from '../../../constants/theme';
 
 export const styles = StyleSheet.create({
   safeArea: {

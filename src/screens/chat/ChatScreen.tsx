@@ -1,8 +1,8 @@
 // src/screens/chat/ChatScreen.tsx
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  SafeAreaView,
   View,
   Text,
   FlatList,

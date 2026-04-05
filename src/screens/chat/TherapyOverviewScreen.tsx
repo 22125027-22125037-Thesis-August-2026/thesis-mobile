@@ -1,8 +1,8 @@
 // src/screens/chat/TherapyOverviewScreen.tsx
 
 import React, { useCallback, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  SafeAreaView,
   View,
   Text,
   FlatList,
@@ -18,7 +18,7 @@ import { TrackingStackParamList } from '../../navigation/types';
 import { aiApi } from '../../api/aiApi';
 import { ChatSessionOverview } from '../../types/chat';
 import TherapySessionCard from '../../components/TherapySessionCard';
-import { styles } from '../TherapyOverviewScreen.styles';
+import { styles } from './TherapyOverviewScreen.styles';
 
 type NavigationPropType = NavigationProp<TrackingStackParamList>;
 

@@ -11,12 +11,12 @@ import { NavigationContext, NavigationProp } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import * as diaryApi from '../../api/diaryApi';
-import { COLORS } from '../../constants/colors';
-import { t } from '../../constants/i18n';
-import { MoodTone, getMoodTone } from '../../constants/moods';
-import { TrackingStackParamList } from '../../navigation/types';
-import { DiaryEntryResponse } from '../../types/diary';
+import * as diaryApi from '../../../api/diaryApi';
+import { COLORS } from '../../../constants/colors';
+import { t } from '../../../constants/i18n';
+import { MoodTone, getMoodTone } from '../../../constants/moods';
+import { TrackingStackParamList } from '../../../navigation/types';
+import { DiaryEntryResponse } from '../../../types/diary';
 import { styles } from './DiaryOverviewScreen.styles';
 
 type MoodCellTone = MoodTone | 'empty';
@@ -231,7 +231,7 @@ const DiaryOverviewScreen: React.FC = () => {
                 <Pressable
                   style={styles.backButton}
                   onPress={() => navigation?.goBack()}
-                  disabled={!navigation?.canGoBack?.()}>
+                  disabled={!navigation?.navigate('Home')}>
                   <Feather name="chevron-left" size={24} color={COLORS.white} />
                 </Pressable>
                 <Text style={styles.headerTitle}>{t('overview.headerTitle')}</Text>

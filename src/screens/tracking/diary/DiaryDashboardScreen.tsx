@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   View,
@@ -12,12 +12,12 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as diaryApi from '../../api/diaryApi';
-import { COLORS } from '../../constants/colors';
-import { getMoodCardUi } from '../../constants/moods';
-import { TrackingStackParamList } from '../../navigation/types';
-import { t } from '../../constants/i18n';
-import { DiaryEntryResponse } from '../../types/diary';
+import * as diaryApi from '../../../api/diaryApi';
+import { COLORS } from '../../../constants/colors';
+import { getMoodCardUi } from '../../../constants/moods';
+import { TrackingStackParamList } from '../../../navigation/types';
+import { t } from '../../../constants/i18n';
+import { DiaryEntryResponse } from '../../../types/diary';
 import { styles } from './DiaryDashboardScreen.styles';
 
 const formatDate = (dateString: string): string => {

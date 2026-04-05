@@ -16,7 +16,9 @@ import VideoConsultationScreen from './src/screens/booking/VideoConsultationScre
 import WaitingRoomScreen from './src/screens/booking/WaitingRoomScreen';
 import SleepOverviewScreen from './src/screens/tracking/sleep/SleepOverviewScreen';
 import SleepEntryScreen from './src/screens/tracking/sleep/SleepEntryScreen';
-import DiaryOverviewScreen from './src/screens/tracking/DiaryOverviewScreen';
+import DiaryOverviewScreen from './src/screens/tracking/diary/DiaryOverviewScreen';
+import DiaryDashboardScreen from './src/screens/tracking/diary/DiaryDashboardScreen';
+import DiaryEntryScreen from './src/screens/tracking/diary/DiaryEntryScreen';
 import FoodOverviewScreen from './src/screens/tracking/food/FoodOverviewScreen';
 import FoodEntryScreen from './src/screens/tracking/food/FoodEntryScreen';
 import ChatScreen from './src/screens/chat/ChatScreen';
@@ -60,6 +62,8 @@ const AppNav: React.FC = () => {
             <Stack.Screen name="SleepOverview" component={SleepOverviewScreen} />
             <Stack.Screen name="SleepEntry" component={SleepEntryScreen} />
             <Stack.Screen name="DiaryOverview" component={DiaryOverviewScreen} />
+            <Stack.Screen name="DiaryDashboard" component={DiaryDashboardScreen} />
+            <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
             <Stack.Screen name="FoodOverview" component={FoodOverviewScreen} />
             <Stack.Screen name="FoodEntry" component={FoodEntryScreen} />
           </>
