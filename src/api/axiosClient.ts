@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import i18next from 'i18next';
 
 const BASE_URL = 'http://localhost:8080';
 
@@ -55,7 +56,10 @@ axiosClient.interceptors.response.use(
       if (logoutHandler) {
         logoutHandler();
       }
-      Alert.alert('Phiên đăng nhập đã hết hạn', 'Vui lòng đăng nhập lại.');
+      Alert.alert(
+        i18next.t('session.expiredTitle'),
+        i18next.t('session.expiredMessage'),
+      );
     }
     return Promise.reject(error);
   },

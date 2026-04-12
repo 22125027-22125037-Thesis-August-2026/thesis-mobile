@@ -1,5 +1,11 @@
-import { COLORS } from './colors';
-import { TranslationKey } from './i18n';
+import { COLORS } from '@/theme';
+
+type MoodLabelKey =
+  | 'mood.terrible'
+  | 'mood.bad'
+  | 'mood.neutral'
+  | 'mood.good'
+  | 'mood.excellent';
 
 export type MoodTag = 'TERRIBLE' | 'BAD' | 'NEUTRAL' | 'GOOD' | 'EXCELLENT';
 export type MoodTone = 'negative' | 'neutral' | 'positive';
@@ -18,7 +24,7 @@ type MoodConfig = {
   selectorActiveIcon: string;
   selectorColor: string;
   cardIcon: string;
-  cardLabelKey: TranslationKey;
+  cardLabelKey: MoodLabelKey;
 };
 
 const MOOD_CONFIG: Record<MoodTag, MoodConfig> = {
@@ -113,7 +119,7 @@ export const getMoodCardUi = (
   iconBackgroundColor: string;
   tagBackgroundColor: string;
   tagTextColor: string;
-  labelKey: TranslationKey;
+  labelKey: MoodLabelKey;
 } => {
   const resolvedTag = getMoodTag(moodTag);
   const config = MOOD_CONFIG[resolvedTag];

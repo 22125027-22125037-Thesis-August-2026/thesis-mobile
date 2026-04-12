@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../constants/colors';
+import { COLORS } from '@/theme';
 
 interface Props {
   title: string;

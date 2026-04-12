@@ -1,10 +1,9 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { COLORS } from '../constants/colors';
-import { SPACING } from '../constants/theme';
-import { ChatSessionOverview } from '../types/chat';
-import { formatSessionDate, getEmotionColor } from '../utils/therapySession';
+import { COLORS, SPACING } from '@/theme';
+import { ChatSessionOverview } from '@/types';
+import { formatSessionDate, getEmotionColor } from '@/utils';
 
 interface TherapySessionCardProps {
   session: ChatSessionOverview;

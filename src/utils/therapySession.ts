@@ -1,4 +1,4 @@
-import { COLORS } from '../constants/colors';
+import { COLORS } from '@/theme';
 
 const EMOTION_COLOR_MAP: Record<string, string> = {
   SAD: COLORS.emotionSad,

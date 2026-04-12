@@ -1,7 +1,7 @@
 // src/api/__tests__/therapistApi.test.ts
 
-import { getTherapists, getTherapistDetails, bookSession, Therapist, BookSessionData } from '../therapistApi';
-import axiosClient from '../index';
+import { getTherapists, getTherapistDetails, bookSession, Therapist, BookSessionData } from '@/api/therapistApi';
+import axiosClient from '@/api';
 
 jest.mock('../index');
 

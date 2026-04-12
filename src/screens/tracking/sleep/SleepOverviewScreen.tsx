@@ -13,19 +13,19 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as sleepApi from '../../../api/sleepApi';
-import { COLORS } from '../../../constants/colors';
-import { SLEEP_QUALITY_UI_MAP, SLEEP_WEEKDAY_LABELS } from '../../../constants/sleep';
-import { TrackingStackParamList } from '../../../navigation/types';
-import { SleepLogResponse } from '../../../types/sleep';
+import { sleepApi } from '@/api';
+import { SLEEP_QUALITY_UI_MAP, SLEEP_WEEKDAY_LABELS } from '@/constants';
+import { COLORS } from '@/theme';
+import { TrackingStackParamList } from '@/navigation';
+import { SleepLogResponse } from '@/types';
 import {
   endOfWeekSunday,
   formatWeekRangeLabel,
   isSameDate,
   shiftWeek,
   startOfWeekMonday,
-} from '../../../utils/weekCalendar';
-import { styles } from './SleepOverviewScreen.styles';
+} from '@/utils';
+import { styles } from '@/screens/tracking/sleep/SleepOverviewScreen.styles';
 
 type SleepDayStat = {
   dayIndex: number;

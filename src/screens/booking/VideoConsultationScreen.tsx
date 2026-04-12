@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import CryptoJS from 'crypto-js';
 import ZoomUs from 'react-native-zoom-us';
-import { COLORS } from '../../constants/colors';
-import { RootStackParamList } from '../../navigation/types';
-import styles from './VideoConsultationScreen.styles';
+import { COLORS } from '@/theme';
+import { RootStackParamList } from '@/navigation';
+import styles from '@/screens/booking/VideoConsultationScreen.styles';
 
 const ZOOM_APP_KEY = '_fpH9UMMQqWNyO7NS2rhBg';
 const ZOOM_APP_SECRET = 'PGVVtMBsIl5DmXEUdcnfwhquvMpeeysX';
@@ -59,6 +60,7 @@ const generateTestingToken = async (): Promise<string> => {
 
 const VideoConsultationScreen: React.FC = () => {
   const navigation = useNavigation<VideoConsultationNavigationProp>();
+  const { t } = useTranslation();
   const [isZoomInitialized, setIsZoomInitialized] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [initializationError, setInitializationError] = useState<string | null>(null);
@@ -112,8 +114,8 @@ const VideoConsultationScreen: React.FC = () => {
           setIsInitializing(false);
           setInitializationError(
             isTokenCredentialError
-              ? 'JWT token không hợp lệ hoặc không khớp Meeting SDK credentials. Vui lòng tạo lại SDK JWT từ backend.'
-              : 'Không thể khởi tạo Zoom. Vui lòng kiểm tra JWT token và thử lại.',
+              ? t('booking.videoConsultation.invalidTokenError')
+              : t('booking.videoConsultation.initError'),
           );
         }
       }
@@ -153,26 +155,26 @@ const VideoConsultationScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Sẵn sàng kết nối với chuyên gia</Text>
+        <Text style={styles.title}>{t('booking.videoConsultation.readyTitle')}</Text>
 
         {isInitializing ? (
           <View style={styles.loadingWrapper}>
             <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>Đang khởi tạo Zoom...</Text>
+            <Text style={styles.loadingText}>{t('booking.videoConsultation.initializingText')}</Text>
           </View>
         ) : isZoomInitialized ? (
           <View style={styles.loadingWrapper}>
             <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleJoinMeeting}>
-              <Text style={styles.primaryButtonText}>Mở Zoom & Tham gia</Text>
+              <Text style={styles.primaryButtonText}>{t('booking.videoConsultation.joinButton')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.endMeetingButton} activeOpacity={0.85} onPress={handleEndMeeting}>
-              <Text style={styles.primaryButtonText}>End Meeting</Text>
+              <Text style={styles.primaryButtonText}>{t('booking.videoConsultation.endButton')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.loadingWrapper}>
-            <Text style={styles.errorText}>{initializationError ?? 'Không thể khởi tạo Zoom.'}</Text>
+            <Text style={styles.errorText}>{initializationError ?? t('booking.videoConsultation.defaultError')}</Text>
           </View>
         )}
       </View>

@@ -8,16 +8,16 @@ import {
   View,
 } from 'react-native';
 import { NavigationContext, NavigationProp } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import * as diaryApi from '../../../api/diaryApi';
-import { COLORS } from '../../../constants/colors';
-import { t } from '../../../constants/i18n';
-import { MoodTone, getMoodTone } from '../../../constants/moods';
-import { TrackingStackParamList } from '../../../navigation/types';
-import { DiaryEntryResponse } from '../../../types/diary';
-import { styles } from './DiaryOverviewScreen.styles';
+import { diaryApi } from '@/api';
+import { MoodTone, getMoodTone } from '@/constants';
+import { COLORS } from '@/theme';
+import { TrackingStackParamList } from '@/navigation';
+import { DiaryEntryResponse } from '@/types';
+import { styles } from '@/screens/tracking/diary/DiaryOverviewScreen.styles';
 
 type MoodCellTone = MoodTone | 'empty';
 
@@ -149,6 +149,7 @@ const generateMoodGrid = (entries: DiaryEntryResponse[], monthDate: Date): GridC
 };
 
 const DiaryOverviewScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useContext(NavigationContext) as
     | NavigationProp<TrackingStackParamList>
     | undefined;

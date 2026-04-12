@@ -11,21 +11,23 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useTranslation } from 'react-i18next';
 
 // Import
-import { AuthContext } from '../../context/AuthContext';
-import { COLORS } from '../../constants/colors';
-import CustomInput from '../../components/CustomInput';
+import { AuthContext } from '@/context/AuthContext';
+import { COLORS } from '@/theme';
+import { CustomButton, CustomInput } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from './RegisterScreen.styles';
-import CustomButton from '../../components/CustomButton';
-import { RegisterPayload, UserRole } from '../../types/auth';
+import { styles } from '@/screens/auth/RegisterScreen.styles';
+import { RegisterPayload, UserRole } from '@/types';
 
 const RegisterScreen = ({ navigation }: any) => {
+  const { t } = useTranslation();
+
   const ROLE_OPTIONS: Array<{ label: string; value: UserRole }> = [
-    { label: 'Học sinh/Sinh viên', value: 'TEEN' },
-    { label: 'Phụ huynh/Người thân', value: 'PARENT' },
-    { label: 'Bác sĩ tâm lý', value: 'THERAPIST' },
+    { label: t('auth.roles.teen'), value: 'TEEN' },
+    { label: t('auth.roles.parent'), value: 'PARENT' },
+    { label: t('auth.roles.therapist'), value: 'THERAPIST' },
   ];
 
   const [email, setEmail] = useState('');
@@ -89,16 +91,16 @@ const RegisterScreen = ({ navigation }: any) => {
       return (
         <>
           <CustomInput
-            label="Trường học"
+            label={t('auth.registerRoleFields.teenSchoolLabel')}
             iconName="school-outline"
-            placeholder="Nhập trường học (không bắt buộc)"
+            placeholder={t('auth.registerRoleFields.teenSchoolPlaceholder')}
             value={school}
             onChangeText={setSchool}
           />
           <CustomInput
-            label="Liên hệ khẩn cấp"
+            label={t('auth.registerRoleFields.teenEmergencyLabel')}
             iconName="call-outline"
-            placeholder="Số điện thoại hoặc người liên hệ"
+            placeholder={t('auth.registerRoleFields.teenEmergencyPlaceholder')}
             value={emergencyContact}
             onChangeText={setEmergencyContact}
           />
@@ -110,30 +112,30 @@ const RegisterScreen = ({ navigation }: any) => {
       return (
         <>
           <CustomInput
-            label="Chuyên môn"
+            label={t('auth.registerRoleFields.therapistSpecializationLabel')}
             iconName="medkit-outline"
-            placeholder="Ví dụ: Tâm lý học lâm sàng"
+            placeholder={t('auth.registerRoleFields.therapistSpecializationPlaceholder')}
             value={specialization}
             onChangeText={setSpecialization}
           />
           <CustomInput
-            label="Giới thiệu"
+            label={t('auth.registerRoleFields.therapistBioLabel')}
             iconName="document-text-outline"
-            placeholder="Tóm tắt kinh nghiệm và phương pháp"
+            placeholder={t('auth.registerRoleFields.therapistBioPlaceholder')}
             value={bio}
             onChangeText={setBio}
           />
           <CustomInput
-            label="Số năm kinh nghiệm"
+            label={t('auth.registerRoleFields.therapistYearsLabel')}
             iconName="stats-chart-outline"
-            placeholder="Ví dụ: 5"
+            placeholder={t('auth.registerRoleFields.therapistYearsPlaceholder')}
             value={yearsOfExperience}
             onChangeText={setYearsOfExperience}
           />
           <CustomInput
-            label="Phí tư vấn (VND)"
+            label={t('auth.registerRoleFields.therapistFeeLabel')}
             iconName="cash-outline"
-            placeholder="Ví dụ: 300000"
+            placeholder={t('auth.registerRoleFields.therapistFeePlaceholder')}
             value={consultationFee}
             onChangeText={setConsultationFee}
           />
@@ -144,9 +146,9 @@ const RegisterScreen = ({ navigation }: any) => {
     if (selectedRole === 'PARENT') {
       return (
         <CustomInput
-          label="Linked Teen ID"
+          label={t('auth.registerRoleFields.parentLinkedTeenIdLabel')}
           iconName="link-outline"
-          placeholder="UUID hồ sơ teen (không bắt buộc)"
+          placeholder={t('auth.registerRoleFields.parentLinkedTeenIdPlaceholder')}
           value={linkedTeenId}
           onChangeText={setLinkedTeenId}
         />
@@ -162,7 +164,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
     // Validate cơ bản
     if (!fullName.trim() || !email || !password || !confirmPassword) {
-      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin');
+      Alert.alert(t('auth.common.errorTitle'), t('auth.register.validationError'));
       return;
     }
 
@@ -173,12 +175,12 @@ const RegisterScreen = ({ navigation }: any) => {
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Lỗi', 'Mật khẩu xác nhận không khớp');
+      Alert.alert(t('auth.common.errorTitle'), t('auth.register.passwordMismatch'));
       return;
     }
 
     if (!agreeTerm) {
-      Alert.alert('Thông báo', 'Bạn cần đồng ý với Điều khoản và Điều kiện');
+      Alert.alert(t('auth.common.notificationTitle'), t('auth.register.mustAgreeTerms'));
       return;
     }
 
@@ -191,7 +193,7 @@ const RegisterScreen = ({ navigation }: any) => {
         yearsOfExperience.trim() &&
         Number.isNaN(Number(yearsOfExperience.trim()))
       ) {
-        Alert.alert('Lỗi', 'Số năm kinh nghiệm phải là số hợp lệ');
+        Alert.alert(t('auth.common.errorTitle'), t('auth.register.invalidYearsOfExperience'));
         return;
       }
 
@@ -200,7 +202,7 @@ const RegisterScreen = ({ navigation }: any) => {
         consultationFee.trim() &&
         Number.isNaN(Number(consultationFee.trim()))
       ) {
-        Alert.alert('Lỗi', 'Phí tư vấn phải là số hợp lệ');
+        Alert.alert(t('auth.common.errorTitle'), t('auth.register.invalidConsultationFee'));
         return;
       }
 
@@ -216,11 +218,11 @@ const RegisterScreen = ({ navigation }: any) => {
 
       await auth?.register(payload);
       
-      Alert.alert('Thành công', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập.');
+      Alert.alert(t('auth.register.successTitle'), t('auth.register.successNavigateMessage'));
       navigation.navigate('Login'); // Chuyển về trang đăng nhập
     } catch (error) {
       // Nếu Backend báo lỗi (vd: Email đã tồn tại) thì nó sẽ nhảy vào đây
-      Alert.alert('Đăng ký thất bại', 'Email này có thể đã được sử dụng. Vui lòng thử lại.');
+      Alert.alert(t('auth.register.failureTitle'), t('auth.register.failureMessage'));
     }
   };
 
@@ -238,38 +240,38 @@ const RegisterScreen = ({ navigation }: any) => {
         style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           
-          <Text style={styles.title}>Đăng kí</Text>
+          <Text style={styles.title}>{t('auth.register.title')}</Text>
 
           <View style={styles.formContainer}>
             <CustomInput
-              label="Họ và tên"
+              label={t('auth.register.fullNameLabel')}
               iconName="person-outline"
-              placeholder="Nhập họ và tên"
+              placeholder={t('auth.register.fullNamePlaceholder')}
               value={fullName}
               onChangeText={setFullName}
             />
 
             <CustomInput
-              label="Số điện thoại"
+              label={t('auth.register.phoneLabel')}
               iconName="call-outline"
-              placeholder="Nhập số điện thoại (không bắt buộc)"
+              placeholder={t('auth.register.phonePlaceholder')}
               value={phoneNumber}
               onChangeText={setPhoneNumber}
             />
 
             <CustomInput
-              label="Ngày sinh"
+              label={t('auth.register.dobLabel')}
               iconName="calendar-outline"
-              placeholder="YYYY-MM-DD (không bắt buộc)"
+              placeholder={t('auth.register.dobPlaceholder')}
               value={dob}
               onChangeText={setDob}
             />
 
             {/* Input Email */}
             <CustomInput
-              label="Email"
+              label={t('auth.register.emailLabel')}
               iconName="mail-outline"
-              placeholder="Nhập email"
+              placeholder={t('auth.register.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
               error={emailError} // Truyền prop lỗi
@@ -279,15 +281,15 @@ const RegisterScreen = ({ navigation }: any) => {
             {emailError && (
               <View style={styles.errorBox}>
                 <Ionicons name="alert-circle" size={18} color={COLORS.errorText} />
-                <Text style={styles.errorText}>Email không hợp lệ</Text>
+                <Text style={styles.errorText}>{t('auth.register.invalidEmail')}</Text>
               </View>
             )}
 
             {/* Mật khẩu */}
             <CustomInput
-              label="Mật khẩu"
+              label={t('auth.register.passwordLabel')}
               iconName="lock-closed-outline"
-              placeholder="Tạo mật khẩu mới"
+              placeholder={t('auth.register.passwordPlaceholder')}
               value={password}
               onChangeText={setPassword}
               isPassword={true}
@@ -297,9 +299,9 @@ const RegisterScreen = ({ navigation }: any) => {
 
             {/* Xác nhận mật khẩu */}
             <CustomInput
-              label="Xác nhận mật khẩu"
+              label={t('auth.register.confirmPasswordLabel')}
               iconName="lock-closed-outline"
-              placeholder="Xác nhận mật khẩu mới"
+              placeholder={t('auth.register.confirmPasswordPlaceholder')}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               isPassword={true}
@@ -307,7 +309,7 @@ const RegisterScreen = ({ navigation }: any) => {
               onTogglePassword={() => setShowConfirmPass(!showConfirmPass)}
             />
 
-            <Text style={styles.roleSectionTitle}>Bạn đăng ký với vai trò:</Text>
+            <Text style={styles.roleSectionTitle}>{t('auth.register.roleSectionTitle')}</Text>
             <View style={styles.roleSelectorContainer}>
               {ROLE_OPTIONS.map(option => {
                 const isSelected = selectedRole === option.value;
@@ -352,37 +354,37 @@ const RegisterScreen = ({ navigation }: any) => {
                 color={COLORS.text} 
               />
               <Text style={styles.checkboxText}>
-                Tôi đồng ý với <Text style={styles.linkText}>Điều khoản và Điều kiện</Text>
+                {t('auth.register.agreePrefix')}<Text style={styles.linkText}>{t('auth.register.agreeTermsLink')}</Text>
               </Text>
             </TouchableOpacity>
 
             {/* Link đã có tài khoản */}
             <View style={{flexDirection: 'row', marginBottom: 20}}>
-              <Text style={{color: COLORS.textSecondary}}>Đã có tài khoản? </Text>
+              <Text style={{color: COLORS.textSecondary}}>{t('auth.register.alreadyHaveAccount')} </Text>
                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                  <Text style={styles.loginLink}>Đăng nhập.</Text>
+                  <Text style={styles.loginLink}>{t('auth.register.loginLink')}</Text>
                </TouchableOpacity>
             </View>
 
             {/* Component Button */}
             <CustomButton 
-              title="Đăng kí" 
+              title={t('auth.register.submitButton')} 
               onPress={handleRegister} 
               isLoading={auth?.isLoading} 
             />
 
             {/* Hoặc */}
-            <Text style={styles.orText}>hoặc</Text>
+            <Text style={styles.orText}>{t('auth.register.orText')}</Text>
 
             {/* Nút Social Dài */}
             <TouchableOpacity style={styles.socialBtnLong}>
                <FontAwesome name="google" size={20} color={COLORS.google} />
-               <Text style={styles.socialBtnText}>Tiếp tục với Google</Text>
+               <Text style={styles.socialBtnText}>{t('auth.register.continueWithGoogle')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.socialBtnLong}>
                <FontAwesome name="facebook" size={20} color={COLORS.facebook} />
-               <Text style={styles.socialBtnText}>Tiếp tục với Facebook</Text>
+               <Text style={styles.socialBtnText}>{t('auth.register.continueWithFacebook')}</Text>
             </TouchableOpacity>
 
           </View>

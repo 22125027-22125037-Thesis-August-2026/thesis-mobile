@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../constants/colors';
+import { COLORS } from '@/theme';
 
 interface Props {
   label?: string; // Cho phép không truyền label

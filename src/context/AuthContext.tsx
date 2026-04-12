@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axiosClient from '../api/axiosClient';
-import { setLogoutHandler } from '../api/axiosClient';
-import { AuthResponse, RegisterPayload, User, UserRole } from '../types/auth';
+import i18next from 'i18next';
+import { axiosClient, setLogoutHandler } from '@/api';
+import { AuthResponse, RegisterPayload, User, UserRole } from '@/types';
 
 const AUTH_BASE_PATH = '/api/v1/auth';
 const USER_TOKEN_KEY = 'userToken';
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
     } catch (error) {
       console.log('Login error:', error);
-      Alert.alert('Đăng nhập thất bại', 'Vui lòng kiểm tra email hoặc mật khẩu');
+      Alert.alert(i18next.t('auth.login.failureTitle'), i18next.t('auth.login.failureMessage'));
     } finally {
       setIsLoading(false);
     }

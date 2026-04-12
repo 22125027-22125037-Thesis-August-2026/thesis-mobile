@@ -12,35 +12,37 @@ import {
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import { useTranslation } from 'react-i18next';
 
-import { getDashboardSummary, DashboardSummary } from '../api/trackingApi';
-import { AuthContext } from '../context/AuthContext';
-import { COLORS } from '../constants/colors';
-import { BORDER_RADIUS, FONT_SIZES, SPACING } from '../constants/theme';
-import { TrackingStackParamList } from '../navigation/types';
+import { DashboardSummary, getDashboardSummary } from '@/api';
+import { AuthContext } from '@/context/AuthContext';
+import { BORDER_RADIUS, FONT_SIZES, SPACING } from '@/theme';
+import { COLORS } from '@/theme';
+import { TrackingStackParamList } from '@/navigation';
 
 type NavigationPropType = NavigationProp<TrackingStackParamList>;
-
-const getMoodDisplay = (dominantMood: string): { emoji: string; text: string } => {
-  switch (dominantMood?.toUpperCase()) {
-    case 'SAD':
-      return { emoji: '😢', text: 'Buồn' };
-    case 'HAPPY':
-      return { emoji: '😊', text: 'Vui' };
-    case 'ANXIOUS':
-      return { emoji: '😟', text: 'Lo âu' };
-    case 'ANGRY':
-      return { emoji: '😠', text: 'Giận' };
-    default:
-      return { emoji: '🙂', text: 'Ổn' };
-  }
-};
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
   const { userInfo } = useContext(AuthContext)!;
+  const { t } = useTranslation();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const getMoodDisplay = useMemo(() => (dominantMood: string): { emoji: string; text: string } => {
+    switch (dominantMood?.toUpperCase()) {
+      case 'SAD':
+        return { emoji: '😢', text: t('home.moods.sad') };
+      case 'HAPPY':
+        return { emoji: '😊', text: t('home.moods.happy') };
+      case 'ANXIOUS':
+        return { emoji: '😟', text: t('home.moods.anxious') };
+      case 'ANGRY':
+        return { emoji: '😠', text: t('home.moods.angry') };
+      default:
+        return { emoji: '🙂', text: t('home.moods.neutral') };
+    }
+  }, [t]);
 
   const fetchSummary = useCallback(async (): Promise<void> => {
     setIsLoading(true);
@@ -193,7 +195,7 @@ const HomeScreen: React.FC = () => {
         {/* ===== DAILY LOGS SECTION (CRITICAL NAVIGATION HUB) ===== */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Nhật kí hằng ngày</Text>
+            <Text style={styles.sectionTitle}>{t('home.overview.dailyLogsTitle')}</Text>
             <Pressable>
               <Feather name="more-vertical" size={20} color={COLORS.textPrimary} />
             </Pressable>
@@ -215,7 +217,7 @@ const HomeScreen: React.FC = () => {
               <View style={styles.logCardText}>
                 <Text style={styles.logCardTitle}>Chất lượng giấc mơ</Text>
                 <Text style={styles.logCardSubtitle}>
-                  {summary?.sleepQuality || 'Chưa có dữ liệu'}
+                  {summary?.sleepQuality || t('home.overview.sleepQualityNoData')}
                 </Text>
               </View>
             </View>
@@ -238,7 +240,7 @@ const HomeScreen: React.FC = () => {
               <View style={styles.logCardText}>
                 <Text style={styles.logCardTitle}>Góc tâm tư</Text>
                 <Text style={styles.logCardSubtitle}>
-                  {summary?.diaryStreak ? `${summary.diaryStreak} ngày chuỗi` : 'Chưa có chuỗi'}
+                  {summary?.diaryStreak ? t('home.overview.diaryStreakFormat', {count: summary.diaryStreak}) : t('home.overview.diaryNoStreak')}
                 </Text>
               </View>
             </View>
@@ -279,7 +281,7 @@ const HomeScreen: React.FC = () => {
               <View style={styles.logCardText}>
                 <Text style={styles.logCardTitle}>Nhật ký dinh dưỡng</Text>
                 <Text style={styles.logCardSubtitle}>
-                  {summary?.foodStatus || 'Chưa có dữ liệu'}
+                  {summary?.foodStatus || t('home.overview.foodDiaryNoData')}
                 </Text>
               </View>
             </View>
@@ -296,7 +298,7 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== AI CHATBOT SECTION ===== */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Bạn Tâm giao</Text>
+          <Text style={styles.sectionTitle}>{t('home.overview.aiChatbotTitle')}</Text>
           
           {/* ĐỔI VIEW THÀNH PRESSABLE VÀ GẮN ONPRESS */}
           <Pressable 

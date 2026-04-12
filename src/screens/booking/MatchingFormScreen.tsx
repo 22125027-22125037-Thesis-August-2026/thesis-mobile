@@ -1,5 +1,5 @@
 // src/screens/booking/MatchingFormScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,44 +12,16 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { RootStackParamList } from '../../navigation/types';
-import { COLORS } from '../../constants/colors';
-import { MatchingFormData, INITIAL_MATCHING_FORM } from '../../types/matching';
-import { saveMatchingData } from '../../api/therapistApi';
-import CustomInput from '../../components/CustomInput';
-import styles from './MatchingFormScreen.styles';
+import { useTranslation } from 'react-i18next';
+import { RootStackParamList } from '@/navigation';
+import { COLORS } from '@/theme';
+import { MatchingFormData, INITIAL_MATCHING_FORM } from '@/types';
+import { saveMatchingData } from '@/api';
+import { CustomInput } from '@/components';
+import styles from '@/screens/booking/MatchingFormScreen.styles';
 
 const TOTAL_STEPS = 8;
 const SCALE_VALUES = [1, 2, 3, 4, 5];
-
-/* ─── Option data ─── */
-const PRIOR_COUNSELING_OPTIONS = [
-  'Chưa bao giờ',
-  'Đã từng, nhưng không hiệu quả',
-  'Đã từng, và thấy rất tốt',
-];
-const GENDER_OPTIONS = ['Nam', 'Nữ', 'Khác'];
-const SEXUAL_ORIENTATION_OPTIONS = [
-  'Straight',
-  'Gay',
-  'Lesbian',
-  'Bisexual',
-  'Pansexual',
-  'Asexual',
-  'Đang tìm hiểu',
-  'Không muốn nói',
-];
-const BINARY_OPTIONS = ['Không', 'Có'];
-const REASONS_OPTIONS = [
-  'Lo âu, hồi hộp',
-  'Buồn chán, mất động lực',
-  'Áp lực học tập/thi cử',
-  'Mất ngủ',
-  'Mối quan hệ/Gia đình',
-  'Chấn thương tâm lý',
-  'Rối loạn ăn uống',
-];
-const COMMUNICATION_STYLE_OPTIONS = ['Người lắng nghe', 'Người hướng dẫn', 'Kết hợp cả hai'];
 
 type StringFieldKey = {
   [K in keyof MatchingFormData]: MatchingFormData[K] extends string ? K : never;
@@ -58,11 +30,55 @@ type MoodLevelKey = keyof MatchingFormData['moodLevels'];
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MatchingForm'>;
 
+const getOptionArrays = (t: (key: string) => string) => ({
+  PRIOR_COUNSELING_OPTIONS: [
+    t('matching.priorCounseling.never'),
+    t('matching.priorCounseling.ineffective'),
+    t('matching.priorCounseling.effective'),
+  ],
+  GENDER_OPTIONS: [
+    t('matching.gender.male'),
+    t('matching.gender.female'),
+    t('matching.gender.other'),
+  ],
+  SEXUAL_ORIENTATION_OPTIONS: [
+    t('matching.sexualOrientation.straight'),
+    t('matching.sexualOrientation.gay'),
+    t('matching.sexualOrientation.lesbian'),
+    t('matching.sexualOrientation.bisexual'),
+    t('matching.sexualOrientation.pansexual'),
+    t('matching.sexualOrientation.asexual'),
+    t('matching.sexualOrientation.exploring'),
+    t('matching.sexualOrientation.noAnswer'),
+  ],
+  BINARY_OPTIONS: [
+    t('matching.binaryOptions.no'),
+    t('matching.binaryOptions.yes'),
+  ],
+  REASONS_OPTIONS: [
+    t('matching.reasons.anxiety'),
+    t('matching.reasons.depression'),
+    t('matching.reasons.stress'),
+    t('matching.reasons.insomnia'),
+    t('matching.reasons.relationship'),
+    t('matching.reasons.trauma'),
+    t('matching.reasons.eating'),
+  ],
+  COMMUNICATION_STYLE_OPTIONS: [
+    t('matching.communicationStyle.listener'),
+    t('matching.communicationStyle.guide'),
+    t('matching.communicationStyle.combined'),
+  ],
+});
+
 const MatchingFormScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<MatchingFormData>(INITIAL_MATCHING_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const options = useMemo(() => getOptionArrays(t), [t]);
 
   /* ─── Helpers ─── */
   const updateField = <K extends keyof MatchingFormData>(key: K, value: MatchingFormData[K]) => {
@@ -256,7 +272,7 @@ const MatchingFormScreen: React.FC = () => {
       await saveMatchingData(formData);
       navigation.navigate('TherapistFilter', { matchingSuccess: true });
     } catch {
-      Alert.alert('Lỗi', 'Không thể gửi dữ liệu. Vui lòng thử lại.');
+      Alert.alert(t('auth.common.errorTitle'), t('matching.submitError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -276,12 +292,12 @@ const MatchingFormScreen: React.FC = () => {
       case 1:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>Bạn đã từng đi trị liệu bao giờ chưa?</Text>
+            <Text style={styles.questionTitle}>{t('matching.form.step1Title')}</Text>
             <Text style={styles.questionSubtitle}>
-              Câu trả lời giúp chuyên gia hiểu điểm bắt đầu của bạn.
+              {t('matching.form.step1Subtitle')}
             </Text>
             {renderVerticalSingleSelect(
-              PRIOR_COUNSELING_OPTIONS,
+              options.PRIOR_COUNSELING_OPTIONS,
               formData.hasPriorCounseling,
               'hasPriorCounseling',
             )}
@@ -291,16 +307,16 @@ const MatchingFormScreen: React.FC = () => {
       case 2:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>Giới tính của bạn là gì?</Text>
+            <Text style={styles.questionTitle}>{t('matching.form.step2Title')}</Text>
             <Text style={styles.questionSubtitle}>
-              Chúng tôi dùng thông tin này để tinh chỉnh kết quả ghép nối.
+              {t('matching.form.step2Subtitle')}
             </Text>
-            {renderPillSelect(GENDER_OPTIONS, formData.gender, 'gender')}
+            {renderPillSelect(options.GENDER_OPTIONS, formData.gender, 'gender')}
             <View style={styles.inputWrapper}>
-              <Text style={styles.inputQuestionLabel}>Bạn bao nhiêu tuổi?</Text>
+              <Text style={styles.inputQuestionLabel}>{t('matching.form.step2AgeLabel')}</Text>
               <CustomInput
                 iconName="calendar-outline"
-                placeholder="Nhập tuổi của bạn"
+                placeholder={t('matching.form.step2AgePlaceholder')}
                 value={formData.age}
                 onChangeText={text => updateField('age', text.replace(/[^0-9]/g, ''))}
               />
@@ -311,12 +327,12 @@ const MatchingFormScreen: React.FC = () => {
       case 3:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>Bạn xác định xu hướng tình dục của mình là?</Text>
+            <Text style={styles.questionTitle}>{t('matching.form.step3Title')}</Text>
             <Text style={styles.questionSubtitle}>
-              Bạn có thể bỏ qua bằng cách chọn "Không muốn nói".
+              {t('matching.form.step3Subtitle')}
             </Text>
             {renderPillSelect(
-              SEXUAL_ORIENTATION_OPTIONS,
+              options.SEXUAL_ORIENTATION_OPTIONS,
               formData.sexualOrientation,
               'sexualOrientation',
             )}
@@ -327,12 +343,12 @@ const MatchingFormScreen: React.FC = () => {
         return (
           <View style={styles.card}>
             <Text style={styles.questionTitle}>
-              Bạn có muốn được ưu tiên ghép đôi với chuyên gia thuộc cộng đồng LGBTQ+ không?
+              {t('matching.form.step4Title')}
             </Text>
             <Text style={styles.questionSubtitle}>
-              Điều này giúp hệ thống ưu tiên danh sách chuyên gia phù hợp với bạn.
+              {t('matching.form.step4Subtitle')}
             </Text>
-            {renderPillSelect(BINARY_OPTIONS, formData.isLgbtqPriority, 'isLgbtqPriority')}
+            {renderPillSelect(options.BINARY_OPTIONS, formData.isLgbtqPriority, 'isLgbtqPriority')}
           </View>
         );
 
@@ -340,48 +356,48 @@ const MatchingFormScreen: React.FC = () => {
         return (
           <View style={styles.card}>
             <Text style={styles.questionTitle}>
-              Hiện tại, bạn có đang suy nghĩ về việc làm hại bản thân hoặc người khác không?
+              {t('matching.form.step5Title')}
             </Text>
             <Text style={styles.questionSubtitle}>
-              Nếu bạn cần hỗ trợ khẩn cấp, hãy liên hệ dịch vụ y tế ngay lập tức.
+              {t('matching.form.step5Subtitle')}
             </Text>
-            {renderPillSelect(BINARY_OPTIONS, formData.selfHarmThought, 'selfHarmThought')}
+            {renderPillSelect(options.BINARY_OPTIONS, formData.selfHarmThought, 'selfHarmThought')}
           </View>
         );
 
       case 6:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>Điều gì khiến bạn tìm đến trị liệu hôm nay?</Text>
+            <Text style={styles.questionTitle}>{t('matching.form.step6Title')}</Text>
             <Text style={styles.questionSubtitle}>
-              Bạn có thể chọn nhiều hơn một lý do.
+              {t('matching.form.step6Subtitle')}
             </Text>
-            {renderVerticalMultiSelect(REASONS_OPTIONS, formData.reasons)}
+            {renderVerticalMultiSelect(options.REASONS_OPTIONS, formData.reasons)}
           </View>
         );
 
       case 7:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>Hôm nay bạn đang cảm thấy như thế nào?</Text>
+            <Text style={styles.questionTitle}>{t('matching.form.step7Title')}</Text>
             <Text style={styles.questionSubtitle}>
-              Chọn mức độ cho từng trạng thái từ ít đến nhiều.
+              {t('matching.form.step7Subtitle')}
             </Text>
-            {renderMoodScale('Lo lắng', 'anxiety')}
-            {renderMoodScale('Mất hứng thú', 'lossInterest')}
-            {renderMoodScale('Mệt mỏi', 'fatigue')}
+            {renderMoodScale(t('matching.moodScales.anxiety'), 'anxiety')}
+            {renderMoodScale(t('matching.moodScales.lossInterest'), 'lossInterest')}
+            {renderMoodScale(t('matching.form.step7Fatigue'), 'fatigue')}
           </View>
         );
 
       case 8:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>Bạn mong đợi phong cách giao tiếp nào từ chuyên gia?</Text>
+            <Text style={styles.questionTitle}>{t('matching.form.step8Title')}</Text>
             <Text style={styles.questionSubtitle}>
-              Chọn kiểu trao đổi khiến bạn cảm thấy thoải mái nhất.
+              {t('matching.form.step8Subtitle')}
             </Text>
             {renderVerticalSingleSelect(
-              COMMUNICATION_STYLE_OPTIONS,
+              options.COMMUNICATION_STYLE_OPTIONS,
               formData.communicationStyle,
               'communicationStyle',
             )}

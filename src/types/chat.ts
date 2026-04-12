@@ -1,6 +1,6 @@
 // src/types/chat.ts
 
-import { ChatSender } from '../constants/chat';
+import { ChatSender } from '@/constants';
 
 export interface Message {
   id: string;

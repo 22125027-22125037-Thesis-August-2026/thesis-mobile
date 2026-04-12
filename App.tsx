@@ -2,31 +2,34 @@ import React, { useContext } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import '@/locales/i18n';
 
-import { AuthContext, AuthProvider } from './src/context/AuthContext';
-import { COLORS } from './src/constants/colors';
-import HomeScreen from './src/screens/HomeScreen';
-import LoginScreen from './src/screens/auth/LoginScreen';
-import RegisterScreen from './src/screens/auth/RegisterScreen';
-import BookingScreen from './src/screens/booking/BookingScreen';
-import ConsultationDetailScreen from './src/screens/booking/ConsultationDetailScreen';
-import MatchingFormScreen from './src/screens/booking/MatchingFormScreen';
-import TherapistDetailScreen from './src/screens/booking/TherapistDetailScreen';
-import TherapistFilterScreen from './src/screens/booking/TherapistFilterScreen';
-import VideoConsultationScreen from './src/screens/booking/VideoConsultationScreen';
-import WaitingRoomScreen from './src/screens/booking/WaitingRoomScreen';
-import SleepOverviewScreen from './src/screens/tracking/sleep/SleepOverviewScreen';
-import SleepEntryScreen from './src/screens/tracking/sleep/SleepEntryScreen';
-import DiaryOverviewScreen from './src/screens/tracking/diary/DiaryOverviewScreen';
-import DiaryDashboardScreen from './src/screens/tracking/diary/DiaryDashboardScreen';
-import DiaryEntryScreen from './src/screens/tracking/diary/DiaryEntryScreen';
-import FoodOverviewScreen from './src/screens/tracking/food/FoodOverviewScreen';
-import FoodEntryScreen from './src/screens/tracking/food/FoodEntryScreen';
-import ChatScreen from './src/screens/chat/ChatScreen';
-import TherapyOverviewScreen from './src/screens/chat/TherapyOverviewScreen'; 
+import { AuthContext, AuthProvider } from '@/context/AuthContext';
+import { COLORS } from '@/theme';
+import {
+  BookingScreen,
+  ChatScreen,
+  ConsultationDetailScreen,
+  DiaryDashboardScreen,
+  DiaryEntryScreen,
+  DiaryOverviewScreen,
+  FoodEntryScreen,
+  FoodOverviewScreen,
+  HomeScreen,
+  LoginScreen,
+  MatchingFormScreen,
+  RegisterScreen,
+  SleepEntryScreen,
+  SleepOverviewScreen,
+  TherapistDetailScreen,
+  TherapistFilterScreen,
+  TherapyOverviewScreen,
+  VideoConsultationScreen,
+  WaitingRoomScreen,
+} from '@/screens';
 
-import { RootStackParamList } from './src/navigation/types';
-import { UserRole } from './src/types/auth';
+import { RootStackParamList } from '@/navigation';
+import { UserRole } from '@/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

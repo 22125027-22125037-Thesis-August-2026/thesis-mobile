@@ -1,79 +1,74 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
-  View,
-  Text,
-  StatusBar,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-// Import Logic & Components
-import { AuthContext } from '../../context/AuthContext';
-import { COLORS } from '../../constants/colors';
-import CustomInput from '../../components/CustomInput';
-import CustomButton from '../../components/CustomButton';
-
-// Import Styles từ file bên cạnh
-import { styles } from './LoginScreen.styles';
+import { CustomButton, CustomInput } from '@/components';
+import { COLORS } from '@/theme';
+import { AuthContext } from '@/context/AuthContext';
+import { styles } from '@/screens/auth/LoginScreen.styles';
 
 const LoginScreen = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  // Lấy context
   const auth = useContext(AuthContext);
   const navigation = useNavigation<any>();
 
   const handleLogin = () => {
     if (!email || !password) {
-      Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin');
+      Alert.alert(
+        t('auth.common.notificationTitle'),
+        t('auth.login.validationError'),
+      );
       return;
     }
-    // Dùng optional chaining (?.) để an toàn
     auth?.login(email, password);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* StatusBar dùng màu background từ constants cho đồng bộ */}
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
 
-      {/* Background cong */}
       <View style={styles.headerBackground}>
         <View style={styles.circle} />
       </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          
+        style={styles.keyboardContainer}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}>
           <View style={styles.headerContainer}>
-            <Text style={styles.title}>Đăng nhập</Text>
+            <Text style={styles.title}>{t('auth.login.title')}</Text>
           </View>
 
           <View style={styles.formContainer}>
-            {/* Component Input: Email */}
             <CustomInput
-              label="Email"
+              label={t('auth.login.emailLabel')}
               iconName="mail-outline"
-              placeholder="Nhập email..."
+              placeholder={t('auth.login.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
             />
 
-            {/* Component Input: Password */}
             <CustomInput
-              label="Mật khẩu"
+              label={t('auth.login.passwordLabel')}
               iconName="lock-closed-outline"
-              placeholder="Nhập mật khẩu..."
+              placeholder={t('auth.login.passwordPlaceholder')}
               value={password}
               onChangeText={setPassword}
               isPassword={true}
@@ -81,19 +76,17 @@ const LoginScreen = () => {
               onTogglePassword={() => setIsPasswordVisible(!isPasswordVisible)}
             />
 
-            {/* Component Button */}
-            <CustomButton 
-              title="Đăng nhập" 
-              onPress={handleLogin} 
-              isLoading={auth?.isLoading} 
+            <CustomButton
+              title={t('auth.login.submitButton')}
+              onPress={handleLogin}
+              isLoading={auth?.isLoading}
             />
 
-            {/* Social Icons */}
             <View style={styles.socialContainer}>
-              {[ 
+              {[
                 { icon: 'facebook', color: COLORS.facebook },
                 { icon: 'google', color: COLORS.google },
-                { icon: 'instagram', color: COLORS.instagram }
+                { icon: 'instagram', color: COLORS.instagram },
               ].map((item, index) => (
                 <TouchableOpacity key={index} style={styles.socialButton}>
                   <FontAwesome name={item.icon} size={20} color={item.color} />
@@ -101,19 +94,25 @@ const LoginScreen = () => {
               ))}
             </View>
 
-            {/* Footer */}
             <View style={styles.footer}>
               <Text style={styles.footerText}>
-                Chưa có tài khoản?{' '}
+                {t('auth.login.noAccountText')}{' '}
                 <Text style={styles.linkText} onPress={() => navigation.navigate('Register')}>
-                  Đăng kí
+                  {t('auth.login.registerLink')}
                 </Text>
               </Text>
-              <TouchableOpacity onPress={() => Alert.alert('Nav', 'Quên mật khẩu')}>
-                <Text style={[styles.linkText, { marginTop: 10 }]}>Quên mật khẩu</Text>
+              <TouchableOpacity
+                onPress={() =>
+                  Alert.alert(
+                    t('auth.common.notificationTitle'),
+                    t('auth.login.forgotPasswordMessage'),
+                  )
+                }>
+                <Text style={[styles.linkText, styles.forgotPasswordLink]}>
+                  {t('auth.login.forgotPassword')}
+                </Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

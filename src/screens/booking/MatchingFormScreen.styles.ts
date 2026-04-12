@@ -1,7 +1,7 @@
 // src/screens/booking/MatchingFormScreen.styles.ts
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
-import { SPACING, BORDER_RADIUS, FONT_SIZES } from '../../constants/theme';
+import { COLORS } from '@/theme';
+import { SPACING, BORDER_RADIUS, FONT_SIZES } from '@/theme';
 
 const styles = StyleSheet.create({
   container: {

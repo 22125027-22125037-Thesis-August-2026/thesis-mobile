@@ -16,19 +16,18 @@ import {
 import { NavigationProp, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import { aiApi } from '../../api/aiApi';
-import { COLORS } from '../../constants/colors';
-import { BORDER_RADIUS, SPACING } from '../../constants/theme';
+import { aiApi } from '@/api';
 import {
-  CHAT_SENDER,
-  INITIAL_CHAT_MESSAGE,
-  LOADING_HISTORY_TEXT,
-  ERROR_MESSAGE_TEXT,
   BOT_NAME,
   BOT_STATUS,
-} from '../../constants/chat';
-import { Message, BackendChatMessage } from '../../types/chat';
-import { TrackingStackParamList } from '../../navigation/types';
+  CHAT_SENDER,
+  ERROR_MESSAGE_TEXT,
+  INITIAL_CHAT_MESSAGE,
+  LOADING_HISTORY_TEXT,
+} from '@/constants';
+import { COLORS, SPACING, BORDER_RADIUS } from '@/theme';
+import { Message, BackendChatMessage } from '@/types';
+import { TrackingStackParamList } from '@/navigation';
 
 type NavigationPropType = NavigationProp<TrackingStackParamList>;
 

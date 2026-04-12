@@ -1,3 +1,5 @@
+import { COLORS } from '@/theme';
+
 export type SatietyUi = {
   value: number;
   label: string;
@@ -9,31 +11,31 @@ export const SATIETY_UI_MAP: Record<string, SatietyUi> = {
   ENERGIZED: {
     value: 5,
     label: 'Năng lượng',
-    color: '#84CC16',
+    color: COLORS.sleepQualityExcellent,
     icon: 'emoticon-happy-outline',
   },
   NORMAL: {
     value: 4,
     label: 'Bình thường',
-    color: '#FACC15',
+    color: COLORS.sleepQualityGood,
     icon: 'emoticon-outline',
   },
   INDULGENT: {
     value: 3,
     label: 'Nuông chiều',
-    color: '#A8A29E',
+    color: COLORS.emotionNeutral,
     icon: 'emoticon-neutral-outline',
   },
   OVERATE: {
     value: 2,
     label: 'Quá đà',
-    color: '#FB923C',
+    color: COLORS.sleepQualityBad,
     icon: 'emoticon-sad-outline',
   },
   SKIPPED: {
     value: 1,
     label: 'Bỏ bữa',
-    color: '#A855F7',
+    color: COLORS.sleepQualityTerrible,
     icon: 'emoticon-cry-outline',
   },
 };

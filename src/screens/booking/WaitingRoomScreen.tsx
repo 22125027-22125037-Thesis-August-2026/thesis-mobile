@@ -8,9 +8,9 @@ import {
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { RootStackParamList } from '../../navigation/types';
-import { COLORS } from '../../constants/colors';
-import styles from './WaitingRoomScreen.styles';
+import { RootStackParamList } from '@/navigation';
+import { COLORS } from '@/theme';
+import styles from '@/screens/booking/WaitingRoomScreen.styles';
 
 type WaitingRoomRouteProp = RouteProp<RootStackParamList, 'WaitingRoom'>;
 type WaitingRoomNavigationProp = NativeStackNavigationProp<RootStackParamList, 'WaitingRoom'>;

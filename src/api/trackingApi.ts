@@ -1,9 +1,5 @@
-import axiosClient from './axiosClient';
-import {
-  MoodLogRequest,
-  MoodLogResponse,
-  StreakResponse,
-} from '../types/tracking';
+import axiosClient from '@/api/axiosClient';
+import { MoodLogRequest, MoodLogResponse, StreakResponse } from '@/types';
 
 export interface DashboardSummary {
   emotionScore: number;

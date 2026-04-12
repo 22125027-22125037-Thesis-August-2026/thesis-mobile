@@ -1,5 +1,5 @@
-import { DiaryEntryRequest } from '../types/diary';
-import { AttachmentFile } from '../types/media';
+import { DiaryEntryRequest } from '@/types';
+import { AttachmentFile } from '@/types';
 
 export const getFileNameFromUri = (uri: string): string => {
   const uriSegments = uri.split('/');

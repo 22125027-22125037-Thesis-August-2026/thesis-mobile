@@ -1,0 +1,15 @@
+export const BORDER_RADIUS = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+  pill: 999,
+  input: 24,
+  card: 28,
+  imagePreview: 14,
+  chip: 18,
+  button: 999,
+  full: 999,
+} as const;

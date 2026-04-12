@@ -18,11 +18,12 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useTranslation } from 'react-i18next';
 
-import * as sleepApi from '../../../api/sleepApi';
-import { COLORS } from '../../../constants/colors';
-import { SleepLogRequest } from '../../../types/sleep';
-import { styles } from './SleepEntryScreen.styles';
+import * as sleepApi from '@/api/sleepApi';
+import { COLORS } from '@/theme';
+import { SleepLogRequest } from '@/types';
+import { styles } from '@/screens/tracking/sleep/SleepEntryScreen.styles';
 
 type PickerTarget = 'bedTime' | 'wakeTime' | null;
 
@@ -95,6 +96,7 @@ const formatHourMinute = (date: Date): string => {
 
 const SleepEntryScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
+  const { t } = useTranslation();
 
   const [bedTime, setBedTime] = useState<Date>(getDefaultBedTime);
   const [wakeTime, setWakeTime] = useState<Date>(getDefaultWakeTime);
@@ -156,10 +158,10 @@ const SleepEntryScreen: React.FC = () => {
 
     try {
       await sleepApi.createSleepLog(payload);
-      Alert.alert('Thành công', 'Đã cập nhật giấc ngủ của bạn.');
+      Alert.alert(t('sleep.entry.successTitle'), t('sleep.entry.successMessage'));
       navigation.goBack();
     } catch {
-      Alert.alert('Thất bại', 'Không thể cập nhật giấc ngủ. Vui lòng thử lại.');
+      Alert.alert(t('sleep.entry.errorTitle'), t('sleep.entry.errorMessage'));
     } finally {
       setIsSubmitting(false);
     }

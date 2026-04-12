@@ -13,23 +13,29 @@ import {
   View,
 } from 'react-native';
 import { NavigationContext, NavigationProp, RouteProp, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-import * as diaryApi from '../../../api/diaryApi';
-import { COLORS } from '../../../constants/colors';
-import { t } from '../../../constants/i18n';
-import { MOOD_SELECTOR_OPTIONS, MoodTag, getMoodScore, getMoodTag } from '../../../constants/moods';
-import { TrackingStackParamList } from '../../../navigation/types';
-import { AttachmentFile } from '../../../types/media';
-import { styles } from './DiaryEntryScreen.styles';
+import { diaryApi } from '@/api';
+import {
+  MOOD_SELECTOR_OPTIONS,
+  MoodTag,
+  getMoodScore,
+  getMoodTag,
+} from '@/constants';
+import { COLORS } from '@/theme';
+import { TrackingStackParamList } from '@/navigation';
+import { AttachmentFile } from '@/types';
+import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
 
 const MAX_CONTENT_LENGTH = 300;
 const MAX_ATTACHMENTS = 5;
 
 const DiaryEntryScreen: React.FC = () => {
+  const { t } = useTranslation();
   type PickerAsset = {
     uri?: string;
     fileName?: string;

@@ -1,5 +1,5 @@
-import axiosClient from './axiosClient';
-import { SleepLogRequest, SleepLogResponse } from '../types/sleep';
+import axiosClient from '@/api/axiosClient';
+import { SleepLogRequest, SleepLogResponse } from '@/types';
 
 const SLEEP_BASE_PATH = '/api/v1/tracking/sleeps';
 const SLEEP_COLLECTION_PATH = `${SLEEP_BASE_PATH}/`;

@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { COLORS } from '../../constants/colors';
-import styles from './TherapistFilterScreen.styles';
-import { RootStackParamList } from '../../navigation/types';
+import { COLORS } from '@/theme';
+import styles from '@/screens/booking/TherapistFilterScreen.styles';
+import { RootStackParamList } from '@/navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import CustomButton from '../../components/CustomButton';
+import { CustomButton } from '@/components';
 
 const SPECIALTIES = [
   'Tâm lý học lâm sàng',

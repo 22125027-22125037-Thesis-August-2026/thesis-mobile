@@ -10,9 +10,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Calendar, DateData } from 'react-native-calendars';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../../constants/colors';
-import { RootStackParamList } from '../../navigation/types';
-import styles from './BookingScreen.styles';
+import { COLORS } from '@/theme';
+import { RootStackParamList } from '@/navigation';
+import styles from '@/screens/booking/BookingScreen.styles';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Booking'>;
 

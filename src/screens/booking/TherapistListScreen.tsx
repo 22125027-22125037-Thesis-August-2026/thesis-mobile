@@ -4,12 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/types'; // Import your map
+import { RootStackParamList } from '@/navigation'; // Import your map
 import Ionicons from 'react-native-vector-icons/Ionicons'; // BEGIN: Fix for Ionicons import
-import CustomInput from '../../components/CustomInput';
-import CustomButton from '../../components/CustomButton';
-import { getTherapists, Therapist } from '../../api/therapistApi';
-import styles from './TherapistListScreen.styles';
+import { getTherapists, Therapist } from '@/api';
+import { CustomButton, CustomInput } from '@/components';
+import styles from '@/screens/booking/TherapistListScreen.styles';
 
 const TherapistListScreen = () => {
   

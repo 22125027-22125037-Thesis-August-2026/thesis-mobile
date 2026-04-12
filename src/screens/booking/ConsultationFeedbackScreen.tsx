@@ -2,10 +2,11 @@ import React from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../../constants/colors';
-import { RootStackParamList } from '../../navigation/types';
-import styles from './ConsultationFeedbackScreen.styles';
+import { COLORS } from '@/theme';
+import { RootStackParamList } from '@/navigation';
+import styles from '@/screens/booking/ConsultationFeedbackScreen.styles';
 
 type ConsultationFeedbackNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -16,6 +17,7 @@ const RATING_EMOJIS = ['😞', '🙁', '😐', '🙂', '😄'] as const;
 
 const ConsultationFeedbackScreen: React.FC = () => {
   const navigation = useNavigation<ConsultationFeedbackNavigationProp>();
+  const { t } = useTranslation();
 
   return (
     <ScrollView
@@ -64,7 +66,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
         <Text style={styles.cardTitle}>Review</Text>
         <TextInput
           style={styles.input}
-          placeholder="Tôi thấy session này rất hiệu quả"
+          placeholder={t('booking.consultationFeedback.feedbackPlaceholder')}
           placeholderTextColor={COLORS.consultationFeedbackSecondary}
           multiline
         />

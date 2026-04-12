@@ -1,5 +1,5 @@
-import axiosClient from './axiosClient';
-import { FoodLogRequest, FoodLogResponse } from '../types/food';
+import axiosClient from '@/api/axiosClient';
+import { FoodLogRequest, FoodLogResponse } from '@/types';
 
 const FOOD_BASE_PATH = '/api/v1/tracking/foods';
 const FOOD_COLLECTION_PATH = `${FOOD_BASE_PATH}/`;

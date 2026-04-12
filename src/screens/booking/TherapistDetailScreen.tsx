@@ -9,10 +9,10 @@ import {
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import CustomButton from '../../components/CustomButton';
-import { RootStackParamList } from '../../navigation/types';
-import styles from './TherapistDetailScreen.styles';
-import { COLORS } from '../../constants/colors';
+import { CustomButton } from '@/components';
+import { RootStackParamList } from '@/navigation';
+import styles from '@/screens/booking/TherapistDetailScreen.styles';
+import { COLORS } from '@/theme';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'TherapistDetails'>;
 type TherapistDetailRouteProp = RouteProp<RootStackParamList, 'TherapistDetails'>;

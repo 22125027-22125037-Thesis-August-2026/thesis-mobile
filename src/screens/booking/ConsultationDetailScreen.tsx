@@ -11,9 +11,9 @@ import {
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../../constants/colors';
-import { RootStackParamList } from '../../navigation/types';
-import styles from './ConsultationDetailScreen.styles';
+import { COLORS } from '@/theme';
+import { RootStackParamList } from '@/navigation';
+import styles from '@/screens/booking/ConsultationDetailScreen.styles';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'ConsultationDetail'>;
 type ConsultationDetailRouteProp = RouteProp<RootStackParamList, 'ConsultationDetail'>;

@@ -1,4 +1,4 @@
-import { COLORS } from './colors';
+import { COLORS } from '@/theme';
 
 export type SleepQualityUi = {
   color: string;

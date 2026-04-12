@@ -8,17 +8,17 @@ import {
   View,
 } from 'react-native';
 import { NavigationContext, NavigationProp } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as diaryApi from '../../../api/diaryApi';
-import { COLORS } from '../../../constants/colors';
-import { getMoodCardUi } from '../../../constants/moods';
-import { TrackingStackParamList } from '../../../navigation/types';
-import { t } from '../../../constants/i18n';
-import { DiaryEntryResponse } from '../../../types/diary';
-import { styles } from './DiaryDashboardScreen.styles';
+import { diaryApi } from '@/api';
+import { getMoodCardUi } from '@/constants';
+import { COLORS } from '@/theme';
+import { TrackingStackParamList } from '@/navigation';
+import { DiaryEntryResponse } from '@/types';
+import { styles } from '@/screens/tracking/diary/DiaryDashboardScreen.styles';
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -34,7 +34,10 @@ const formatDate = (dateString: string): string => {
   return `${day}/${month}/${year}`;
 };
 
-const getEntryTitle = (entry: DiaryEntryResponse): string => {
+const getEntryTitle = (
+  entry: DiaryEntryResponse,
+  t: (key: string) => string,
+): string => {
   const content = entry.content.trim();
 
   if (!content) {
@@ -45,6 +48,7 @@ const getEntryTitle = (entry: DiaryEntryResponse): string => {
 };
 
 const DiaryDashboardScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useContext(NavigationContext) as
     | NavigationProp<TrackingStackParamList>
     | undefined;
@@ -179,7 +183,7 @@ const DiaryDashboardScreen: React.FC = () => {
                     </View>
 
                     <Text numberOfLines={1} style={styles.entryTitle}>
-                      {getEntryTitle(entry)}
+                      {getEntryTitle(entry, t)}
                     </Text>
 
                     <Text numberOfLines={2} style={styles.entrySnippet}>

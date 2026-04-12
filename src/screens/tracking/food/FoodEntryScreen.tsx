@@ -15,11 +15,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useTranslation } from 'react-i18next';
 
-import * as foodApi from '../../../api/foodApi';
-import { COLORS } from '../../../constants/colors';
-import { FoodLogRequest } from '../../../types/food';
-import { styles } from './FoodEntryScreen.styles';
+import { foodApi } from '@/api';
+import { COLORS } from '@/theme';
+import { FoodLogRequest } from '@/types';
+import { styles } from '@/screens/tracking/food/FoodEntryScreen.styles';
 
 type MealTypeOption = {
   label: string;
@@ -89,6 +90,7 @@ const MAX_DESCRIPTION_LENGTH = 300;
 
 const FoodEntryScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
+  const { t } = useTranslation();
 
   const [mealType, setMealType] = useState<string>('LUNCH');
   const [satietyLevel, setSatietyLevel] = useState<number>(4);
@@ -119,10 +121,10 @@ const FoodEntryScreen: React.FC = () => {
 
     try {
       await foodApi.createFoodLog(payload);
-      Alert.alert('Thành công', 'Đã cập nhật dinh dưỡng của bạn.');
+      Alert.alert(t('food.entry.successTitle'), t('food.entry.successMessage'));
       navigation.goBack();
     } catch {
-      Alert.alert('Thất bại', 'Không thể cập nhật dinh dưỡng. Vui lòng thử lại.');
+      Alert.alert(t('food.entry.errorTitle'), t('food.entry.errorMessage'));
     } finally {
       setIsSubmitting(false);
     }

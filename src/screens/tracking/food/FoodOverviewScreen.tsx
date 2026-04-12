@@ -13,19 +13,19 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import * as foodApi from '../../../api/foodApi';
-import { COLORS } from '../../../constants/colors';
-import { SATIETY_UI_MAP, FOOD_WEEKDAY_LABELS } from '../../../constants/food';
-import { TrackingStackParamList } from '../../../navigation/types';
-import { FoodLogResponse } from '../../../types/food';
+import { foodApi } from '@/api';
+import { FOOD_WEEKDAY_LABELS, SATIETY_UI_MAP } from '@/constants';
+import { COLORS } from '@/theme';
+import { TrackingStackParamList } from '@/navigation';
+import { FoodLogResponse } from '@/types';
 import {
   endOfWeekSunday,
   formatWeekRangeLabel,
   isSameDate,
   shiftWeek,
   startOfWeekMonday,
-} from '../../../utils/weekCalendar';
-import { styles } from './FoodOverviewScreen.styles';
+} from '@/utils';
+import { styles } from '@/screens/tracking/food/FoodOverviewScreen.styles';
 
 type FoodDayStat = {
   dayIndex: number;

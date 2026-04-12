@@ -1,12 +1,12 @@
 // src/api/aiApi.ts
 
-import axiosClient from './axiosClient';
+import axiosClient from '@/api/axiosClient';
 import {
   AiChatRequest,
   AIChatResponse,
   ChatSessionOverview,
   BackendChatMessage,
-} from '../types/chat';
+} from '@/types';
 
 const AI_BASE_PATH = '/api/v1/ai/chat';
 

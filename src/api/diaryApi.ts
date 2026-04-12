@@ -1,9 +1,6 @@
-import axiosClient from './axiosClient';
-import { DiaryEntryRequest, DiaryEntryResponse } from '../types/diary';
-import {
-  createDiaryFormData,
-  mapImageUrisToAttachmentFiles,
-} from '../utils/formDataUtils';
+import axiosClient from '@/api/axiosClient';
+import { DiaryEntryRequest, DiaryEntryResponse } from '@/types';
+import { createDiaryFormData, mapImageUrisToAttachmentFiles } from '@/utils';
 
 const DIARY_BASE_PATH = '/api/v1/tracking/diaries';
 

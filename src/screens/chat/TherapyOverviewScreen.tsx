@@ -12,13 +12,13 @@ import {
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import { COLORS } from '../../constants/colors';
-import { EMPTY_CHAT_TEXT } from '../../constants/chat';
-import { TrackingStackParamList } from '../../navigation/types';
-import { aiApi } from '../../api/aiApi';
-import { ChatSessionOverview } from '../../types/chat';
-import TherapySessionCard from '../../components/TherapySessionCard';
-import { styles } from './TherapyOverviewScreen.styles';
+import { aiApi } from '@/api';
+import { TherapySessionCard } from '@/components';
+import { EMPTY_CHAT_TEXT } from '@/constants';
+import { COLORS } from '@/theme';
+import { TrackingStackParamList } from '@/navigation';
+import { ChatSessionOverview } from '@/types';
+import { styles } from '@/screens/chat/TherapyOverviewScreen.styles';
 
 type NavigationPropType = NavigationProp<TrackingStackParamList>;
 

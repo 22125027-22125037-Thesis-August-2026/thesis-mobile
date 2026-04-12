@@ -1,9 +1,8 @@
 // src/api/therapistApi.ts
 
 // ✅ Correct
-import axiosClient from './axiosClient';
-import { MatchingFormData } from '../types/matching';
-
+import axiosClient from '@/api/axiosClient';
+import { MatchingFormData } from '@/types';
 
 export enum Specialty {
   CognitiveBehavioral = 'CognitiveBehavioral',
@@ -36,38 +35,41 @@ export interface BookSessionData {
 }
 
 export const getTherapists = async (): Promise<Therapist[]> => {
-    try {
-      const response = await axiosClient.get<Therapist[]>('/api/v1/therapists');
-      return response.data;
-    } catch (error) {
-      // Handle or rethrow error
-      throw error;
-    }
-  };
-  
-  export const getTherapistDetails = async (id: string): Promise<Therapist> => {
-    try {
-      const response = await axiosClient.get<Therapist>(`/api/v1/therapists/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
-  
-  export const bookSession = async (data: BookSessionData): Promise<any> => {
-    try {
-      const response = await axiosClient.post('/api/v1/bookings', data);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
+  try {
+    const response = await axiosClient.get<Therapist[]>('/api/v1/therapists');
+    return response.data;
+  } catch (error) {
+    // Handle or rethrow error
+    throw error;
+  }
+};
 
-  export const saveMatchingData = async (data: MatchingFormData): Promise<void> => {
-    try {
-      await axiosClient.post('/therapists/matching', data);
-    } catch (error) {
-      throw error;
-    }
-  };
+export const getTherapistDetails = async (id: string): Promise<Therapist> => {
+  try {
+    const response = await axiosClient.get<Therapist>(
+      `/api/v1/therapists/${id}`,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
+export const bookSession = async (data: BookSessionData): Promise<any> => {
+  try {
+    const response = await axiosClient.post('/api/v1/bookings', data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const saveMatchingData = async (
+  data: MatchingFormData,
+): Promise<void> => {
+  try {
+    await axiosClient.post('/therapists/matching', data);
+  } catch (error) {
+    throw error;
+  }
+};

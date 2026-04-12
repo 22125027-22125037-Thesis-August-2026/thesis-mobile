@@ -1,0 +1,304 @@
+{
+  "mood": {
+    "terrible": "TỆ HẠI",
+    "bad": "TỨC GIẬN",
+    "neutral": "TRUNG TÍNH",
+    "good": "VUI VẺ",
+    "excellent": "TUYỆT VỜI"
+  },
+  "entry": {
+    "screenTitle": "Hôm nay bạn thế nào?",
+    "editTitle": "Chỉnh sửa nhật ký",
+    "titleLabel": "Tiêu đề",
+    "titlePlaceholder": "Lại cảm thấy tồi tệ",
+    "moodLabel": "Chọn cảm xúc",
+    "contentLabel": "Bạn đang nghĩ gì? Hãy viết ra đây nhé...",
+    "contentPlaceholder": "Tôi đang buồn lắm nhưng tôi không muốn làm to chuyện. Tôi không biết bắt đầu từ đâu.",
+    "addPhoto": "Thêm ảnh",
+    "submitButton": "Ghi lại cảm xúc",
+    "counter": "{{count}}/300",
+    "selectionLimitTitle": "Giới hạn chọn",
+    "selectionLimitMessage": "Bạn có thể đính kèm tối đa 5 hình ảnh.",
+    "selectionLimitTruncatedMessage": "Chỉ 5 hình ảnh đầu tiên được thêm vào.",
+    "validationTitle": "Xác thực",
+    "validationContentRequired": "Vui lòng nhập nội dung nhật ký của bạn.",
+    "successTitle": "Thành công!",
+    "successDiaryId": "ID nhật ký: {{id}}",
+    "errorTitle": "Lỗi",
+    "errorCreateDiary": "Không thể tạo mục nhật ký."
+  },
+  "dashboard": {
+    "loading": "Đang tải nhật ký cảm xúc...",
+    "headerTitle": "Chuyện của mình",
+    "headerSubtitle": "Nhật ký cảm xúc",
+    "chartPlaceholder": "Biểu đồ",
+    "sectionAll": "Tất cả",
+    "sortNewest": "Mới nhất",
+    "emptyState": "Chưa có nhật ký nào. Hãy tạo một nhật ký mới.",
+    "entryFallbackTitle": "Nhật ký cảm xúc",
+    "statsTitle": "Thống kê cảm xúc",
+    "completedCount": "{{count}}/365",
+    "statsCompleted": "Hoàn thành",
+    "statsNeutral": "Trung tính"
+  },
+  "overview": {
+    "loading": "Đang tải dữ liệu cảm xúc...",
+    "headerTitle": "Góc tâm tư",
+    "subtitleLine1": "Nhật ký năm nay.",
+    "subtitleLine2": "Giữ vững phong độ nhé!",
+    "yearCount": "{{count}}/365",
+    "sectionTitle": "Dòng cảm xúc",
+    "monthTitle": "Tháng {{month}}/{{year}}",
+    "weekdayMon": "Hai",
+    "weekdayTue": "Ba",
+    "weekdayWed": "Tư",
+    "weekdayThu": "Năm",
+    "weekdayFri": "Sáu",
+    "weekdaySat": "Bảy",
+    "weekdaySun": "CN",
+    "legendNegative": "Tiêu cực",
+    "legendNeutral": "Trung tính",
+    "legendPositive": "Tích cực"
+  },
+  "sleep": {
+    "entry": {
+      "headerTitle": "Chất lượng giấc ngủ",
+      "mainQuestion": "Hôm qua bạn ngủ ngon chứ?",
+      "bedTimeLabel": "Giờ đi ngủ",
+      "wakeTimeLabel": "Giờ thức dậy",
+      "noteLabel": "Ghi chú thêm",
+      "notePlaceholder": "Mô tả nhanh cảm giác khi thức dậy...",
+      "successTitle": "Thành công",
+      "successMessage": "Đã cập nhật giấc ngủ của bạn.",
+      "errorTitle": "Thất bại",
+      "errorMessage": "Không thể cập nhật giấc ngủ. Vui lòng thử lại."
+    },
+    "overview": {
+      "headerTitle": "Chất lượng giấc mơ",
+      "subtitle": "trung bình trong tuần",
+      "chartTitle": "Thống kê giấc ngủ",
+      "loading": "Đang tải dữ liệu tuần này..."
+    }
+  },
+  "food": {
+    "meal": {
+      "breakfast": "Sáng",
+      "lunch": "Trưa",
+      "dinner": "Tối",
+      "snack": "Ăn vặt"
+    },
+    "satiety": {
+      "energized": "Năng lượng",
+      "normal": "Bình thường",
+      "indulgent": "Nuông chiều",
+      "overate": "Quá đà",
+      "skipped": "Bỏ bữa"
+    },
+    "entry": {
+      "screenTitle": "Nhật ký dinh dưỡng",
+      "mainQuestion": "Hôm nay bạn ăn uống tốt chứ?",
+      "descriptionLabel": "Bạn có thể mô tả thêm ở đây nhé...",
+      "descriptionPlaceholder": "Mô tả chi tiết bữa ăn của bạn...",
+      "submitButton": "Cập nhật dinh dưỡng",
+      "counter": "{{count}}/300",
+      "successTitle": "Thành công",
+      "successMessage": "Đã cập nhật dinh dưỡng của bạn.",
+      "errorTitle": "Thất bại",
+      "errorMessage": "Không thể cập nhật dinh dưỡng. Vui lòng thử lại."
+    },
+    "overview": {
+      "headerTitle": "Nhật ký dinh dưỡng",
+      "subtitle": "Chất lượng ăn uống hôm nay của bạn",
+      "noData": "Chưa có dữ liệu",
+      "chartTitle": "Thống kê dinh dưỡng",
+      "loading": "Đang tải dữ liệu tuần này..."
+    }
+  },
+  "auth": {
+    "common": {
+      "notificationTitle": "Thông báo",
+      "errorTitle": "Lỗi"
+    },
+    "login": {
+      "title": "Đăng nhập",
+      "emailLabel": "Email",
+      "passwordLabel": "Mật khẩu",
+      "emailPlaceholder": "Nhập email...",
+      "passwordPlaceholder": "Nhập mật khẩu...",
+      "submitButton": "Đăng nhập",
+      "noAccountText": "Chưa có tài khoản?",
+      "registerLink": "Đăng kí",
+      "forgotPassword": "Quên mật khẩu",
+      "forgotPasswordMessage": "Tính năng đang được phát triển",
+      "validationError": "Vui lòng nhập đầy đủ thông tin",
+      "failureTitle": "Đăng nhập thất bại",
+      "failureMessage": "Vui lòng kiểm tra email hoặc mật khẩu"
+    },
+    "register": {
+      "title": "Đăng kí",
+      "fullNameLabel": "Họ và tên",
+      "fullNamePlaceholder": "Nhập họ và tên",
+      "phoneLabel": "Số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại (không bắt buộc)",
+      "dobLabel": "Ngày sinh",
+      "dobPlaceholder": "YYYY-MM-DD (không bắt buộc)",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Nhập email",
+      "passwordLabel": "Mật khẩu",
+      "passwordPlaceholder": "Tạo mật khẩu mới",
+      "confirmPasswordLabel": "Xác nhận mật khẩu",
+      "confirmPasswordPlaceholder": "Xác nhận mật khẩu mới",
+      "roleSectionTitle": "Bạn đăng ký với vai trò:",
+      "agreePrefix": "Tôi đồng ý với ",
+      "agreeTermsLink": "Điều khoản và Điều kiện",
+      "alreadyHaveAccount": "Đã có tài khoản?",
+      "loginLink": "Đăng nhập.",
+      "orText": "hoặc",
+      "continueWithGoogle": "Tiếp tục với Google",
+      "continueWithFacebook": "Tiếp tục với Facebook",
+      "submitButton": "Đăng kí",
+      "validationError": "Vui lòng điền đầy đủ thông tin",
+      "invalidEmail": "Email không hợp lệ",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp",
+      "mustAgreeTerms": "Bạn cần đồng ý với Điều khoản và Điều kiện",
+      "invalidYearsOfExperience": "Số năm kinh nghiệm phải là số hợp lệ",
+      "invalidConsultationFee": "Phí tư vấn phải là số hợp lệ",
+      "failureTitle": "Đăng ký thất bại",
+      "failureMessage": "Email này có thể đã được sử dụng. Vui lòng thử lại.",
+      "successNavigateMessage": "Đăng ký tài khoản thành công! Vui lòng đăng nhập.",
+      "successTitle": "Thành công",
+      "successMessage": "Đăng ký tài khoản thành công!"
+    },
+    "roles": {
+      "teen": "Học sinh/Sinh viên",
+      "parent": "Phụ huynh/Người thân",
+      "therapist": "Bác sĩ tâm lý"
+    },
+    "registerRoleFields": {
+      "teenSchoolLabel": "Trường học",
+      "teenSchoolPlaceholder": "Nhập trường học (không bắt buộc)",
+      "teenEmergencyLabel": "Liên hệ khẩn cấp",
+      "teenEmergencyPlaceholder": "Số điện thoại hoặc người liên hệ",
+      "therapistSpecializationLabel": "Chuyên môn",
+      "therapistSpecializationPlaceholder": "Ví dụ: Tâm lý học lâm sàng",
+      "therapistBioLabel": "Giới thiệu",
+      "therapistBioPlaceholder": "Tóm tắt kinh nghiệm và phương pháp",
+      "therapistYearsLabel": "Số năm kinh nghiệm",
+      "therapistYearsPlaceholder": "Ví dụ: 5",
+      "therapistFeeLabel": "Phí tư vấn (VND)",
+      "therapistFeePlaceholder": "Ví dụ: 300000",
+      "parentLinkedTeenIdLabel": "Linked Teen ID",
+      "parentLinkedTeenIdPlaceholder": "UUID hồ sơ teen (không bắt buộc)"
+    }
+  },
+  "booking": {
+    "therapistFilter": {
+      "changeTherapist": "Tôi muốn đổi chuyên gia",
+      "customizationTitle": "Tùy chỉnh mong muốn về chuyên gia của bạn",
+      "question": "nối chuyên gia trị liệu không?",
+      "chatButton": "Trò chuyện với chuyên gia"
+    },
+    "videoConsultation": {
+      "readyTitle": "Sẵn sàng kết nối với chuyên gia",
+      "initializingText": "Đang khởi tạo Zoom...",
+      "joinButton": "Mở Zoom & Tham gia",
+      "endButton": "End Meeting",
+      "invalidTokenError": "JWT token không hợp lệ hoặc không khớp Meeting SDK credentials. Vui lòng tạo lại SDK JWT từ backend.",
+      "initError": "Không thể khởi tạo Zoom. Vui lòng kiểm tra JWT token và thử lại.",
+      "defaultError": "Không thể khởi tạo Zoom."
+    },
+    "consultationFeedback": {
+      "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"
+    }
+  },
+  "home": {
+    "overview": {
+      "dailyLogsTitle": "Nhật kí hằng ngày",
+      "sleepQualityTitle": "Chất lượng giấc mơ",
+      "sleepQualityNoData": "Chưa có dữ liệu",
+      "diaryTitle": "Góc tâm tư",
+      "diaryStreakFormat": "{{count}} ngày chuỗi",
+      "diaryNoStreak": "Chưa có chuỗi",
+      "foodDiaryTitle": "Nhật ký dinh dưỡng",
+      "foodDiaryNoData": "Chưa có dữ liệu",
+      "aiChatbotTitle": "Bạn Tâm giao"
+    },
+    "moods": {
+      "sad": "Buồn",
+      "happy": "Vui",
+      "anxious": "Lo âu",
+      "angry": "Giận",
+      "neutral": "Ổn"
+    }
+  },
+  "session": {
+    "expiredTitle": "Phiên đăng nhập đã hết hạn",
+    "expiredMessage": "Vui lòng đăng nhập lại."
+  },
+  "matching": {
+    "submitError": "Không thể gửi dữ liệu. Vui lòng thử lại.",
+    "priorCounseling": {
+      "never": "Chưa bao giờ",
+      "ineffective": "Đã từng, nhưng không hiệu quả",
+      "effective": "Đã từng, và thấy rất tốt"
+    },
+    "gender": {
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác"
+    },
+    "sexualOrientation": {
+      "straight": "Straight",
+      "gay": "Gay",
+      "lesbian": "Lesbian",
+      "bisexual": "Bisexual",
+      "pansexual": "Pansexual",
+      "asexual": "Asexual",
+      "exploring": "Đang tìm hiểu",
+      "noAnswer": "Không muốn nói"
+    },
+    "binaryOptions": {
+      "no": "Không",
+      "yes": "Có"
+    },
+    "reasons": {
+      "anxiety": "Lo âu, hồi hộp",
+      "depression": "Buồn chán, mất động lực",
+      "stress": "Áp lực học tập/thi cử",
+      "insomnia": "Mất ngủ",
+      "relationship": "Mối quan hệ/Gia đình",
+      "trauma": "Chấn thương tâm lý",
+      "eating": "Rối loạn ăn uống"
+    },
+    "communicationStyle": {
+      "listener": "Người lăng nghe",
+      "guide": "Người hướng dẫn",
+      "combined": "Kết hợp cả hai"
+    },
+    "moodScales": {
+      "anxiety": "Lo lăn",
+      "lossInterest": "Mất hứng thú"
+    },
+    "form": {
+      "step1Title": "Đã từng đi trị liệu bao giờ chưa?",
+      "step1Subtitle": "Câu trả lời giúp chuyên gia hiểu điểm bắt đầu của bạn.",
+      "step2Title": "Giới tính của bạn là gì?",
+      "step2Subtitle": "Chung tôi dung thông tin này để tinh chỉnh kết quả ghép nối.",
+      "step2AgeLabel": "Bạn bao nhiêu tuổi?",
+      "step2AgePlaceholder": "Nhập tuổi của bạn",
+      "step3Title": "Bạn xác định xu hướng tình dục của mình là?",
+      "step3Subtitle": "Bạn có thể bỏ qua bằng cách chọn \"Không muốn nói\".",
+      "step4Title": "Bạn có muốn ưu tiên ghép đôi với chuyên gia thuộc cộng Đồng LGBTQ+ không?",
+      "step4Subtitle": "Điều này giúp hệ thống ưu tiên danh sách chuyên gia phù hợp với bạn.",
+      "step5Title": "Hiện tại, bạn có đang suy nghĩ về việc làm hại bản thân hoặc người khác không?",
+      "step5Subtitle": "Nếu bạn cần hỗ trợ khẩn cấp, hãy liên hệ dịch vụ y tế ngay lập tức.",
+      "step6Title": "Diều gì khiến bạn tìm đến trị liệu hôm nay?",
+      "step6Subtitle": "Bạn có thể chọn nhiều hơn một lý do.",
+      "step7Title": "Hôm nay bạn đang cảm thấy như thế nào?",
+      "step7Subtitle": "Chọn mức độ cho từng trạng thái từ ít đến nhiều.",
+      "step7Fatigue": "Mệt mỏi",
+      "step8Title": "Bạn mong đợi phòng cách giao tiếp nào từ chuyên gia?",
+      "step8Subtitle": "Chọn kiểu trao đổi khiến bạn cảm thấy thoải mái nhất."
+    }
+  }
+}

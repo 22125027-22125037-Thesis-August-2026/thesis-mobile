@@ -1,16 +1,18 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from '../screens/HomeScreen';
-import ChatScreen from '../screens/chat/ChatScreen';
-import SleepEntryScreen from '../screens/tracking/sleep/SleepEntryScreen';
-import SleepOverviewScreen from '../screens/tracking/sleep/SleepOverviewScreen';
-import DiaryOverviewScreen from '../screens/tracking/diary/DiaryOverviewScreen';
-import DiaryDashboardScreen from '../screens/tracking/diary/DiaryDashboardScreen';
-import DiaryEntryScreen from '../screens/tracking/diary/DiaryEntryScreen';
-import FoodOverviewScreen from '../screens/tracking/food/FoodOverviewScreen';
-import FoodEntryScreen from '../screens/tracking/food/FoodEntryScreen';
-import { TrackingStackParamList } from './types';
+import {
+  ChatScreen,
+  DiaryDashboardScreen,
+  DiaryEntryScreen,
+  DiaryOverviewScreen,
+  FoodEntryScreen,
+  FoodOverviewScreen,
+  HomeScreen,
+  SleepEntryScreen,
+  SleepOverviewScreen,
+} from '@/screens';
+import { TrackingStackParamList } from '@/navigation/types';
 
 const TrackingStack = createNativeStackNavigator<TrackingStackParamList>();
 
