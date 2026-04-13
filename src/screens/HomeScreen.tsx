@@ -18,9 +18,9 @@ import { DashboardSummary, getDashboardSummary } from '@/api';
 import { AuthContext } from '@/context/AuthContext';
 import { BORDER_RADIUS, FONT_SIZES, SPACING } from '@/theme';
 import { COLORS } from '@/theme';
-import { TrackingStackParamList } from '@/navigation';
+import { RootStackParamList } from '@/navigation';
 
-type NavigationPropType = NavigationProp<TrackingStackParamList>;
+type NavigationPropType = NavigationProp<RootStackParamList>;
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
@@ -83,6 +83,10 @@ const HomeScreen: React.FC = () => {
 
   const handleNavigateChatbot = (): void => {
     navigation.navigate('TherapyOverview');
+  };
+
+  const handleNavigateTherapistFilter = (): void => {
+    navigation.navigate('TherapistFilter');
   };
 
   const today = new Date();
@@ -352,14 +356,14 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== GROUP SESSIONS SECTION ===== */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Available Group Sessions this week</Text>
+          <Text style={styles.sectionTitle}>Therapist Sesions this Month</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
             contentContainerStyle={styles.sessionsCarousel}>
             {/* Mental Health Session */}
-            <Pressable style={styles.sessionCard}>
+            <Pressable style={styles.sessionCard} onPress={handleNavigateTherapistFilter}>
               <Image
                 source={{
                   uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=200&fit=crop',
@@ -374,7 +378,7 @@ const HomeScreen: React.FC = () => {
             </Pressable>
 
             {/* Trauma Session */}
-            <Pressable style={styles.sessionCard}>
+            <Pressable style={styles.sessionCard} onPress={handleNavigateTherapistFilter}>
               <Image
                 source={{
                   uri: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop',
