@@ -1,6 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import '@/locales/i18n';
 
@@ -158,6 +161,8 @@ const renderRoleBasedRoutes = (role?: UserRole) => {
 
 const AppNav: React.FC = () => {
   const auth = useContext(AuthContext);
+  const navigationRef = useNavigationContainerRef<RootStackParamList>();
+  const routeNameRef = useRef<string | undefined>(undefined);
 
   if (!auth || auth.isLoading) {
     return (
@@ -170,7 +175,23 @@ const AppNav: React.FC = () => {
   const { userToken, userInfo } = auth;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => {
+        routeNameRef.current = navigationRef.getCurrentRoute()?.name;
+        if (routeNameRef.current) {
+          console.log(`[Navigation] Current page: ${routeNameRef.current}`);
+        }
+      }}
+      onStateChange={() => {
+        const currentRouteName = navigationRef.getCurrentRoute()?.name;
+
+        if (currentRouteName && routeNameRef.current !== currentRouteName) {
+          console.log(`[Navigation] Current page: ${currentRouteName}`);
+        }
+
+        routeNameRef.current = currentRouteName;
+      }}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken ? (
           renderRoleBasedRoutes(userInfo?.role)

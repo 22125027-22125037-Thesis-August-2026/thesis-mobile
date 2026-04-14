@@ -10,6 +10,41 @@ const HARDCODED_TEST_TOKEN = '';
 
 const HAS_HARDCODED_TEST_TOKEN = HARDCODED_TEST_TOKEN.trim().length > 0;
 const AUTH_STORAGE_KEYS = ['userToken', 'userRole', 'profileId'];
+const IS_DEV = __DEV__;
+
+const redactSensitiveFields = (value: unknown): unknown => {
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(item => redactSensitiveFields(item));
+  }
+
+  return Object.entries(value as Record<string, unknown>).reduce(
+    (acc, [key, fieldValue]) => {
+      if (/password|token/i.test(key)) {
+        acc[key] = '[REDACTED]';
+      } else {
+        acc[key] = redactSensitiveFields(fieldValue);
+      }
+      return acc;
+    },
+    {} as Record<string, unknown>,
+  );
+};
+
+const parseJsonIfPossible = (value: unknown): unknown => {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,
@@ -26,13 +61,22 @@ if (HAS_HARDCODED_TEST_TOKEN) {
 axiosClient.interceptors.request.use(async config => {
   if (HAS_HARDCODED_TEST_TOKEN) {
     config.headers.Authorization = `Bearer ${HARDCODED_TEST_TOKEN}`;
-    return config;
+  } else {
+    const token = await AsyncStorage.getItem('userToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
 
-  const token = await AsyncStorage.getItem('userToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (IS_DEV) {
+    console.log('[API REQUEST]', {
+      method: config.method?.toUpperCase(),
+      url: `${config.baseURL || ''}${config.url || ''}`,
+      headers: redactSensitiveFields(config.headers),
+      data: redactSensitiveFields(parseJsonIfPossible(config.data)),
+    });
   }
+
   return config;
 });
 
@@ -46,8 +90,29 @@ export const setLogoutHandler = (handler: () => void) => {
 };
 
 axiosClient.interceptors.response.use(
-  response => response,
+  response => {
+    if (IS_DEV) {
+      console.log('[API RESPONSE]', {
+        status: response.status,
+        method: response.config.method?.toUpperCase(),
+        url: `${response.config.baseURL || ''}${response.config.url || ''}`,
+        data: redactSensitiveFields(response.data),
+      });
+    }
+
+    return response;
+  },
   async error => {
+    if (IS_DEV) {
+      console.log('[API ERROR]', {
+        status: error?.response?.status,
+        method: error?.config?.method?.toUpperCase(),
+        url: `${error?.config?.baseURL || ''}${error?.config?.url || ''}`,
+        requestData: redactSensitiveFields(parseJsonIfPossible(error?.config?.data)),
+        responseData: redactSensitiveFields(error?.response?.data),
+      });
+    }
+
     if (
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
