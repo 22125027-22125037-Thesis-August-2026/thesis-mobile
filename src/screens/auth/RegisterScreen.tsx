@@ -1,16 +1,22 @@
-import React, { useContext, useState } from 'react';
-import { View, StatusBar, Alert, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { useTranslation } from 'react-i18next';
-
-// Import
+import { AppText, CustomButton, CustomInput } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
-import { COLORS } from '@/theme';
-import { CustomButton, CustomInput, AppText } from '@/components';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '@/screens/auth/RegisterScreen.styles';
+import { COLORS } from '@/theme';
 import { RegisterPayload, UserRole } from '@/types';
+import React, { useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const RegisterScreen = ({ navigation }: any) => {
   const { t } = useTranslation();
@@ -36,12 +42,10 @@ const RegisterScreen = ({ navigation }: any) => {
   const [yearsOfExperience, setYearsOfExperience] = useState('');
   const [consultationFee, setConsultationFee] = useState('');
   const [linkedTeenId, setLinkedTeenId] = useState('');
-  
-  // State hiển thị mật khẩu
+
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
-  // State lỗi (demo giống hình)
   const [emailError, setEmailError] = useState(false);
 
   const auth = useContext(AuthContext);
@@ -105,7 +109,9 @@ const RegisterScreen = ({ navigation }: any) => {
           <CustomInput
             label={t('auth.registerRoleFields.therapistSpecializationLabel')}
             iconName="medkit-outline"
-            placeholder={t('auth.registerRoleFields.therapistSpecializationPlaceholder')}
+            placeholder={t(
+              'auth.registerRoleFields.therapistSpecializationPlaceholder',
+            )}
             value={specialization}
             onChangeText={setSpecialization}
           />
@@ -139,7 +145,9 @@ const RegisterScreen = ({ navigation }: any) => {
         <CustomInput
           label={t('auth.registerRoleFields.parentLinkedTeenIdLabel')}
           iconName="link-outline"
-          placeholder={t('auth.registerRoleFields.parentLinkedTeenIdPlaceholder')}
+          placeholder={t(
+            'auth.registerRoleFields.parentLinkedTeenIdPlaceholder',
+          )}
           value={linkedTeenId}
           onChangeText={setLinkedTeenId}
         />
@@ -150,32 +158,37 @@ const RegisterScreen = ({ navigation }: any) => {
   };
 
   const handleRegister = async () => {
-    // Reset lỗi
     setEmailError(false);
 
-    // Validate cơ bản
     if (!fullName.trim() || !email || !password || !confirmPassword) {
-      Alert.alert(t('auth.common.errorTitle'), t('auth.register.validationError'));
+      Alert.alert(
+        t('auth.common.errorTitle'),
+        t('auth.register.validationError'),
+      );
       return;
     }
 
-    // Check email giả định (để hiện UI lỗi giống hình)
     if (!email.includes('@')) {
       setEmailError(true);
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert(t('auth.common.errorTitle'), t('auth.register.passwordMismatch'));
+      Alert.alert(
+        t('auth.common.errorTitle'),
+        t('auth.register.passwordMismatch'),
+      );
       return;
     }
 
     if (!agreeTerm) {
-      Alert.alert(t('auth.common.notificationTitle'), t('auth.register.mustAgreeTerms'));
+      Alert.alert(
+        t('auth.common.notificationTitle'),
+        t('auth.register.mustAgreeTerms'),
+      );
       return;
     }
 
-    // Gọi API Register thông qua Context
     try {
       const roleSpecificPayload = getRoleSpecificPayload();
 
@@ -184,7 +197,10 @@ const RegisterScreen = ({ navigation }: any) => {
         yearsOfExperience.trim() &&
         Number.isNaN(Number(yearsOfExperience.trim()))
       ) {
-        Alert.alert(t('auth.common.errorTitle'), t('auth.register.invalidYearsOfExperience'));
+        Alert.alert(
+          t('auth.common.errorTitle'),
+          t('auth.register.invalidYearsOfExperience'),
+        );
         return;
       }
 
@@ -193,7 +209,10 @@ const RegisterScreen = ({ navigation }: any) => {
         consultationFee.trim() &&
         Number.isNaN(Number(consultationFee.trim()))
       ) {
-        Alert.alert(t('auth.common.errorTitle'), t('auth.register.invalidConsultationFee'));
+        Alert.alert(
+          t('auth.common.errorTitle'),
+          t('auth.register.invalidConsultationFee'),
+        );
         return;
       }
 
@@ -208,12 +227,17 @@ const RegisterScreen = ({ navigation }: any) => {
       };
 
       await auth?.register(payload);
-      
-      Alert.alert(t('auth.register.successTitle'), t('auth.register.successNavigateMessage'));
-      navigation.navigate('Login'); // Chuyển về trang đăng nhập
+
+      Alert.alert(
+        t('auth.register.successTitle'),
+        t('auth.register.successNavigateMessage'),
+      );
+      navigation.navigate('Login');
     } catch (error) {
-      // Nếu Backend báo lỗi (vd: Email đã tồn tại) thì nó sẽ nhảy vào đây
-      Alert.alert(t('auth.register.failureTitle'), t('auth.register.failureMessage'));
+      Alert.alert(
+        t('auth.register.failureTitle'),
+        t('auth.register.failureMessage'),
+      );
     }
   };
 
@@ -221,18 +245,20 @@ const RegisterScreen = ({ navigation }: any) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
 
-      {/* Background Cong */}
       <View style={styles.headerBackground}>
         <View style={styles.circle} />
       </View>
 
+      <AppText style={styles.title}>{t('auth.register.title')}</AppText>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          
-          <AppText style={styles.title}>{t('auth.register.title')}</AppText>
-
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.formContainer}>
             <CustomInput
               label={t('auth.register.fullNameLabel')}
@@ -258,7 +284,6 @@ const RegisterScreen = ({ navigation }: any) => {
               onChangeText={setDob}
             />
 
-            {/* Input Email */}
             <CustomInput
               label={t('auth.register.emailLabel')}
               iconName="mail-outline"
@@ -268,15 +293,19 @@ const RegisterScreen = ({ navigation }: any) => {
               error={emailError} // Truyền prop lỗi
             />
 
-            {/* Hộp báo lỗi Email (Chỉ hiện khi có lỗi) */}
             {emailError && (
               <View style={styles.errorBox}>
-                <Ionicons name="alert-circle" size={18} color={COLORS.errorText} />
-                <AppText style={styles.errorText}>{t('auth.register.invalidEmail')}</AppText>
+                <Ionicons
+                  name="alert-circle"
+                  size={18}
+                  color={COLORS.errorText}
+                />
+                <AppText style={styles.errorText}>
+                  {t('auth.register.invalidEmail')}
+                </AppText>
               </View>
             )}
 
-            {/* Mật khẩu */}
             <CustomInput
               label={t('auth.register.passwordLabel')}
               iconName="lock-closed-outline"
@@ -288,7 +317,6 @@ const RegisterScreen = ({ navigation }: any) => {
               onTogglePassword={() => setShowPass(!showPass)}
             />
 
-            {/* Xác nhận mật khẩu */}
             <CustomInput
               label={t('auth.register.confirmPasswordLabel')}
               iconName="lock-closed-outline"
@@ -300,7 +328,9 @@ const RegisterScreen = ({ navigation }: any) => {
               onTogglePassword={() => setShowConfirmPass(!showConfirmPass)}
             />
 
-            <AppText style={styles.roleSectionTitle}>{t('auth.register.roleSectionTitle')}</AppText>
+            <AppText style={styles.roleSectionTitle}>
+              {t('auth.register.roleSectionTitle')}
+            </AppText>
             <View style={styles.roleSelectorContainer}>
               {ROLE_OPTIONS.map(option => {
                 const isSelected = selectedRole === option.value;
@@ -313,7 +343,8 @@ const RegisterScreen = ({ navigation }: any) => {
                       isSelected && styles.roleCardSelected,
                     ]}
                     activeOpacity={0.85}
-                    onPress={() => setSelectedRole(option.value)}>
+                    onPress={() => setSelectedRole(option.value)}
+                  >
                     <Ionicons
                       name={isSelected ? 'radio-button-on' : 'radio-button-off'}
                       size={20}
@@ -323,7 +354,8 @@ const RegisterScreen = ({ navigation }: any) => {
                       style={[
                         styles.roleCardText,
                         isSelected && styles.roleCardTextSelected,
-                      ]}>
+                      ]}
+                    >
                       {option.label}
                     </AppText>
                   </TouchableOpacity>
@@ -334,34 +366,41 @@ const RegisterScreen = ({ navigation }: any) => {
             {renderRoleSpecificFields()}
 
             {/* Checkbox Điều khoản */}
-            <TouchableOpacity 
-              style={styles.checkboxContainer} 
+            <TouchableOpacity
+              style={styles.checkboxContainer}
               onPress={() => setAgreeTerm(!agreeTerm)}
               activeOpacity={0.8}
             >
-              <Ionicons 
-                name={agreeTerm ? "radio-button-on" : "radio-button-off"} 
-                size={22} 
-                color={COLORS.text} 
+              <Ionicons
+                name={agreeTerm ? 'radio-button-on' : 'radio-button-off'}
+                size={22}
+                color={COLORS.text}
               />
               <AppText style={styles.checkboxText}>
-                {t('auth.register.agreePrefix')}<AppText style={styles.linkText}>{t('auth.register.agreeTermsLink')}</AppText>
+                {t('auth.register.agreePrefix')}
+                <AppText style={styles.linkText}>
+                  {t('auth.register.agreeTermsLink')}
+                </AppText>
               </AppText>
             </TouchableOpacity>
 
             {/* Link đã có tài khoản */}
-            <View style={{flexDirection: 'row', marginBottom: 20}}>
-              <AppText style={{color: COLORS.textSecondary}}>{t('auth.register.alreadyHaveAccount')} </AppText>
-               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                  <AppText style={styles.loginLink}>{t('auth.register.loginLink')}</AppText>
-               </TouchableOpacity>
+            <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+              <AppText style={{ color: COLORS.textSecondary }}>
+                {t('auth.register.alreadyHaveAccount')}{' '}
+              </AppText>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <AppText style={styles.loginLink}>
+                  {t('auth.register.loginLink')}
+                </AppText>
+              </TouchableOpacity>
             </View>
 
             {/* Component Button */}
-            <CustomButton 
-              title={t('auth.register.submitButton')} 
-              onPress={handleRegister} 
-              isLoading={auth?.isLoading} 
+            <CustomButton
+              title={t('auth.register.submitButton')}
+              onPress={handleRegister}
+              isLoading={auth?.isLoading}
             />
 
             {/* Hoặc */}
@@ -369,15 +408,18 @@ const RegisterScreen = ({ navigation }: any) => {
 
             {/* Nút Social Dài */}
             <TouchableOpacity style={styles.socialBtnLong}>
-               <FontAwesome name="google" size={20} color={COLORS.google} />
-               <AppText style={styles.socialBtnText}>{t('auth.register.continueWithGoogle')}</AppText>
+              <FontAwesome name="google" size={20} color={COLORS.google} />
+              <AppText style={styles.socialBtnText}>
+                {t('auth.register.continueWithGoogle')}
+              </AppText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.socialBtnLong}>
-               <FontAwesome name="facebook" size={20} color={COLORS.facebook} />
-               <AppText style={styles.socialBtnText}>{t('auth.register.continueWithFacebook')}</AppText>
+              <FontAwesome name="facebook" size={20} color={COLORS.facebook} />
+              <AppText style={styles.socialBtnText}>
+                {t('auth.register.continueWithFacebook')}
+              </AppText>
             </TouchableOpacity>
-
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

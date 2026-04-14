@@ -11,7 +11,7 @@ export const FONT_SIZES = {
 export const FONTS = {
   regular: 'SVN-Gilroy-Regular',
   medium: 'SVN-Gilroy-Medium',
-  semiBold: 'SVN-Gilroy-SemiBold',
+  semiBold: 'SVN-Gilroy-Medium',
   bold: 'SVN-Gilroy-Bold',
 } as const;
 

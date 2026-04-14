@@ -32,7 +32,7 @@ const CustomInput = ({
       {label && <AppText style={styles.label} weight="semiBold">{label}</AppText>}
       <View style={[
         styles.inputWrapper, 
-        error && { borderColor: COLORS.errorBorder, borderWidth: 1.5 } // Đổi màu viền nếu lỗi
+        error && { borderColor: COLORS.errorBorder, borderWidth: 1.5 } 
       ]}>
         <Ionicons 
           name={iconName} 
