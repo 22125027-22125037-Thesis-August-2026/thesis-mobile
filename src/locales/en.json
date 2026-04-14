@@ -68,6 +68,30 @@
       "wakeTimeLabel": "Wake time",
       "noteLabel": "Add a note",
       "notePlaceholder": "Describe how you felt when you woke up...",
+      "submitButton": "Update sleep",
+      "iosDone": "Done",
+      "quality": {
+        "excellent": {
+          "title": "Excellent",
+          "subtitle": "7-9 HOURS"
+        },
+        "good": {
+          "title": "Good",
+          "subtitle": "6-7 HOURS"
+        },
+        "neutral": {
+          "title": "Neutral",
+          "subtitle": "5 HOURS"
+        },
+        "bad": {
+          "title": "Bad",
+          "subtitle": "3-4 HOURS"
+        },
+        "terrible": {
+          "title": "Terrible",
+          "subtitle": "<3 HOURS"
+        }
+      },
       "successTitle": "Success",
       "successMessage": "Your sleep entry has been updated.",
       "errorTitle": "Failed",
@@ -77,7 +101,15 @@
       "headerTitle": "Dream Quality",
       "subtitle": "average this week",
       "chartTitle": "Sleep Statistics",
-      "loading": "Loading week data..."
+      "loading": "Loading week data...",
+      "durationFormat": "{{hours}}h {{minutes}}m",
+      "weekdayMon": "Mon",
+      "weekdayTue": "Tue",
+      "weekdayWed": "Wed",
+      "weekdayThu": "Thu",
+      "weekdayFri": "Fri",
+      "weekdaySat": "Sat",
+      "weekdaySun": "Sun"
     }
   },
   "food": {
@@ -93,6 +125,13 @@
       "indulgent": "Indulgent",
       "overate": "Overate",
       "skipped": "Skipped"
+    },
+    "satietySubtitle": {
+      "energized": "ATE JUST ENOUGH, FEELING ENERGETIC",
+      "normal": "FULL ENOUGH, NOTHING TOO SPECIAL",
+      "indulgent": "SWEETS, FRIED FOOD, COMFORT EATING",
+      "overate": "ATE TOO MUCH, FEELING BLOATED",
+      "skipped": "DIDN'T EAT ANYTHING, VERY HUNGRY"
     },
     "entry": {
       "screenTitle": "Nutrition Journal",
@@ -111,7 +150,14 @@
       "subtitle": "Your eating quality today",
       "noData": "No data yet",
       "chartTitle": "Nutrition Statistics",
-      "loading": "Loading week data..."
+      "loading": "Loading week data...",
+      "weekdayMon": "Mon",
+      "weekdayTue": "Tue",
+      "weekdayWed": "Wed",
+      "weekdayThu": "Thu",
+      "weekdayFri": "Fri",
+      "weekdaySat": "Sat",
+      "weekdaySun": "Sun"
     }
   },
   "auth": {

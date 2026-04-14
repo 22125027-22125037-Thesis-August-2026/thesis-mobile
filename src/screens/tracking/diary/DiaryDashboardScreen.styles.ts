@@ -205,7 +205,7 @@ export const styles = StyleSheet.create({
     lineHeight: 42,
   },
   statLabel: {
-    fontSize: FONT_SIZES.lg,
+    fontSize: FONT_SIZES.md,
     fontWeight: '700',
     color: COLORS.textSecondary,
   },

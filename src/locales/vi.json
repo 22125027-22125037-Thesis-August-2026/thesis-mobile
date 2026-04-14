@@ -68,6 +68,30 @@
       "wakeTimeLabel": "Giờ thức dậy",
       "noteLabel": "Ghi chú thêm",
       "notePlaceholder": "Mô tả nhanh cảm giác khi thức dậy...",
+      "submitButton": "Cập nhật giấc ngủ",
+      "iosDone": "Xong",
+      "quality": {
+        "excellent": {
+          "title": "Rất tốt",
+          "subtitle": "7-9 TIẾNG"
+        },
+        "good": {
+          "title": "Tốt",
+          "subtitle": "6-7 TIẾNG"
+        },
+        "neutral": {
+          "title": "Bình thường",
+          "subtitle": "5 TIẾNG"
+        },
+        "bad": {
+          "title": "Tệ",
+          "subtitle": "3-4 TIẾNG"
+        },
+        "terrible": {
+          "title": "Rất tệ",
+          "subtitle": "<3 TIẾNG"
+        }
+      },
       "successTitle": "Thành công",
       "successMessage": "Đã cập nhật giấc ngủ của bạn.",
       "errorTitle": "Thất bại",
@@ -77,7 +101,15 @@
       "headerTitle": "Chất lượng giấc mơ",
       "subtitle": "trung bình trong tuần",
       "chartTitle": "Thống kê giấc ngủ",
-      "loading": "Đang tải dữ liệu tuần này..."
+      "loading": "Đang tải dữ liệu tuần này...",
+      "durationFormat": "{{hours}}h {{minutes}}m",
+      "weekdayMon": "Hai",
+      "weekdayTue": "Ba",
+      "weekdayWed": "Tư",
+      "weekdayThu": "Năm",
+      "weekdayFri": "Sáu",
+      "weekdaySat": "Bảy",
+      "weekdaySun": "CN"
     }
   },
   "food": {
@@ -93,6 +125,13 @@
       "indulgent": "Nuông chiều",
       "overate": "Quá đà",
       "skipped": "Bỏ bữa"
+    },
+    "satietySubtitle": {
+      "energized": "ĂN VỪA ĐỦ, THẤY KHỎE KHOẮN",
+      "normal": "ĐỦ NO, KHÔNG QUÁ ĐẶC BIỆT",
+      "indulgent": "ĐỒ NGỌT, CHIÊN RÁN, ĂN VUI MIỆNG",
+      "overate": "ĂN QUÁ NO, ĐẦY BỤNG, KHÓ CHỊU",
+      "skipped": "KHÔNG ĂN GÌ CẢ, ĐÓI LẢ"
     },
     "entry": {
       "screenTitle": "Nhật ký dinh dưỡng",
@@ -111,7 +150,14 @@
       "subtitle": "Chất lượng ăn uống hôm nay của bạn",
       "noData": "Chưa có dữ liệu",
       "chartTitle": "Thống kê dinh dưỡng",
-      "loading": "Đang tải dữ liệu tuần này..."
+      "loading": "Đang tải dữ liệu tuần này...",
+      "weekdayMon": "Hai",
+      "weekdayTue": "Ba",
+      "weekdayWed": "Tư",
+      "weekdayThu": "Năm",
+      "weekdayFri": "Sáu",
+      "weekdaySat": "Bảy",
+      "weekdaySun": "CN"
     }
   },
   "auth": {

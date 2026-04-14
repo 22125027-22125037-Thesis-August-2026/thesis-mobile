@@ -11,7 +11,7 @@ import { MoodTone, getMoodTone } from '@/constants';
 import { COLORS } from '@/theme';
 import { TrackingStackParamList } from '@/navigation';
 import { DiaryEntryResponse } from '@/types';
-import { styles } from '@/screens/tracking/diary/DiaryOverviewScreen.styles';
+import { styles } from './DiaryOverviewScreen.styles';
 
 type MoodCellTone = MoodTone | 'empty';
 
@@ -225,7 +225,7 @@ const DiaryOverviewScreen: React.FC = () => {
               <View style={styles.headerTopRow}>
                 <Pressable
                   style={styles.backButton}
-                  onPress={() => navigation?.goBack()}
+                  onPress={() => navigation?.navigate('Home')}
                   disabled={!navigation}>
                   <Feather name="chevron-left" size={24} color={COLORS.white} />
                 </Pressable>

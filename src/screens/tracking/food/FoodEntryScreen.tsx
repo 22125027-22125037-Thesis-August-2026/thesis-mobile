@@ -1,8 +1,22 @@
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { AppText } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
@@ -13,64 +27,64 @@ import { FoodLogRequest } from '@/types';
 import { styles } from '@/screens/tracking/food/FoodEntryScreen.styles';
 
 type MealTypeOption = {
-  label: string;
+  labelKey: string;
   value: string;
 };
 
 type SatietyLevelOption = {
   value: number;
   level: string;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   icon: string;
   color: string;
 };
 
 const MEAL_TYPES: MealTypeOption[] = [
-  { label: 'Sáng', value: 'BREAKFAST' },
-  { label: 'Trưa', value: 'LUNCH' },
-  { label: 'Tối', value: 'DINNER' },
-  { label: 'Ăn vặt', value: 'SNACK' },
+  { labelKey: 'food.meal.breakfast', value: 'BREAKFAST' },
+  { labelKey: 'food.meal.lunch', value: 'LUNCH' },
+  { labelKey: 'food.meal.dinner', value: 'DINNER' },
+  { labelKey: 'food.meal.snack', value: 'SNACK' },
 ];
 
 const SATIETY_LEVELS: SatietyLevelOption[] = [
   {
     value: 5,
     level: 'ENERGIZED',
-    title: 'Năng lượng',
-    subtitle: 'ĂN VỪA ĐỦ, THẤY KHỎE KHOẮN',
+    titleKey: 'food.satiety.energized',
+    subtitleKey: 'food.satietySubtitle.energized',
     icon: 'emoticon-happy-outline',
     color: '#84CC16',
   },
   {
     value: 4,
     level: 'NORMAL',
-    title: 'Bình thường',
-    subtitle: 'ĐỦ NO, KHÔNG QUÁ ĐẶC BIỆT',
+    titleKey: 'food.satiety.normal',
+    subtitleKey: 'food.satietySubtitle.normal',
     icon: 'emoticon-outline',
     color: '#FACC15',
   },
   {
     value: 3,
     level: 'INDULGENT',
-    title: 'Nuông chiều',
-    subtitle: 'ĐỒ NGỌT, CHIÊN RÁN, ĂN VUI MIỆNG',
+    titleKey: 'food.satiety.indulgent',
+    subtitleKey: 'food.satietySubtitle.indulgent',
     icon: 'emoticon-neutral-outline',
     color: '#A8A29E',
   },
   {
     value: 2,
     level: 'OVERATE',
-    title: 'Quá đà',
-    subtitle: 'ĂN QUÁ NO, ĐẦY BỤNG, KHÓ CHỊU',
+    titleKey: 'food.satiety.overate',
+    subtitleKey: 'food.satietySubtitle.overate',
     icon: 'emoticon-sad-outline',
     color: '#FB923C',
   },
   {
     value: 1,
     level: 'SKIPPED',
-    title: 'Bỏ bữa',
-    subtitle: 'KHÔNG ĂN GÌ CẢ, ĐÓI LẢ',
+    titleKey: 'food.satiety.skipped',
+    subtitleKey: 'food.satietySubtitle.skipped',
     icon: 'emoticon-cry-outline',
     color: '#A855F7',
   },
@@ -124,26 +138,37 @@ const FoodEntryScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <View style={styles.screen}>
           <ScrollView
             contentContainerStyle={styles.contentContainer}
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.headerRow}>
               <Pressable style={styles.backButton} onPress={navigation.goBack}>
-                <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
+                <Feather
+                  name="arrow-left"
+                  size={20}
+                  color={COLORS.textPrimary}
+                />
               </Pressable>
-              <AppText style={styles.headerLabel}>Nhật ký dinh dưỡng</AppText>
+              <AppText style={styles.headerLabel}>
+                {t('food.entry.screenTitle')}
+              </AppText>
             </View>
 
-            <AppText style={styles.title}>Hôm nay bạn ăn uống tốt chứ?</AppText>
+            <AppText style={styles.title}>
+              {t('food.entry.mainQuestion')}
+            </AppText>
 
             <View style={styles.mealTypesSection}>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.mealTypesContainer}>
+                contentContainerStyle={styles.mealTypesContainer}
+              >
                 {MEAL_TYPES.map(meal => {
                   const isSelected = mealType === meal.value;
 
@@ -155,13 +180,15 @@ const FoodEntryScreen: React.FC = () => {
                         isSelected && styles.mealTypeChipSelected,
                       ]}
                       onPress={() => setMealType(meal.value)}
-                      activeOpacity={0.85}>
+                      activeOpacity={0.85}
+                    >
                       <AppText
                         style={[
                           styles.mealTypeText,
                           isSelected && styles.mealTypeTextSelected,
-                        ]}>
-                        {meal.label}
+                        ]}
+                      >
+                        {t(meal.labelKey)}
                       </AppText>
                     </TouchableOpacity>
                   );
@@ -176,19 +203,30 @@ const FoodEntryScreen: React.FC = () => {
                 return (
                   <TouchableOpacity
                     key={option.value}
-                    style={[styles.satietyRow, isSelected && styles.satietyRowSelected]}
+                    style={[
+                      styles.satietyRow,
+                      isSelected && styles.satietyRowSelected,
+                    ]}
                     onPress={() => setSatietyLevel(option.value)}
-                    activeOpacity={0.85}>
+                    activeOpacity={0.85}
+                  >
                     <View style={styles.satietyTextBlock}>
-                      <AppText style={styles.satietyTitle}>{option.title}</AppText>
-                      <AppText style={styles.satietySubtitle}>{option.subtitle}</AppText>
+                      <AppText style={styles.satietyTitle}>
+                        {t(option.titleKey)}
+                      </AppText>
+                      <AppText style={styles.satietySubtitle}>
+                        {t(option.subtitleKey)}
+                      </AppText>
                     </View>
 
                     <View style={styles.timelineHolder}>
                       <View style={styles.timelineTrack}>
                         {isSelected ? (
                           <View
-                            style={[styles.timelineKnob, { backgroundColor: option.color }]}
+                            style={[
+                              styles.timelineKnob,
+                              { backgroundColor: option.color },
+                            ]}
                           />
                         ) : null}
                       </View>
@@ -208,12 +246,15 @@ const FoodEntryScreen: React.FC = () => {
 
             <View>
               <AppText style={styles.sectionTitle}>
-                Bạn có thể mô tả thêm ở đây nhé...
+                {t('food.entry.descriptionLabel')}
               </AppText>
               <View style={styles.descriptionCard}>
                 <TextInput
-                  style={[styles.descriptionInput, { fontFamily: FONTS.regular }]}
-                  placeholder="Mô tả chi tiết bữa ăn của bạn..."
+                  style={[
+                    styles.descriptionInput,
+                    { fontFamily: FONTS.regular },
+                  ]}
+                  placeholder={t('food.entry.descriptionPlaceholder')}
                   placeholderTextColor={COLORS.placeholder}
                   multiline
                   value={foodDescription}
@@ -223,10 +264,18 @@ const FoodEntryScreen: React.FC = () => {
                 <View style={styles.descriptionFooter}>
                   <View style={styles.toolbarButtons}>
                     <Pressable style={styles.toolbarButton}>
-                      <Feather name="rotate-ccw" size={18} color={COLORS.textSecondary} />
+                      <Feather
+                        name="rotate-ccw"
+                        size={18}
+                        color={COLORS.textSecondary}
+                      />
                     </Pressable>
                     <Pressable style={styles.toolbarButton}>
-                      <Feather name="rotate-cw" size={18} color={COLORS.textSecondary} />
+                      <Feather
+                        name="rotate-cw"
+                        size={18}
+                        color={COLORS.textSecondary}
+                      />
                     </Pressable>
                     <Pressable style={styles.toolbarButton}>
                       <MaterialCommunityIcons
@@ -237,7 +286,7 @@ const FoodEntryScreen: React.FC = () => {
                     </Pressable>
                   </View>
                   <AppText style={styles.characterCounter}>
-                    {foodDescription.length}/{MAX_DESCRIPTION_LENGTH}
+                    {t('food.entry.counter', { count: foodDescription.length })}
                   </AppText>
                 </View>
               </View>
@@ -247,15 +296,28 @@ const FoodEntryScreen: React.FC = () => {
 
         <View style={styles.footer}>
           <Pressable
-            style={[styles.submitButton, !canSubmit && styles.submitButtonDisabled]}
+            style={[
+              styles.submitButton,
+              !canSubmit && styles.submitButtonDisabled,
+            ]}
             onPress={handleSubmit}
-            disabled={!canSubmit}>
+            disabled={!canSubmit}
+          >
             {isSubmitting ? (
-              <ActivityIndicator size="small" color={COLORS.buttonPrimaryText} />
+              <ActivityIndicator
+                size="small"
+                color={COLORS.buttonPrimaryText}
+              />
             ) : (
               <View style={styles.submitContent}>
-                <AppText style={styles.submitText}>Cập nhật dinh dưỡng</AppText>
-                <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
+                <AppText style={styles.submitText}>
+                  {t('food.entry.submitButton')}
+                </AppText>
+                <Feather
+                  name="check"
+                  size={20}
+                  color={COLORS.buttonPrimaryText}
+                />
               </View>
             )}
           </Pressable>

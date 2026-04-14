@@ -1,7 +1,22 @@
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { AppText } from '@/components';
-import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from '@react-navigation/native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
@@ -18,8 +33,8 @@ type PickerTarget = 'bedTime' | 'wakeTime' | null;
 
 type SleepQualityOption = {
   value: number;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   icon: string;
   color: string;
 };
@@ -27,36 +42,36 @@ type SleepQualityOption = {
 const SLEEP_QUALITY_OPTIONS: SleepQualityOption[] = [
   {
     value: 5,
-    title: 'Rất tốt',
-    subtitle: '7-9 TIẾNG',
+    titleKey: 'sleep.entry.quality.excellent.title',
+    subtitleKey: 'sleep.entry.quality.excellent.subtitle',
     icon: 'emoticon-excited-outline',
     color: COLORS.journalMoodExcellent,
   },
   {
     value: 4,
-    title: 'Tốt',
-    subtitle: '6-7 TIẾNG',
+    titleKey: 'sleep.entry.quality.good.title',
+    subtitleKey: 'sleep.entry.quality.good.subtitle',
     icon: 'emoticon-happy-outline',
     color: COLORS.journalMoodNeutral,
   },
   {
     value: 3,
-    title: 'Bình thường',
-    subtitle: '5 TIẾNG',
+    titleKey: 'sleep.entry.quality.neutral.title',
+    subtitleKey: 'sleep.entry.quality.neutral.subtitle',
     icon: 'emoticon-neutral-outline',
     color: COLORS.textSecondary,
   },
   {
     value: 2,
-    title: 'Tệ',
-    subtitle: '3-4 TIẾNG',
+    titleKey: 'sleep.entry.quality.bad.title',
+    subtitleKey: 'sleep.entry.quality.bad.subtitle',
     icon: 'emoticon-sad-outline',
     color: COLORS.journalMoodBad,
   },
   {
     value: 1,
-    title: 'Rất tệ',
-    subtitle: '<3 TIẾNG',
+    titleKey: 'sleep.entry.quality.terrible.title',
+    subtitleKey: 'sleep.entry.quality.terrible.subtitle',
     icon: 'emoticon-cry-outline',
     color: COLORS.journalMoodActive,
   },
@@ -75,8 +90,12 @@ const getDefaultWakeTime = (): Date => {
   return defaultDate;
 };
 
-const formatHourMinute = (date: Date): string => {
-  return date.toLocaleTimeString('vi-VN', {
+const getTimeLocale = (language: string): string => {
+  return language.startsWith('vi') ? 'vi-VN' : 'en-US';
+};
+
+const formatHourMinute = (date: Date, locale: string): string => {
+  return date.toLocaleTimeString(locale, {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
@@ -85,7 +104,8 @@ const formatHourMinute = (date: Date): string => {
 
 const SleepEntryScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const timeLocale = getTimeLocale(i18n.resolvedLanguage ?? i18n.language);
 
   const [bedTime, setBedTime] = useState<Date>(getDefaultBedTime);
   const [wakeTime, setWakeTime] = useState<Date>(getDefaultWakeTime);
@@ -147,7 +167,10 @@ const SleepEntryScreen: React.FC = () => {
 
     try {
       await sleepApi.createSleepLog(payload);
-      Alert.alert(t('sleep.entry.successTitle'), t('sleep.entry.successMessage'));
+      Alert.alert(
+        t('sleep.entry.successTitle'),
+        t('sleep.entry.successMessage'),
+      );
       navigation.goBack();
     } catch {
       Alert.alert(t('sleep.entry.errorTitle'), t('sleep.entry.errorMessage'));
@@ -160,34 +183,62 @@ const SleepEntryScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <View style={styles.screen}>
           <ScrollView
             contentContainerStyle={styles.contentContainer}
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.headerRow}>
               <Pressable style={styles.backButton} onPress={navigation.goBack}>
-                <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
+                <Feather
+                  name="arrow-left"
+                  size={20}
+                  color={COLORS.textPrimary}
+                />
               </Pressable>
-              <AppText style={styles.headerLabel}>Chất lượng giấc ngủ</AppText>
+              <AppText style={styles.headerLabel}>
+                {t('sleep.entry.headerTitle')}
+              </AppText>
             </View>
 
-            <AppText style={styles.title}>Hôm qua bạn ngủ ngon chứ?</AppText>
+            <AppText style={styles.title}>
+              {t('sleep.entry.mainQuestion')}
+            </AppText>
 
             <View style={styles.timeRow}>
-              <Pressable style={styles.timeCard} onPress={() => openPicker('bedTime')}>
-                <AppText style={styles.timeLabel}>Giờ đi ngủ</AppText>
+              <Pressable
+                style={styles.timeCard}
+                onPress={() => openPicker('bedTime')}
+              >
+                <AppText style={styles.timeLabel}>
+                  {t('sleep.entry.bedTimeLabel')}
+                </AppText>
                 <View style={styles.timeValueRow}>
-                  <AppText style={styles.timeValue}>{formatHourMinute(bedTime)}</AppText>
-                  <Feather name="clock" size={18} color={COLORS.textSecondary} />
+                  <AppText style={styles.timeValue}>
+                    {formatHourMinute(bedTime, timeLocale)}
+                  </AppText>
+                  <Feather
+                    name="clock"
+                    size={18}
+                    color={COLORS.textSecondary}
+                  />
                 </View>
               </Pressable>
 
-              <Pressable style={styles.timeCard} onPress={() => openPicker('wakeTime')}>
-                <AppText style={styles.timeLabel}>Giờ thức dậy</AppText>
+              <Pressable
+                style={styles.timeCard}
+                onPress={() => openPicker('wakeTime')}
+              >
+                <AppText style={styles.timeLabel}>
+                  {t('sleep.entry.wakeTimeLabel')}
+                </AppText>
                 <View style={styles.timeValueRow}>
-                  <AppText style={styles.timeValue}>{formatHourMinute(wakeTime)}</AppText>
+                  <AppText style={styles.timeValue}>
+                    {formatHourMinute(wakeTime, timeLocale)}
+                  </AppText>
                   <Feather name="sun" size={18} color={COLORS.textSecondary} />
                 </View>
               </Pressable>
@@ -200,19 +251,30 @@ const SleepEntryScreen: React.FC = () => {
                 return (
                   <TouchableOpacity
                     key={option.value}
-                    style={[styles.qualityRow, isSelected && styles.qualityRowSelected]}
+                    style={[
+                      styles.qualityRow,
+                      isSelected && styles.qualityRowSelected,
+                    ]}
                     onPress={() => setSleepQuality(option.value)}
-                    activeOpacity={0.85}>
+                    activeOpacity={0.85}
+                  >
                     <View style={styles.qualityTextBlock}>
-                      <AppText style={styles.qualityTitle}>{option.title}</AppText>
-                      <AppText style={styles.qualitySubtitle}>{option.subtitle}</AppText>
+                      <AppText style={styles.qualityTitle}>
+                        {t(option.titleKey)}
+                      </AppText>
+                      <AppText style={styles.qualitySubtitle}>
+                        {t(option.subtitleKey)}
+                      </AppText>
                     </View>
 
                     <View style={styles.timelineHolder}>
                       <View style={styles.timelineTrack}>
                         {isSelected ? (
                           <View
-                            style={[styles.timelineKnob, { backgroundColor: option.color }]}
+                            style={[
+                              styles.timelineKnob,
+                              { backgroundColor: option.color },
+                            ]}
                           />
                         ) : null}
                       </View>
@@ -231,11 +293,13 @@ const SleepEntryScreen: React.FC = () => {
             </View>
 
             <View>
-              <AppText style={styles.sectionTitle}>Ghi chú thêm</AppText>
+              <AppText style={styles.sectionTitle}>
+                {t('sleep.entry.noteLabel')}
+              </AppText>
               <View style={styles.noteCard}>
                 <TextInput
                   style={[styles.noteInput, { fontFamily: FONTS.regular }]}
-                  placeholder="Mô tả nhanh cảm giác khi thức dậy..."
+                  placeholder={t('sleep.entry.notePlaceholder')}
                   placeholderTextColor={COLORS.placeholder}
                   multiline
                   value={note}
@@ -248,15 +312,25 @@ const SleepEntryScreen: React.FC = () => {
 
           <View style={styles.footer}>
             <Pressable
-              style={[styles.submitButton, !canSubmit && styles.submitButtonDisabled]}
+              style={[
+                styles.submitButton,
+                !canSubmit && styles.submitButtonDisabled,
+              ]}
               onPress={handleSubmit}
-              disabled={!canSubmit}>
+              disabled={!canSubmit}
+            >
               {isSubmitting ? (
                 <ActivityIndicator color={COLORS.buttonPrimaryText} />
               ) : (
                 <View style={styles.submitContent}>
-                  <AppText style={styles.submitText}>Cập nhật giấc ngủ</AppText>
-                  <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
+                  <AppText style={styles.submitText}>
+                    {t('sleep.entry.submitButton')}
+                  </AppText>
+                  <Feather
+                    name="check"
+                    size={20}
+                    color={COLORS.buttonPrimaryText}
+                  />
                 </View>
               )}
             </Pressable>
@@ -274,11 +348,16 @@ const SleepEntryScreen: React.FC = () => {
 
           {pickerTarget && Platform.OS === 'ios' ? (
             <>
-              <Pressable style={styles.iosPickerBackdrop} onPress={closePicker} />
+              <Pressable
+                style={styles.iosPickerBackdrop}
+                onPress={closePicker}
+              />
               <View style={styles.iosPickerCard}>
                 <View style={styles.iosPickerHeader}>
                   <Pressable onPress={closePicker}>
-                    <AppText style={styles.iosPickerDone}>Xong</AppText>
+                    <AppText style={styles.iosPickerDone}>
+                      {t('sleep.entry.iosDone')}
+                    </AppText>
                   </Pressable>
                 </View>
                 <DateTimePicker

@@ -109,10 +109,6 @@ const DiaryDashboardScreen: React.FC = () => {
             <AppText style={styles.headerTitle}>{t('dashboard.headerTitle')}</AppText>
             <AppText style={styles.headerSubtitle}>{t('dashboard.headerSubtitle')}</AppText>
           </View>
-
-          <Pressable style={styles.settingsButton} onPress={() => {}}>
-            <Feather name="settings" size={22} color={COLORS.white} />
-          </Pressable>
         </View>
 
         <View style={styles.chartSection}>

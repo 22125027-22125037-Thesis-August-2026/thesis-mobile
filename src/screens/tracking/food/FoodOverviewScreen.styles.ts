@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
   },
   statusLabel: {
     color: COLORS.textPrimary,
-    fontSize: 44,
+    fontSize: 36,
     lineHeight: 50,
     fontWeight: '800',
   },
@@ -75,7 +75,7 @@ export const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: SPACING.screenHorizontal,
-    top: 196,
+    top: 220,
     width: 58,
     height: 58,
     borderRadius: BORDER_RADIUS.full,
@@ -134,13 +134,32 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.borderSubtle,
   },
   chartArea: {
-    height: 200,
-    justifyContent: 'flex-end',
+    minHeight: 320,
+  },
+  chartInner: {
+    flexDirection: 'row',
+    minHeight: 200,
+  },
+  yAxis: {
+    width: 10,
+    justifyContent: 'space-between',
+    paddingVertical: SPACING.xs,
+    marginRight: SPACING.xs,
+  },
+  yAxisLabel: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
+    textAlign: 'right',
+  },
+  plotArea: {
+    flex: 1,
+    height: 250,
   },
   gridOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'space-between',
-    paddingVertical: SPACING.xs,
+    paddingVertical: SPACING.md,
   },
   gridLine: {
     borderTopWidth: SPACING.borderWidth,
@@ -151,15 +170,16 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     height: '100%',
+    columnGap: SPACING.xs,
   },
   column: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    rowGap: SPACING.xs,
+    rowGap: SPACING.xxs,
   },
   bar: {
-    width: 26,
+    width: 24,
     borderTopLeftRadius: BORDER_RADIUS.md,
     borderTopRightRadius: BORDER_RADIUS.md,
     alignItems: 'center',
@@ -180,5 +200,27 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.sm,
     color: COLORS.textSecondary,
     fontSize: FONT_SIZES.sm,
+  },
+  legendWrap: {
+    marginTop: SPACING.md,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: SPACING.xs,
+    columnGap: SPACING.md,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: SPACING.xs,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: BORDER_RADIUS.full,
+  },
+  legendText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
   },
 });
