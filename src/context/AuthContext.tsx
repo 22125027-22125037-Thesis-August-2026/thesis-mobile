@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useRef } from 're
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18next from 'i18next';
+import axios from 'axios';
 import { axiosClient, setLogoutHandler } from '@/api';
 import { AuthResponse, RegisterPayload, User, UserRole } from '@/types';
 
@@ -105,7 +106,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await axiosClient.post(`${AUTH_BASE_PATH}/register`, payload);
     } catch (error) {
-      console.log('Register error:', error);
+      if (axios.isAxiosError(error)) {
+        console.log('Register error details:', {
+          status: error.response?.status,
+          method: error.config?.method?.toUpperCase(),
+          url: `${error.config?.baseURL || ''}${error.config?.url || ''}`,
+          requestData: error.config?.data,
+          responseData: error.response?.data,
+        });
+      } else {
+        console.log('Register error:', error);
+      }
       throw error;
     } finally {
       setIsLoading(false);
