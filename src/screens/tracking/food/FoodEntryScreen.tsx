@@ -1,16 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { AppText } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -18,7 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useTranslation } from 'react-i18next';
 
 import { foodApi } from '@/api';
-import { COLORS } from '@/theme';
+import { COLORS, FONTS } from '@/theme';
 import { FoodLogRequest } from '@/types';
 import { styles } from '@/screens/tracking/food/FoodEntryScreen.styles';
 
@@ -144,10 +134,10 @@ const FoodEntryScreen: React.FC = () => {
               <Pressable style={styles.backButton} onPress={navigation.goBack}>
                 <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
               </Pressable>
-              <Text style={styles.headerLabel}>Nhật ký dinh dưỡng</Text>
+              <AppText style={styles.headerLabel}>Nhật ký dinh dưỡng</AppText>
             </View>
 
-            <Text style={styles.title}>Hôm nay bạn ăn uống tốt chứ?</Text>
+            <AppText style={styles.title}>Hôm nay bạn ăn uống tốt chứ?</AppText>
 
             <View style={styles.mealTypesSection}>
               <ScrollView
@@ -166,13 +156,13 @@ const FoodEntryScreen: React.FC = () => {
                       ]}
                       onPress={() => setMealType(meal.value)}
                       activeOpacity={0.85}>
-                      <Text
+                      <AppText
                         style={[
                           styles.mealTypeText,
                           isSelected && styles.mealTypeTextSelected,
                         ]}>
                         {meal.label}
-                      </Text>
+                      </AppText>
                     </TouchableOpacity>
                   );
                 })}
@@ -190,8 +180,8 @@ const FoodEntryScreen: React.FC = () => {
                     onPress={() => setSatietyLevel(option.value)}
                     activeOpacity={0.85}>
                     <View style={styles.satietyTextBlock}>
-                      <Text style={styles.satietyTitle}>{option.title}</Text>
-                      <Text style={styles.satietySubtitle}>{option.subtitle}</Text>
+                      <AppText style={styles.satietyTitle}>{option.title}</AppText>
+                      <AppText style={styles.satietySubtitle}>{option.subtitle}</AppText>
                     </View>
 
                     <View style={styles.timelineHolder}>
@@ -217,12 +207,12 @@ const FoodEntryScreen: React.FC = () => {
             </View>
 
             <View>
-              <Text style={styles.sectionTitle}>
+              <AppText style={styles.sectionTitle}>
                 Bạn có thể mô tả thêm ở đây nhé...
-              </Text>
+              </AppText>
               <View style={styles.descriptionCard}>
                 <TextInput
-                  style={styles.descriptionInput}
+                  style={[styles.descriptionInput, { fontFamily: FONTS.regular }]}
                   placeholder="Mô tả chi tiết bữa ăn của bạn..."
                   placeholderTextColor={COLORS.placeholder}
                   multiline
@@ -246,9 +236,9 @@ const FoodEntryScreen: React.FC = () => {
                       />
                     </Pressable>
                   </View>
-                  <Text style={styles.characterCounter}>
+                  <AppText style={styles.characterCounter}>
                     {foodDescription.length}/{MAX_DESCRIPTION_LENGTH}
-                  </Text>
+                  </AppText>
                 </View>
               </View>
             </View>
@@ -264,7 +254,7 @@ const FoodEntryScreen: React.FC = () => {
               <ActivityIndicator size="small" color={COLORS.buttonPrimaryText} />
             ) : (
               <View style={styles.submitContent}>
-                <Text style={styles.submitText}>Cập nhật dinh dưỡng</Text>
+                <AppText style={styles.submitText}>Cập nhật dinh dưỡng</AppText>
                 <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
               </View>
             )}

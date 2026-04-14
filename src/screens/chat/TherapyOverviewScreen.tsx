@@ -3,17 +3,12 @@
 import React, { useCallback, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  View,
-  Text,
-  FlatList,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+  View, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { aiApi } from '@/api';
-import { TherapySessionCard } from '@/components';
+import { TherapySessionCard, AppText } from '@/components';
 import { EMPTY_CHAT_TEXT } from '@/constants';
 import { COLORS } from '@/theme';
 import { TrackingStackParamList } from '@/navigation';
@@ -74,7 +69,7 @@ const TherapyOverviewScreen: React.FC = () => {
           <Pressable style={styles.backButton} onPress={handleGoBack}>
             <Feather name="chevron-left" size={24} color={COLORS.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Bạn Tâm Giao</Text>
+          <AppText style={styles.headerTitle}>Bạn Tâm Giao</AppText>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -83,25 +78,25 @@ const TherapyOverviewScreen: React.FC = () => {
           <View style={styles.heroCard}>
             {/* Nếu có file ảnh thật, dùng <Image source={require('...')} /> thay cho Icon này */}
             <MaterialCommunityIcons name="robot-outline" size={80} color={COLORS.primary} style={styles.heroIcon} />
-            <Text style={styles.heroTitle}>Trò chuyện cùng AI</Text>
-            <Text style={styles.heroSubtitle}>Mình luôn ở đây để lắng nghe bạn</Text>
+            <AppText style={styles.heroTitle}>Trò chuyện cùng AI</AppText>
+            <AppText style={styles.heroSubtitle}>Mình luôn ở đây để lắng nghe bạn</AppText>
             
             <Pressable style={styles.primaryBtn} onPress={handleStartNewSession}>
-              <Text style={styles.primaryBtnText}>Bắt đầu tâm sự</Text>
+              <AppText style={styles.primaryBtnText}>Bắt đầu tâm sự</AppText>
             </Pressable>
           </View>
         </View>
 
         {/* ===== LỊCH SỬ TRÒ CHUYỆN ===== */}
         <View style={styles.historySection}>
-          <Text style={styles.sectionTitle}>Lịch sử trò chuyện</Text>
+          <AppText style={styles.sectionTitle}>Lịch sử trò chuyện</AppText>
           {isLoading ? (
             <View style={styles.centerStateContainer}>
               <ActivityIndicator size="large" color={COLORS.primary} />
             </View>
           ) : sessions.length === 0 ? (
             <View style={styles.centerStateContainer}>
-              <Text style={styles.emptyStateText}>{EMPTY_CHAT_TEXT}</Text>
+              <AppText style={styles.emptyStateText}>{EMPTY_CHAT_TEXT}</AppText>
             </View>
           ) : (
             <FlatList

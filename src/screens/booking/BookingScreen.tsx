@@ -1,11 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import {
-  FlatList,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, ScrollView, TouchableOpacity, View } from 'react-native';
+import { AppText } from '@/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Calendar, DateData } from 'react-native-calendars';
@@ -93,14 +88,14 @@ const BookingScreen: React.FC = () => {
         ]}
         onPress={() => setSelectedTime(item.label)}
       >
-        <Text
+        <AppText
           style={[
             styles.timeButtonText,
             isSelected ? styles.timeButtonTextSelected : styles.timeButtonTextUnselected,
           ]}
         >
           {item.label}
-        </Text>
+        </AppText>
       </TouchableOpacity>
     );
   };
@@ -115,7 +110,7 @@ const BookingScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={22} color={COLORS.white} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Đặt lịch hẹn</Text>
+        <AppText style={styles.headerTitle}>Đặt lịch hẹn</AppText>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -145,7 +140,7 @@ const BookingScreen: React.FC = () => {
         </View>
 
         <View style={styles.timeCard}>
-          <Text style={styles.sectionTitle}>Chọn giờ</Text>
+          <AppText style={styles.sectionTitle}>Chọn giờ</AppText>
           <FlatList
             data={TIME_SLOTS}
             numColumns={3}
@@ -167,14 +162,14 @@ const BookingScreen: React.FC = () => {
           onPress={handleConfirm}
           activeOpacity={0.8}
         >
-          <Text
+          <AppText
             style={[
               styles.confirmButtonText,
               canConfirm ? styles.confirmButtonTextActive : styles.confirmButtonTextDisabled,
             ]}
           >
             Xác nhận
-          </Text>
+          </AppText>
         </TouchableOpacity>
       </View>
     </View>

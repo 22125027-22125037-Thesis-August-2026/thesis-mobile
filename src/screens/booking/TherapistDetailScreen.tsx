@@ -1,15 +1,9 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { CustomButton } from '@/components';
+import { CustomButton, AppText } from '@/components';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/TherapistDetailScreen.styles';
 import { COLORS } from '@/theme';
@@ -91,7 +85,7 @@ const TherapistDetailScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={22} color={COLORS.white} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Thông tin chi tiết</Text>
+        <AppText style={styles.headerTitle}>Thông tin chi tiết</AppText>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -103,11 +97,11 @@ const TherapistDetailScreen: React.FC = () => {
             resizeMode="cover"
           />
           <View style={styles.therapistInfo}>
-            <Text style={styles.therapistName}>Dr. David Patel</Text>
-            <Text style={styles.therapistSpecialty}>Tâm lý học lâm sàng</Text>
+            <AppText style={styles.therapistName}>Dr. David Patel</AppText>
+            <AppText style={styles.therapistSpecialty}>Tâm lý học lâm sàng</AppText>
             <View style={styles.locationRow}>
               <Ionicons name="location-outline" size={16} color={COLORS.textSecondary} />
-              <Text style={styles.locationText}>TP. Ho Chi Minh</Text>
+              <AppText style={styles.locationText}>TP. Ho Chi Minh</AppText>
             </View>
           </View>
         </View>
@@ -118,35 +112,35 @@ const TherapistDetailScreen: React.FC = () => {
               <View style={styles.statIconWrap}>
                 <Ionicons name={stat.icon} size={18} color={COLORS.primary} />
               </View>
-              <Text style={styles.statValue}>{stat.value}</Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
+              <AppText style={styles.statValue}>{stat.value}</AppText>
+              <AppText style={styles.statLabel}>{stat.label}</AppText>
             </View>
           ))}
         </View>
 
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Giới thiệu bản thân</Text>
-          <Text style={styles.sectionBody}>
+          <AppText style={styles.sectionTitle}>Giới thiệu bản thân</AppText>
+          <AppText style={styles.sectionBody}>
             Tôi là chuyên gia tâm lý với hơn 10 năm kinh nghiệm trong lĩnh vực trị liệu
             lo âu, trầm cảm và quản lý stress. Mục tiêu của tôi là giúp bạn tìm lại
             sự cân bằng cảm xúc và nâng cao chất lượng cuộc sống.
-          </Text>
+          </AppText>
         </View>
 
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Giờ làm việc</Text>
+          <AppText style={styles.sectionTitle}>Giờ làm việc</AppText>
           <View style={styles.workingHourRow}>
             <Ionicons name="time-outline" size={18} color={COLORS.primary} />
-            <Text style={styles.workingHourText}>Thứ 2 - Thứ 6: 08:00 - 18:00</Text>
+            <AppText style={styles.workingHourText}>Thứ 2 - Thứ 6: 08:00 - 18:00</AppText>
           </View>
           <View style={styles.workingHourRow}>
             <Ionicons name="time-outline" size={18} color={COLORS.primary} />
-            <Text style={styles.workingHourText}>Thứ 7: 08:00 - 12:00</Text>
+            <AppText style={styles.workingHourText}>Thứ 7: 08:00 - 12:00</AppText>
           </View>
         </View>
 
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Đánh giá</Text>
+          <AppText style={styles.sectionTitle}>Đánh giá</AppText>
           {REVIEWS.map((review) => (
             <View key={review.id} style={styles.reviewItem}>
               <Image
@@ -156,10 +150,10 @@ const TherapistDetailScreen: React.FC = () => {
               />
               <View style={styles.reviewContent}>
                 <View style={styles.reviewHeaderRow}>
-                  <Text style={styles.reviewName}>{review.name}</Text>
+                  <AppText style={styles.reviewName}>{review.name}</AppText>
                   <View style={styles.starRow}>{renderStars(review.rating)}</View>
                 </View>
-                <Text style={styles.reviewComment}>{review.comment}</Text>
+                <AppText style={styles.reviewComment}>{review.comment}</AppText>
               </View>
             </View>
           ))}

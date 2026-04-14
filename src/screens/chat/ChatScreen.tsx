@@ -3,16 +3,8 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+  View, FlatList, TextInput, Pressable, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import { AppText } from '@/components';
 import { NavigationProp, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -25,7 +17,7 @@ import {
   INITIAL_CHAT_MESSAGE,
   LOADING_HISTORY_TEXT,
 } from '@/constants';
-import { COLORS, SPACING, BORDER_RADIUS } from '@/theme';
+import { COLORS, SPACING, BORDER_RADIUS, FONTS } from '@/theme';
 import { Message, BackendChatMessage } from '@/types';
 import { TrackingStackParamList } from '@/navigation';
 
@@ -187,14 +179,14 @@ const ChatScreen: React.FC = () => {
             styles.messageBubble,
             isUser ? styles.userBubble : styles.aiBubble,
           ]}>
-          <Text
+          <AppText
             style={[
               styles.messageText,
               isUser ? styles.userMessageText : styles.aiMessageText,
             ]}>
             {item.text}
-          </Text>
-          <Text
+          </AppText>
+          <AppText
             style={[
               styles.timestamp,
               isUser ? styles.userTimestamp : styles.aiTimestamp,
@@ -203,7 +195,7 @@ const ChatScreen: React.FC = () => {
               hour: '2-digit',
               minute: '2-digit',
             })}
-          </Text>
+          </AppText>
         </View>
 
         {isUser && <View style={styles.userAvatarPlaceholder} />}
@@ -262,10 +254,10 @@ const ChatScreen: React.FC = () => {
               />
             </View>
             <View style={styles.headerTextContainer}>
-              <Text style={styles.botName}>{BOT_NAME}</Text>
+              <AppText style={styles.botName}>{BOT_NAME}</AppText>
               <View style={styles.onlineIndicator}>
                 <View style={styles.onlineDot} />
-                <Text style={styles.onlineText}>{BOT_STATUS}</Text>
+                <AppText style={styles.onlineText}>{BOT_STATUS}</AppText>
               </View>
             </View>
           </View>
@@ -284,7 +276,7 @@ const ChatScreen: React.FC = () => {
           {isLoadingHistory ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={COLORS.primary} />
-              <Text style={styles.loadingText}>{LOADING_HISTORY_TEXT}</Text>
+              <AppText style={styles.loadingText}>{LOADING_HISTORY_TEXT}</AppText>
             </View>
           ) : (
             <FlatList
@@ -316,7 +308,7 @@ const ChatScreen: React.FC = () => {
           </Pressable>
 
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, { fontFamily: FONTS.regular }]}
             placeholder="Aa"
             placeholderTextColor={COLORS.placeholder}
             value={inputText}

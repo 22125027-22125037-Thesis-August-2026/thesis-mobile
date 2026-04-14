@@ -1,21 +1,13 @@
 // src/screens/booking/TherapistFilterScreen.tsx
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  Modal,
-} from 'react-native';
+import { View, ScrollView, Image, TouchableOpacity, ImageBackground, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '@/theme';
 import styles from '@/screens/booking/TherapistFilterScreen.styles';
 import { RootStackParamList } from '@/navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { CustomButton } from '@/components';
+import { CustomButton, AppText } from '@/components';
 
 const SPECIALTIES = [
   'Tâm lý học lâm sàng',
@@ -73,13 +65,13 @@ const TherapistFilterScreen: React.FC = () => {
           ? Array.isArray(selected) && selected.includes(item)
           : selected === item;
         return (
-          <Text
+          <AppText
             key={item}
             style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
             onPress={() => onPress(item)}
           >
             {item}
-          </Text>
+          </AppText>
         );
       })}
     </View>
@@ -88,7 +80,7 @@ const TherapistFilterScreen: React.FC = () => {
   const renderResetButton = (onPress: () => void) => (
     <TouchableOpacity style={styles.resetBtn} onPress={onPress} activeOpacity={0.7}>
       <Ionicons name="close-circle" size={16} color={COLORS.primary} />
-      <Text style={styles.resetBtnText}>Reset</Text>
+      <AppText style={styles.resetBtnText}>Reset</AppText>
     </TouchableOpacity>
   );
 
@@ -101,13 +93,13 @@ const TherapistFilterScreen: React.FC = () => {
             <Ionicons name="arrow-back" size={24} color={COLORS.white} />
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.7} onPress={() => setShowUpdateModal(true)}>
-            <Text style={styles.switchLink}>Tôi muốn đổi chuyên gia</Text>
+            <AppText style={styles.switchLink}>Tôi muốn đổi chuyên gia</AppText>
           </TouchableOpacity>
         </View>
-        <Text style={styles.brandText}>uMatter</Text>
-        <Text style={styles.subHeader}>
+        <AppText style={styles.brandText}>uMatter</AppText>
+        <AppText style={styles.subHeader}>
           Tùy chỉnh mong muốn về chuyên gia của bạn
-        </Text>
+        </AppText>
         <Image
           source={require('../../assets/booking/doctor.png')}
           style={styles.headerImage}
@@ -125,7 +117,7 @@ const TherapistFilterScreen: React.FC = () => {
           {/* Specialty Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Chuyên môn</Text>
+              <AppText style={styles.sectionTitle}>Chuyên môn</AppText>
               {renderResetButton(resetSpecialties)}
             </View>
             {renderChips(SPECIALTIES, selectedSpecialties, handleSpecialtyPress, true)}
@@ -134,7 +126,7 @@ const TherapistFilterScreen: React.FC = () => {
           {/* Years of Experience Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Số năm kinh nghiệm</Text>
+              <AppText style={styles.sectionTitle}>Số năm kinh nghiệm</AppText>
               {renderResetButton(resetYear)}
             </View>
             {renderChips(YEARS, selectedYear, handleYearPress)}
@@ -143,7 +135,7 @@ const TherapistFilterScreen: React.FC = () => {
           {/* Gender Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Giới tính</Text>
+              <AppText style={styles.sectionTitle}>Giới tính</AppText>
               {renderResetButton(resetGender)}
             </View>
             {renderChips(GENDERS, selectedGender, handleGenderPress)}
@@ -160,18 +152,18 @@ const TherapistFilterScreen: React.FC = () => {
       >
         <View style={styles.modalBackdrop}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalText}>
+            <AppText style={styles.modalText}>
               Bạn có muốn cập nhật thông tin mới của mình trong bảng câu hỏi ghép
               nối chuyên gia trị liệu không?
-            </Text>
+            </AppText>
             <TouchableOpacity
               style={styles.modalBtnOutline}
               onPress={() => setShowUpdateModal(false)}
               activeOpacity={0.7}
             >
-              <Text style={styles.modalBtnOutlineText}>
+              <AppText style={styles.modalBtnOutlineText}>
                 Không, thông tin trong đó vẫn đúng
-              </Text>
+              </AppText>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalBtnPrimary}
@@ -181,9 +173,9 @@ const TherapistFilterScreen: React.FC = () => {
               }}
               activeOpacity={0.7}
             >
-              <Text style={styles.modalBtnPrimaryText}>
+              <AppText style={styles.modalBtnPrimaryText}>
                 Có, tôi muốn thay đổi 1 vài thông tin
-              </Text>
+              </AppText>
             </TouchableOpacity>
           </View>
         </View>

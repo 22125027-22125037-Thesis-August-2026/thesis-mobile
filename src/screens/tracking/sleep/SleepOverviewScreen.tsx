@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { AppText } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -155,15 +148,15 @@ const SleepOverviewScreen: React.FC = () => {
                 <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
                   <Feather name="chevron-left" size={22} color={COLORS.white} />
                 </Pressable>
-                <Text style={styles.headerTitle}>Chất lượng giấc mơ</Text>
+                <AppText style={styles.headerTitle}>Chất lượng giấc mơ</AppText>
               </View>
 
-              <Text style={styles.averageValue}>{formatAverageDuration(averageDurationMinutes)}</Text>
-              <Text style={styles.averageSubtitle}>trung bình trong tuần</Text>
+              <AppText style={styles.averageValue}>{formatAverageDuration(averageDurationMinutes)}</AppText>
+              <AppText style={styles.averageSubtitle}>trung bình trong tuần</AppText>
             </View>
 
             <View style={styles.body}>
-              <Text style={styles.sectionTitle}>Thống kê giấc ngủ</Text>
+              <AppText style={styles.sectionTitle}>Thống kê giấc ngủ</AppText>
 
               <View style={styles.weekNavigatorRow}>
                 <Pressable
@@ -173,7 +166,7 @@ const SleepOverviewScreen: React.FC = () => {
                   }>
                   <Feather name="chevron-left" size={18} color={COLORS.textPrimary} />
                 </Pressable>
-                <Text style={styles.weekRangeLabel}>{weekRangeLabel}</Text>
+                <AppText style={styles.weekRangeLabel}>{weekRangeLabel}</AppText>
                 <Pressable
                   style={styles.weekNavButton}
                   onPress={() =>
@@ -187,7 +180,7 @@ const SleepOverviewScreen: React.FC = () => {
                 {isLoading ? (
                   <View style={styles.loadingWrap}>
                     <ActivityIndicator color={COLORS.primary} />
-                    <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+                    <AppText style={styles.loadingText}>Đang tải dữ liệu...</AppText>
                   </View>
                 ) : (
                   <View style={styles.chartArea}>
@@ -224,7 +217,7 @@ const SleepOverviewScreen: React.FC = () => {
                                 />
                               ) : null}
                             </View>
-                            <Text style={styles.dayLabel}>{day.label}</Text>
+                            <AppText style={styles.dayLabel}>{day.label}</AppText>
                           </View>
                         );
                       })}

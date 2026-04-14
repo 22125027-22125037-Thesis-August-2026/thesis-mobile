@@ -1,12 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View } from 'react-native';
+import { AppText } from '@/components';
 import { NavigationContext, NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
@@ -211,7 +205,7 @@ const DiaryOverviewScreen: React.FC = () => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingWrap}>
           <ActivityIndicator size="large" color={COLORS.buttonPrimary} />
-          <Text style={styles.loadingText}>{t('overview.loading')}</Text>
+          <AppText style={styles.loadingText}>{t('overview.loading')}</AppText>
         </View>
       </SafeAreaView>
     );
@@ -235,12 +229,12 @@ const DiaryOverviewScreen: React.FC = () => {
                   disabled={!navigation}>
                   <Feather name="chevron-left" size={24} color={COLORS.white} />
                 </Pressable>
-                <Text style={styles.headerTitle}>{t('overview.headerTitle')}</Text>
+                <AppText style={styles.headerTitle}>{t('overview.headerTitle')}</AppText>
               </View>
 
               <View style={styles.centerWrap}>
-                <Text style={styles.scoreText}>{yearlyCountText}</Text>
-                <Text style={styles.subtitle}>{t('overview.subtitleLine1')}{`\n`}{t('overview.subtitleLine2')}</Text>
+                <AppText style={styles.scoreText}>{yearlyCountText}</AppText>
+                <AppText style={styles.subtitle}>{t('overview.subtitleLine1')}{`\n`}{t('overview.subtitleLine2')}</AppText>
               </View>
             </View>
           </View>
@@ -265,7 +259,7 @@ const DiaryOverviewScreen: React.FC = () => {
 
         <View style={styles.contentWrap}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('overview.sectionTitle')}</Text>
+            <AppText style={styles.sectionTitle}>{t('overview.sectionTitle')}</AppText>
             <Pressable onPress={() => navigation?.navigate('DiaryDashboard')}>
               <Ionicons
                 name="ellipsis-vertical"
@@ -282,7 +276,7 @@ const DiaryOverviewScreen: React.FC = () => {
               <Feather name="chevron-left" size={18} color={COLORS.textPrimary} />
             </Pressable>
 
-            <Text style={styles.monthTitle}>{monthTitleText}</Text>
+            <AppText style={styles.monthTitle}>{monthTitleText}</AppText>
 
             <Pressable
               style={styles.monthNavButton}
@@ -293,9 +287,9 @@ const DiaryOverviewScreen: React.FC = () => {
 
           <View style={styles.weekdayRow}>
             {WEEKDAY_KEYS.map(weekdayKey => (
-              <Text key={weekdayKey} style={styles.weekdayText}>
+              <AppText key={weekdayKey} style={styles.weekdayText}>
                 {t(weekdayKey)}
-              </Text>
+              </AppText>
             ))}
           </View>
 
@@ -314,14 +308,14 @@ const DiaryOverviewScreen: React.FC = () => {
                       borderColor: dotColor.borderColor,
                     },
                   ]}>
-                  <Text
+                  <AppText
                     style={[
                       styles.dayText,
                       !cell.isCurrentMonth && styles.dayTextInactive,
                       cell.mood !== 'empty' && styles.dayTextFilled,
                     ]}>
                     {cell.dayLabel}
-                  </Text>
+                  </AppText>
                 </View>
               );
             })}

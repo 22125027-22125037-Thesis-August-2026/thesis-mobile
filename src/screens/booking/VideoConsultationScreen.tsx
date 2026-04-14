@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import { AppText } from '@/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -155,26 +156,26 @@ const VideoConsultationScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>{t('booking.videoConsultation.readyTitle')}</Text>
+        <AppText style={styles.title}>{t('booking.videoConsultation.readyTitle')}</AppText>
 
         {isInitializing ? (
           <View style={styles.loadingWrapper}>
             <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>{t('booking.videoConsultation.initializingText')}</Text>
+            <AppText style={styles.loadingText}>{t('booking.videoConsultation.initializingText')}</AppText>
           </View>
         ) : isZoomInitialized ? (
           <View style={styles.loadingWrapper}>
             <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleJoinMeeting}>
-              <Text style={styles.primaryButtonText}>{t('booking.videoConsultation.joinButton')}</Text>
+              <AppText style={styles.primaryButtonText}>{t('booking.videoConsultation.joinButton')}</AppText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.endMeetingButton} activeOpacity={0.85} onPress={handleEndMeeting}>
-              <Text style={styles.primaryButtonText}>{t('booking.videoConsultation.endButton')}</Text>
+              <AppText style={styles.primaryButtonText}>{t('booking.videoConsultation.endButton')}</AppText>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.loadingWrapper}>
-            <Text style={styles.errorText}>{initializationError ?? t('booking.videoConsultation.defaultError')}</Text>
+            <AppText style={styles.errorText}>{initializationError ?? t('booking.videoConsultation.defaultError')}</AppText>
           </View>
         )}
       </View>

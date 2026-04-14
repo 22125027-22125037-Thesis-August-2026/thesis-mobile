@@ -1,13 +1,13 @@
 // src/screens/booking/TherapistListScreen.tsx
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation'; // Import your map
 import Ionicons from 'react-native-vector-icons/Ionicons'; // BEGIN: Fix for Ionicons import
 import { getTherapists, Therapist } from '@/api';
-import { CustomButton, CustomInput } from '@/components';
+import { CustomButton, CustomInput, AppText } from '@/components';
 import styles from '@/screens/booking/TherapistListScreen.styles';
 
 const TherapistListScreen = () => {
@@ -40,11 +40,11 @@ const TherapistListScreen = () => {
     <View style={styles.card}>
       <Image source={{ uri: item.imageUrl }} style={styles.image} />
       <View style={styles.info}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.specialty}>{item.specialty}</Text>
+        <AppText style={styles.name}>{item.name}</AppText>
+        <AppText style={styles.specialty}>{item.specialty}</AppText>
         <View style={styles.ratingRow}>
           <Ionicons name="star" size={16} color="#FFD700" />
-          <Text style={styles.rating}>{item.rating.toFixed(1)}</Text>
+          <AppText style={styles.rating}>{item.rating.toFixed(1)}</AppText>
         </View>
         <CustomButton
           title="Book Now"
@@ -61,7 +61,7 @@ const TherapistListScreen = () => {
       <View style={styles.header}>
         <View style={styles.circleLarge} />
         <View style={styles.circleSmall} />
-        <Text style={styles.headerTitle}>Find a Therapist</Text>
+        <AppText style={styles.headerTitle}>Find a Therapist</AppText>
       </View>
       <View style={styles.searchBar}>
         <CustomInput

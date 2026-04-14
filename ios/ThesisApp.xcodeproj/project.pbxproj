@@ -11,6 +11,11 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		854D6918DF3A44AAA1C1C7BA /* SVN-Gilroy-Bold-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0FF25BAFE292487297225B17 /* SVN-Gilroy-Bold-Italic.otf */; };
+		DA4629309CC14C108C452AFF /* SVN-Gilroy-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84CD821AD57B4640AFA018B0 /* SVN-Gilroy-Bold.otf */; };
+		2C44BFB4B78D4B22AF66591D /* SVN-Gilroy-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CB2D0072F2E408FA100E3EF /* SVN-Gilroy-Italic.otf */; };
+		AA5999ACCCA441C099DF1854 /* SVN-Gilroy-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 55E5240F4EA04437900FCDE0 /* SVN-Gilroy-Medium.otf */; };
+		9FF3F0D3E433460696C8C85F /* SVN-Gilroy-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 830ECC657453457CB62E0346 /* SVN-Gilroy-Regular.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +29,11 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ThesisApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ThesisApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		0FF25BAFE292487297225B17 /* SVN-Gilroy-Bold-Italic.otf */ = {isa = PBXFileReference; name = "SVN-Gilroy-Bold-Italic.otf"; path = "../src/assets/fonts/SVN-Gilroy-Bold-Italic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		84CD821AD57B4640AFA018B0 /* SVN-Gilroy-Bold.otf */ = {isa = PBXFileReference; name = "SVN-Gilroy-Bold.otf"; path = "../src/assets/fonts/SVN-Gilroy-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9CB2D0072F2E408FA100E3EF /* SVN-Gilroy-Italic.otf */ = {isa = PBXFileReference; name = "SVN-Gilroy-Italic.otf"; path = "../src/assets/fonts/SVN-Gilroy-Italic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		55E5240F4EA04437900FCDE0 /* SVN-Gilroy-Medium.otf */ = {isa = PBXFileReference; name = "SVN-Gilroy-Medium.otf"; path = "../src/assets/fonts/SVN-Gilroy-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		830ECC657453457CB62E0346 /* SVN-Gilroy-Regular.otf */ = {isa = PBXFileReference; name = "SVN-Gilroy-Regular.otf"; path = "../src/assets/fonts/SVN-Gilroy-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +84,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				03A737E3DC554FCAB009A9B7 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -96,6 +107,19 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		03A737E3DC554FCAB009A9B7 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				0FF25BAFE292487297225B17 /* SVN-Gilroy-Bold-Italic.otf */,
+				84CD821AD57B4640AFA018B0 /* SVN-Gilroy-Bold.otf */,
+				9CB2D0072F2E408FA100E3EF /* SVN-Gilroy-Italic.otf */,
+				55E5240F4EA04437900FCDE0 /* SVN-Gilroy-Medium.otf */,
+				830ECC657453457CB62E0346 /* SVN-Gilroy-Regular.otf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -159,6 +183,11 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				854D6918DF3A44AAA1C1C7BA /* SVN-Gilroy-Bold-Italic.otf in Resources */,
+				DA4629309CC14C108C452AFF /* SVN-Gilroy-Bold.otf in Resources */,
+				2C44BFB4B78D4B22AF66591D /* SVN-Gilroy-Italic.otf in Resources */,
+				AA5999ACCCA441C099DF1854 /* SVN-Gilroy-Medium.otf in Resources */,
+				9FF3F0D3E433460696C8C85F /* SVN-Gilroy-Regular.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

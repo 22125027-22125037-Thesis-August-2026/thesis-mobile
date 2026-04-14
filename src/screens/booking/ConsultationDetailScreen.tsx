@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { AppText } from '@/components';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '@/theme';
+import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/ConsultationDetailScreen.styles';
 
@@ -56,25 +49,25 @@ const ConsultationDetailScreen: React.FC = () => {
               <View style={styles.avatarPlaceholder}>
                 <Ionicons name="person-outline" size={18} color={COLORS.textSecondary} />
               </View>
-              <Text style={styles.headerTitle}>Tham vấn chuyên gia</Text>
+              <AppText style={styles.headerTitle}>Tham vấn chuyên gia</AppText>
             </View>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Bạn mong muốn gì sau buổi tham vấn</Text>
+            <AppText style={styles.sectionLabel}>Bạn mong muốn gì sau buổi tham vấn</AppText>
             <TextInput
-              style={styles.textArea}
+              style={[styles.textArea, { fontFamily: FONTS.regular }]}
               placeholder="Miêu tả tình trạng, triệu chứng, mong muốn hiện tại của bạn"
               placeholderTextColor={COLORS.placeholder}
               multiline
               value={description}
               onChangeText={setDescription}
             />
-            <Text style={styles.metaText}>{`Lịch hẹn đã chọn: ${selectedDate} - ${selectedTime}`}</Text>
+            <AppText style={styles.metaText}>{`Lịch hẹn đã chọn: ${selectedDate} - ${selectedTime}`}</AppText>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.methodTitle}>Bạn muốn giao tiếp với chuyên gia như thế nào</Text>
+            <AppText style={styles.methodTitle}>Bạn muốn giao tiếp với chuyên gia như thế nào</AppText>
             <View style={styles.methodRow}>
               <TouchableOpacity
                 style={[
@@ -89,7 +82,7 @@ const ConsultationDetailScreen: React.FC = () => {
                   size={18}
                   color={selectedMethod === 'Video' ? COLORS.text : COLORS.textSecondary}
                 />
-                <Text
+                <AppText
                   style={[
                     styles.methodButtonText,
                     selectedMethod === 'Video'
@@ -98,7 +91,7 @@ const ConsultationDetailScreen: React.FC = () => {
                   ]}
                 >
                   Video
-                </Text>
+                </AppText>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -114,7 +107,7 @@ const ConsultationDetailScreen: React.FC = () => {
                   size={18}
                   color={selectedMethod === 'Chat' ? COLORS.text : COLORS.textSecondary}
                 />
-                <Text
+                <AppText
                   style={[
                     styles.methodButtonText,
                     selectedMethod === 'Chat'
@@ -123,7 +116,7 @@ const ConsultationDetailScreen: React.FC = () => {
                   ]}
                 >
                   Chat
-                </Text>
+                </AppText>
               </TouchableOpacity>
             </View>
           </View>
@@ -132,7 +125,7 @@ const ConsultationDetailScreen: React.FC = () => {
 
       <View style={styles.footer}>
         <TouchableOpacity style={styles.nextButton} activeOpacity={0.85} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>Tiếp</Text>
+          <AppText style={styles.nextButtonText}>Tiếp</AppText>
         </TouchableOpacity>
       </View>
     </View>

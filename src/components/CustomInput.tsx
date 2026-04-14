@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '@/theme';
+import { COLORS, FONTS } from '@/theme';
+import AppText from './AppText';
 
 interface Props {
   label?: string; // Cho phép không truyền label
@@ -28,10 +29,10 @@ const CustomInput = ({
 }: Props) => {
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <AppText style={styles.label} weight="semiBold">{label}</AppText>}
       <View style={[
         styles.inputWrapper, 
-        error && { borderColor: COLORS.errorBorder, borderWidth: 1.5 } // Đổi màu viền nếu lỗi
+        error && { borderColor: COLORS.errorBorder, borderWidth: 1.5 } 
       ]}>
         <Ionicons 
           name={iconName} 
@@ -40,7 +41,7 @@ const CustomInput = ({
           style={styles.icon} 
         />
         <TextInput
-          style={styles.input}
+          style={[styles.input, { fontFamily: FONTS.regular }]}
           placeholder={placeholder}
           placeholderTextColor="#999"
           value={value}
@@ -66,7 +67,6 @@ const styles = StyleSheet.create({
   container: { marginBottom: 16 },
   label: {
     fontSize: 14,
-    fontWeight: '600',
     color: COLORS.text,
     marginBottom: 8,
   },

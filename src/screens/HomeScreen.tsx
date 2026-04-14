@@ -1,14 +1,8 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  RefreshControl,
-  ScrollView,
-  View,
-  Text,
-  Image,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+  RefreshControl, ScrollView, View, Image, Pressable, StyleSheet } from 'react-native';
+import { AppText } from '@/components';
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -119,7 +113,7 @@ const HomeScreen: React.FC = () => {
                 size={16}
                 color={COLORS.textSecondary}
               />
-              <Text style={styles.dateText}>{dateString}</Text>
+              <AppText style={styles.dateText}>{dateString}</AppText>
             </View>
             <Pressable style={styles.notificationButton}>
               <Feather name="bell" size={20} color={COLORS.textPrimary} />
@@ -135,10 +129,10 @@ const HomeScreen: React.FC = () => {
               defaultSource={require('../assets/booking/placeholder.png')}
             />
             <View style={styles.profileInfo}>
-              <Text style={styles.greetingText}>Hi, {userName.split(' ').pop()}!</Text>
+              <AppText style={styles.greetingText}>Hi, {userName.split(' ').pop()}!</AppText>
               <View style={styles.badgeContainer}>
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>Thành viên</Text>
+                  <AppText style={styles.badgeText}>Thành viên</AppText>
                 </View>
                 <View style={styles.badge}>
                   <MaterialCommunityIcons
@@ -146,7 +140,7 @@ const HomeScreen: React.FC = () => {
                     size={12}
                     color={COLORS.accentPositive}
                   />
-                  <Text style={styles.badgeText}>Tích cực</Text>
+                  <AppText style={styles.badgeText}>Tích cực</AppText>
                 </View>
               </View>
             </View>
@@ -156,7 +150,7 @@ const HomeScreen: React.FC = () => {
         {/* ===== HEALTH STATS CAROUSEL ===== */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Thống kê sức khỏe cảm xúc</Text>
+            <AppText style={styles.sectionTitle}>Thống kê sức khỏe cảm xúc</AppText>
             <Pressable>
               <Feather name="more-vertical" size={20} color={COLORS.textPrimary} />
             </Pressable>
@@ -170,7 +164,7 @@ const HomeScreen: React.FC = () => {
             {/* Emotion Score Card */}
             <View style={[styles.healthCard, styles.healthCardGreen]}>
               <View style={styles.cardLabelRow}>
-                <Text style={styles.cardLabel}>Điểm cảm xúc</Text>
+                <AppText style={styles.cardLabel}>Điểm cảm xúc</AppText>
                 <MaterialCommunityIcons
                   name="heart"
                   size={20}
@@ -178,20 +172,20 @@ const HomeScreen: React.FC = () => {
                 />
               </View>
               <View style={styles.scoreDisplay}>
-                <Text style={styles.scoreValue}>{summary?.emotionScore ?? '--'}</Text>
-                <Text style={styles.scoreLabel}>
+                <AppText style={styles.scoreValue}>{summary?.emotionScore ?? '--'}</AppText>
+                <AppText style={styles.scoreLabel}>
                   {summary?.dominantMood ? moodDisplay.text : 'Đang cập nhật'}
-                </Text>
+                </AppText>
               </View>
             </View>
 
             {/* Mood Card */}
             <View style={[styles.healthCard, styles.healthCardOrange]}>
-              <Text style={styles.moodLabel}>Mood</Text>
+              <AppText style={styles.moodLabel}>Mood</AppText>
               <View style={styles.moodFace}>
-                <Text style={styles.moodFaceEmoji}>{moodDisplay.emoji}</Text>
+                <AppText style={styles.moodFaceEmoji}>{moodDisplay.emoji}</AppText>
               </View>
-              <Text style={styles.moodText}>{moodDisplay.text}</Text>
+              <AppText style={styles.moodText}>{moodDisplay.text}</AppText>
             </View>
           </ScrollView>
         </View>
@@ -199,7 +193,7 @@ const HomeScreen: React.FC = () => {
         {/* ===== DAILY LOGS SECTION (CRITICAL NAVIGATION HUB) ===== */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t('home.overview.dailyLogsTitle')}</Text>
+            <AppText style={styles.sectionTitle}>{t('home.overview.dailyLogsTitle')}</AppText>
             <Pressable>
               <Feather name="more-vertical" size={20} color={COLORS.textPrimary} />
             </Pressable>
@@ -219,15 +213,15 @@ const HomeScreen: React.FC = () => {
                 />
               </View>
               <View style={styles.logCardText}>
-                <Text style={styles.logCardTitle}>Chất lượng giấc mơ</Text>
-                <Text style={styles.logCardSubtitle}>
+                <AppText style={styles.logCardTitle}>Chất lượng giấc mơ</AppText>
+                <AppText style={styles.logCardSubtitle}>
                   {summary?.sleepQuality || t('home.overview.sleepQualityNoData')}
-                </Text>
+                </AppText>
               </View>
             </View>
             <View style={styles.logCardRight}>
               <View style={styles.progressCircle}>
-                <Text style={styles.progressValue}>{summary?.sleepScore || '--'}</Text>
+                <AppText style={styles.progressValue}>{summary?.sleepScore || '--'}</AppText>
               </View>
             </View>
           </Pressable>
@@ -242,10 +236,10 @@ const HomeScreen: React.FC = () => {
                 <Feather name="file-text" size={24} color={COLORS.accentNegative} />
               </View>
               <View style={styles.logCardText}>
-                <Text style={styles.logCardTitle}>Góc tâm tư</Text>
-                <Text style={styles.logCardSubtitle}>
+                <AppText style={styles.logCardTitle}>Góc tâm tư</AppText>
+                <AppText style={styles.logCardSubtitle}>
                   {summary?.diaryStreak ? t('home.overview.diaryStreakFormat', {count: summary.diaryStreak}) : t('home.overview.diaryNoStreak')}
-                </Text>
+                </AppText>
               </View>
             </View>
             <View style={styles.logCardRight}>
@@ -283,10 +277,10 @@ const HomeScreen: React.FC = () => {
                 />
               </View>
               <View style={styles.logCardText}>
-                <Text style={styles.logCardTitle}>Nhật ký dinh dưỡng</Text>
-                <Text style={styles.logCardSubtitle}>
+                <AppText style={styles.logCardTitle}>Nhật ký dinh dưỡng</AppText>
+                <AppText style={styles.logCardSubtitle}>
                   {summary?.foodStatus || t('home.overview.foodDiaryNoData')}
-                </Text>
+                </AppText>
               </View>
             </View>
             <View style={styles.logCardRight}>
@@ -302,7 +296,7 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== AI CHATBOT SECTION ===== */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('home.overview.aiChatbotTitle')}</Text>
+          <AppText style={styles.sectionTitle}>{t('home.overview.aiChatbotTitle')}</AppText>
           
           {/* ĐỔI VIEW THÀNH PRESSABLE VÀ GẮN ONPRESS */}
           <Pressable 
@@ -318,17 +312,17 @@ const HomeScreen: React.FC = () => {
                 />
               </View>
               <View style={styles.chatbotText}>
-                <Text style={styles.chatbotNumber}>{summary?.totalAiSessions ?? 0}</Text>
-                <Text style={styles.chatbotLabel}>lần tâm sự</Text>
+                <AppText style={styles.chatbotNumber}>{summary?.totalAiSessions ?? 0}</AppText>
+                <AppText style={styles.chatbotLabel}>lần tâm sự</AppText>
                 <View style={styles.chatbotMetaRow}>
                   <MaterialCommunityIcons
                     name="calendar-outline"
                     size={12}
                     color={COLORS.white}
                   />
-                  <Text style={styles.chatbotMeta}>
+                  <AppText style={styles.chatbotMeta}>
                     {summary?.monthlyAiSessions ?? 0} cơn tâm tư này tháng
-                  </Text>
+                  </AppText>
                 </View>
               </View>
             </View>
@@ -356,7 +350,7 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== GROUP SESSIONS SECTION ===== */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Therapist Sesions this Month</Text>
+          <AppText style={styles.sectionTitle}>Available Group Sessions this week</AppText>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -372,8 +366,8 @@ const HomeScreen: React.FC = () => {
               />
               <View style={styles.sessionOverlay} />
               <View style={styles.sessionContent}>
-                <Text style={styles.sessionTitle}>Anxiety & Stress</Text>
-                <Text style={styles.sessionSubtitle}>Management</Text>
+                <AppText style={styles.sessionTitle}>Anxiety & Stress</AppText>
+                <AppText style={styles.sessionSubtitle}>Management</AppText>
               </View>
             </Pressable>
 
@@ -387,8 +381,8 @@ const HomeScreen: React.FC = () => {
               />
               <View style={styles.sessionOverlay} />
               <View style={styles.sessionContent}>
-                <Text style={styles.sessionTitle}>Trauma & PTSD</Text>
-                <Text style={styles.sessionSubtitle}>Recovery</Text>
+                <AppText style={styles.sessionTitle}>Trauma & PTSD</AppText>
+                <AppText style={styles.sessionSubtitle}>Recovery</AppText>
               </View>
             </Pressable>
           </ScrollView>
@@ -396,7 +390,7 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== RELATIONSHIP SESSIONS SECTION ===== */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Relationship & Social Support</Text>
+          <AppText style={styles.sectionTitle}>Relationship & Social Support</AppText>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -412,8 +406,8 @@ const HomeScreen: React.FC = () => {
               />
               <View style={styles.sessionOverlay} />
               <View style={styles.sessionContent}>
-                <Text style={styles.sessionTitle}>Family Dynamics &</Text>
-                <Text style={styles.sessionSubtitle}>Healing</Text>
+                <AppText style={styles.sessionTitle}>Family Dynamics &</AppText>
+                <AppText style={styles.sessionSubtitle}>Healing</AppText>
               </View>
             </Pressable>
 
@@ -427,8 +421,8 @@ const HomeScreen: React.FC = () => {
               />
               <View style={styles.sessionOverlay} />
               <View style={styles.sessionContent}>
-                <Text style={styles.sessionTitle}>Social Anxiety &</Text>
-                <Text style={styles.sessionSubtitle}>Building Confidence</Text>
+                <AppText style={styles.sessionTitle}>Social Anxiety &</AppText>
+                <AppText style={styles.sessionSubtitle}>Building Confidence</AppText>
               </View>
             </Pressable>
           </ScrollView>

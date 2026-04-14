@@ -22,27 +22,26 @@ export const styles = StyleSheet.create({
     zIndex: -1,
   },
   circle: {
-    width: width * 1.5,
+    width: width * 1.2,
     height: 400,
     borderRadius: 1000,
     backgroundColor: COLORS.primary,
     position: 'absolute',
     top: -220,
-    left: -(width * 1.5 - width) / 2,
+    left: -(width * 1.2 - width) / 2,
   },
   title: {
-    fontSize: 28,
+    fontSize: 48,
     fontWeight: 'bold',
     color: COLORS.text,
     textAlign: 'center',
-    marginTop: 80,
-    marginBottom: 30,
+    marginTop: 60,
+    marginBottom: 70,
   },
   formContainer: {
     paddingHorizontal: 24,
   },
 
-  // Hộp báo lỗi đặc biệt (giống hình thiết kế)
   errorBox: {
     backgroundColor: COLORS.errorBg,
     borderRadius: 8,
@@ -99,7 +98,7 @@ export const styles = StyleSheet.create({
   },
   roleCardSelected: {
     borderColor: COLORS.primary,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.white,
   },
   roleCardText: {
     fontSize: 14,

@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { AppText } from '@/components';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -43,17 +39,17 @@ const WaitingRoomScreen: React.FC = () => {
       </TouchableOpacity>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Tham vấn chuyên gia</Text>
-        <Text style={styles.cardSubtitle}>{method}</Text>
+        <AppText style={styles.cardTitle}>Tham vấn chuyên gia</AppText>
+        <AppText style={styles.cardSubtitle}>{method}</AppText>
 
         <View style={styles.timeDateRow}>
-          <Text style={styles.timeText}>{time}</Text>
-          <Text style={styles.dateText}>{date}</Text>
+          <AppText style={styles.timeText}>{time}</AppText>
+          <AppText style={styles.dateText}>{date}</AppText>
         </View>
 
         <View style={styles.statusBadge}>
           <Ionicons name="time-outline" size={14} color={COLORS.primary} />
-          <Text style={styles.statusText}>Buổi tham vấn đang diễn ra</Text>
+          <AppText style={styles.statusText}>Buổi tham vấn đang diễn ra</AppText>
         </View>
 
         <TouchableOpacity
@@ -61,27 +57,27 @@ const WaitingRoomScreen: React.FC = () => {
           style={styles.joinButton}
           onPress={() => navigation.navigate('VideoConsultation')}
         >
-          <Text style={styles.joinButtonText}>Tham gia</Text>
+          <AppText style={styles.joinButtonText}>Tham gia</AppText>
         </TouchableOpacity>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.infoTitle}>Lí do</Text>
-        <Text style={styles.reasonText}>{reason}</Text>
+        <AppText style={styles.infoTitle}>Lí do</AppText>
+        <AppText style={styles.reasonText}>{reason}</AppText>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.infoTitle}>Chuyên gia tâm lý</Text>
+        <AppText style={styles.infoTitle}>Chuyên gia tâm lý</AppText>
         <View style={styles.therapistRow}>
           <View style={styles.avatarWrap}>
             <Ionicons name="person-outline" size={30} color={COLORS.textSecondary} />
           </View>
 
           <View style={styles.therapistInfo}>
-            <Text style={styles.therapistName}>Nguyen Van A</Text>
-            <Text style={styles.therapistDescription}>
+            <AppText style={styles.therapistName}>Nguyen Van A</AppText>
+            <AppText style={styles.therapistDescription}>
               Chuyên gia tư vấn với kinh nghiệm hỗ trợ sức khỏe tinh thần.
-            </Text>
+            </AppText>
           </View>
         </View>
       </View>
