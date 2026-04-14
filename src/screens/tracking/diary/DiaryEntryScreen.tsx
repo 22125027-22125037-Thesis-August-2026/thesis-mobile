@@ -1,17 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Pressable,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+  ActivityIndicator, Alert, Image, KeyboardAvoidingView, Pressable, Platform, ScrollView, TextInput, View } from 'react-native';
+import { AppText } from '@/components';
 import { NavigationContext, NavigationProp, RouteProp, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
@@ -26,7 +17,7 @@ import {
   getMoodScore,
   getMoodTag,
 } from '@/constants';
-import { COLORS } from '@/theme';
+import { COLORS, FONTS } from '@/theme';
 import { TrackingStackParamList } from '@/navigation';
 import { AttachmentFile } from '@/types';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
@@ -208,17 +199,17 @@ const DiaryEntryScreen: React.FC = () => {
                 disabled={isSubmitting || isLoadingEntry}>
                 <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
               </Pressable>
-              <Text style={styles.screenTitle}>
+              <AppText style={styles.screenTitle}>
                 {entryId ? t('entry.editTitle') : t('entry.screenTitle')}
-              </Text>
+              </AppText>
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>{t('entry.titleLabel')}</Text>
+              <AppText style={styles.sectionLabel}>{t('entry.titleLabel')}</AppText>
               <View style={styles.titleInputContainer}>
                 <Feather name="file-text" size={18} color={COLORS.inputIcon} />
                 <TextInput
-                  style={styles.titleInput}
+                  style={[styles.titleInput, { fontFamily: FONTS.regular }]}
                   value={title}
                   onChangeText={setTitle}
                   placeholder={t('entry.titlePlaceholder')}
@@ -230,7 +221,7 @@ const DiaryEntryScreen: React.FC = () => {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>{t('entry.moodLabel')}</Text>
+              <AppText style={styles.sectionLabel}>{t('entry.moodLabel')}</AppText>
               <View style={styles.moodRow}>
                 {MOOD_SELECTOR_OPTIONS.map(mood => {
                   const isSelected = mood.value === moodTag;
@@ -262,10 +253,10 @@ const DiaryEntryScreen: React.FC = () => {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>{t('entry.contentLabel')}</Text>
+              <AppText style={styles.sectionLabel}>{t('entry.contentLabel')}</AppText>
               <View style={styles.contentCard}>
                 <TextInput
-                  style={styles.contentInput}
+                  style={[styles.contentInput, { fontFamily: FONTS.regular }]}
                   multiline
                   value={content}
                   onChangeText={setContent}
@@ -291,12 +282,12 @@ const DiaryEntryScreen: React.FC = () => {
                     onPress={handlePickImage}
                     disabled={isSubmitting}>
                     <Feather name="camera" size={16} color={COLORS.journalCounter} />
-                    <Text style={styles.addPhotoText}>{t('entry.addPhoto')}</Text>
+                    <AppText style={styles.addPhotoText}>{t('entry.addPhoto')}</AppText>
                   </Pressable>
 
                   <View style={styles.counterRow}>
                     <Feather name="file-text" size={14} color={COLORS.journalCounter} />
-                    <Text style={styles.counterText}>{t('entry.counter', { count: content.length })}</Text>
+                    <AppText style={styles.counterText}>{t('entry.counter', { count: content.length })}</AppText>
                   </View>
                 </View>
 
@@ -327,7 +318,7 @@ const DiaryEntryScreen: React.FC = () => {
                 <ActivityIndicator color={COLORS.buttonPrimaryText} />
               ) : (
                 <View style={styles.submitContent}>
-                  <Text style={styles.submitText}>{t('entry.submitButton')}</Text>
+                  <AppText style={styles.submitText}>{t('entry.submitButton')}</AppText>
                   <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
                 </View>
               )}

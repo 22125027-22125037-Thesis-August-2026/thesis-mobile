@@ -1,7 +1,8 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '@/theme';
+import AppText from './AppText';
 
 interface Props {
   title: string;
@@ -21,7 +22,7 @@ const CustomButton = ({ title, onPress, isLoading = false }: Props) => {
         <ActivityIndicator color={COLORS.white} />
       ) : (
         <>
-          <Text style={styles.text}>{title}</Text>
+          <AppText style={styles.text} weight="bold">{title}</AppText>
           <Ionicons name="arrow-forward" size={20} color={COLORS.white} />
         </>
       )}
@@ -49,7 +50,6 @@ const styles = StyleSheet.create({
   text: {
     color: COLORS.white,
     fontSize: 18,
-    fontWeight: 'bold',
     marginRight: 10,
   },
 });

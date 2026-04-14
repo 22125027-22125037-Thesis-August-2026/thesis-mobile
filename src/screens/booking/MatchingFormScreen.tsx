@@ -1,14 +1,6 @@
 // src/screens/booking/MatchingFormScreen.tsx
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ImageBackground,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, ScrollView, TouchableOpacity, ImageBackground, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,7 +9,7 @@ import { RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
 import { MatchingFormData, INITIAL_MATCHING_FORM } from '@/types';
 import { saveMatchingData } from '@/api';
-import { CustomInput } from '@/components';
+import { CustomInput, AppText } from '@/components';
 import styles from '@/screens/booking/MatchingFormScreen.styles';
 
 const TOTAL_STEPS = 8;
@@ -120,14 +112,14 @@ const MatchingFormScreen: React.FC = () => {
             onPress={() => updateField(fieldKey, option)}
             activeOpacity={0.7}
           >
-            <Text
+            <AppText
               style={[
                 styles.pillText,
                 isSelected ? styles.pillTextSelected : styles.pillTextUnselected,
               ]}
             >
               {option}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         );
       })}
@@ -152,14 +144,14 @@ const MatchingFormScreen: React.FC = () => {
             onPress={() => updateField(fieldKey, option)}
             activeOpacity={0.75}
           >
-            <Text
+            <AppText
               style={[
                 styles.verticalOptionText,
                 isSelected ? styles.verticalOptionTextSelected : styles.verticalOptionTextUnselected,
               ]}
             >
               {option}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         );
       })}
@@ -180,14 +172,14 @@ const MatchingFormScreen: React.FC = () => {
             onPress={() => toggleReason(option)}
             activeOpacity={0.75}
           >
-            <Text
+            <AppText
               style={[
                 styles.verticalOptionText,
                 isSelected ? styles.verticalOptionTextSelected : styles.verticalOptionTextUnselected,
               ]}
             >
               {option}
-            </Text>
+            </AppText>
             {isSelected && <Ionicons name="checkmark" size={16} color={COLORS.text} />}
           </TouchableOpacity>
         );
@@ -199,7 +191,7 @@ const MatchingFormScreen: React.FC = () => {
     const currentValue = formData.moodLevels[field];
     return (
       <View style={styles.scaleSection}>
-        <Text style={styles.scaleTitle}>{label}</Text>
+        <AppText style={styles.scaleTitle}>{label}</AppText>
         <View style={styles.gradientTrack}>
           <View style={[styles.gradientSegment, styles.gradientSegmentStart]} />
           <View style={[styles.gradientSegment, styles.gradientSegmentMiddle]} />
@@ -218,21 +210,21 @@ const MatchingFormScreen: React.FC = () => {
                 onPress={() => updateMoodLevel(field, value)}
                 activeOpacity={0.8}
               >
-                <Text
+                <AppText
                   style={[
                     styles.scalePointText,
                     isSelected ? styles.scalePointTextSelected : styles.scalePointTextUnselected,
                   ]}
                 >
                   {value}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             );
           })}
         </View>
         <View style={styles.scaleLegendRow}>
-          <Text style={styles.scaleLegendText}>Ít</Text>
-          <Text style={styles.scaleLegendText}>Nhiều</Text>
+          <AppText style={styles.scaleLegendText}>Ít</AppText>
+          <AppText style={styles.scaleLegendText}>Nhiều</AppText>
         </View>
       </View>
     );
@@ -292,10 +284,10 @@ const MatchingFormScreen: React.FC = () => {
       case 1:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>{t('matching.form.step1Title')}</Text>
-            <Text style={styles.questionSubtitle}>
+            <AppText style={styles.questionTitle}>{t('matching.form.step1Title')}</AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step1Subtitle')}
-            </Text>
+            </AppText>
             {renderVerticalSingleSelect(
               options.PRIOR_COUNSELING_OPTIONS,
               formData.hasPriorCounseling,
@@ -307,13 +299,13 @@ const MatchingFormScreen: React.FC = () => {
       case 2:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>{t('matching.form.step2Title')}</Text>
-            <Text style={styles.questionSubtitle}>
+            <AppText style={styles.questionTitle}>{t('matching.form.step2Title')}</AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step2Subtitle')}
-            </Text>
+            </AppText>
             {renderPillSelect(options.GENDER_OPTIONS, formData.gender, 'gender')}
             <View style={styles.inputWrapper}>
-              <Text style={styles.inputQuestionLabel}>{t('matching.form.step2AgeLabel')}</Text>
+              <AppText style={styles.inputQuestionLabel}>{t('matching.form.step2AgeLabel')}</AppText>
               <CustomInput
                 iconName="calendar-outline"
                 placeholder={t('matching.form.step2AgePlaceholder')}
@@ -327,10 +319,10 @@ const MatchingFormScreen: React.FC = () => {
       case 3:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>{t('matching.form.step3Title')}</Text>
-            <Text style={styles.questionSubtitle}>
+            <AppText style={styles.questionTitle}>{t('matching.form.step3Title')}</AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step3Subtitle')}
-            </Text>
+            </AppText>
             {renderPillSelect(
               options.SEXUAL_ORIENTATION_OPTIONS,
               formData.sexualOrientation,
@@ -342,12 +334,12 @@ const MatchingFormScreen: React.FC = () => {
       case 4:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>
+            <AppText style={styles.questionTitle}>
               {t('matching.form.step4Title')}
-            </Text>
-            <Text style={styles.questionSubtitle}>
+            </AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step4Subtitle')}
-            </Text>
+            </AppText>
             {renderPillSelect(options.BINARY_OPTIONS, formData.isLgbtqPriority, 'isLgbtqPriority')}
           </View>
         );
@@ -355,12 +347,12 @@ const MatchingFormScreen: React.FC = () => {
       case 5:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>
+            <AppText style={styles.questionTitle}>
               {t('matching.form.step5Title')}
-            </Text>
-            <Text style={styles.questionSubtitle}>
+            </AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step5Subtitle')}
-            </Text>
+            </AppText>
             {renderPillSelect(options.BINARY_OPTIONS, formData.selfHarmThought, 'selfHarmThought')}
           </View>
         );
@@ -368,10 +360,10 @@ const MatchingFormScreen: React.FC = () => {
       case 6:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>{t('matching.form.step6Title')}</Text>
-            <Text style={styles.questionSubtitle}>
+            <AppText style={styles.questionTitle}>{t('matching.form.step6Title')}</AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step6Subtitle')}
-            </Text>
+            </AppText>
             {renderVerticalMultiSelect(options.REASONS_OPTIONS, formData.reasons)}
           </View>
         );
@@ -379,10 +371,10 @@ const MatchingFormScreen: React.FC = () => {
       case 7:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>{t('matching.form.step7Title')}</Text>
-            <Text style={styles.questionSubtitle}>
+            <AppText style={styles.questionTitle}>{t('matching.form.step7Title')}</AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step7Subtitle')}
-            </Text>
+            </AppText>
             {renderMoodScale(t('matching.moodScales.anxiety'), 'anxiety')}
             {renderMoodScale(t('matching.moodScales.lossInterest'), 'lossInterest')}
             {renderMoodScale(t('matching.form.step7Fatigue'), 'fatigue')}
@@ -392,10 +384,10 @@ const MatchingFormScreen: React.FC = () => {
       case 8:
         return (
           <View style={styles.card}>
-            <Text style={styles.questionTitle}>{t('matching.form.step8Title')}</Text>
-            <Text style={styles.questionSubtitle}>
+            <AppText style={styles.questionTitle}>{t('matching.form.step8Title')}</AppText>
+            <AppText style={styles.questionSubtitle}>
               {t('matching.form.step8Subtitle')}
-            </Text>
+            </AppText>
             {renderVerticalSingleSelect(
               options.COMMUNICATION_STYLE_OPTIONS,
               formData.communicationStyle,
@@ -418,11 +410,11 @@ const MatchingFormScreen: React.FC = () => {
           <TouchableOpacity style={styles.backButton} onPress={handleBack}>
             <Ionicons name="arrow-back" size={24} color={COLORS.white} />
           </TouchableOpacity>
-          <Text style={styles.stepIndicator}>
+          <AppText style={styles.stepIndicator}>
             {step}/{TOTAL_STEPS}
-          </Text>
+          </AppText>
         </View>
-        <Text style={styles.brandText}>uMatter</Text>
+        <AppText style={styles.brandText}>uMatter</AppText>
         <View style={styles.progressBarContainer}>
           <View style={[styles.progressBarFill, { width: `${(step / TOTAL_STEPS) * 100}%` }]} />
         </View>

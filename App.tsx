@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import '@/locales/i18n';
 
+import { AppText } from '@/components';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
 import { COLORS } from '@/theme';
+import { applyGlobalTypographyDefaults } from '@/theme/applyGlobalTypography';
 import {
   BookingScreen,
   ChatScreen,
@@ -33,6 +35,8 @@ import { UserRole } from '@/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+applyGlobalTypographyDefaults();
+
 const ParentExperiencePlaceholderScreen: React.FC = () => {
   return (
     <View
@@ -43,17 +47,17 @@ const ParentExperiencePlaceholderScreen: React.FC = () => {
         paddingHorizontal: 24,
         backgroundColor: COLORS.background,
       }}>
-      <Text
+      <AppText
         style={{
           fontSize: 22,
-          fontWeight: '700',
           color: COLORS.text,
           marginBottom: 12,
           textAlign: 'center',
-        }}>
+        }}
+        weight="bold">
         Parent Experience
-      </Text>
-      <Text
+      </AppText>
+      <AppText
         style={{
           fontSize: 15,
           color: COLORS.textSecondary,
@@ -61,7 +65,7 @@ const ParentExperiencePlaceholderScreen: React.FC = () => {
           lineHeight: 22,
         }}>
         Luong trai nghiem cho phu huynh dang duoc hoan thien.
-      </Text>
+      </AppText>
     </View>
   );
 };
@@ -76,17 +80,17 @@ const AdminExperiencePlaceholderScreen: React.FC = () => {
         paddingHorizontal: 24,
         backgroundColor: COLORS.background,
       }}>
-      <Text
+      <AppText
         style={{
           fontSize: 22,
-          fontWeight: '700',
           color: COLORS.text,
           marginBottom: 12,
           textAlign: 'center',
-        }}>
+        }}
+        weight="bold">
         Admin Experience
-      </Text>
-      <Text
+      </AppText>
+      <AppText
         style={{
           fontSize: 15,
           color: COLORS.textSecondary,
@@ -94,7 +98,7 @@ const AdminExperiencePlaceholderScreen: React.FC = () => {
           lineHeight: 22,
         }}>
         Khu vuc quan tri hien dang trong giai doan xay dung.
-      </Text>
+      </AppText>
     </View>
   );
 };

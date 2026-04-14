@@ -1,17 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { AppText } from '@/components';
 import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -21,7 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useTranslation } from 'react-i18next';
 
 import * as sleepApi from '@/api/sleepApi';
-import { COLORS } from '@/theme';
+import { COLORS, FONTS } from '@/theme';
 import { SleepLogRequest } from '@/types';
 import { styles } from '@/screens/tracking/sleep/SleepEntryScreen.styles';
 
@@ -181,24 +170,24 @@ const SleepEntryScreen: React.FC = () => {
               <Pressable style={styles.backButton} onPress={navigation.goBack}>
                 <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
               </Pressable>
-              <Text style={styles.headerLabel}>Chất lượng giấc ngủ</Text>
+              <AppText style={styles.headerLabel}>Chất lượng giấc ngủ</AppText>
             </View>
 
-            <Text style={styles.title}>Hôm qua bạn ngủ ngon chứ?</Text>
+            <AppText style={styles.title}>Hôm qua bạn ngủ ngon chứ?</AppText>
 
             <View style={styles.timeRow}>
               <Pressable style={styles.timeCard} onPress={() => openPicker('bedTime')}>
-                <Text style={styles.timeLabel}>Giờ đi ngủ</Text>
+                <AppText style={styles.timeLabel}>Giờ đi ngủ</AppText>
                 <View style={styles.timeValueRow}>
-                  <Text style={styles.timeValue}>{formatHourMinute(bedTime)}</Text>
+                  <AppText style={styles.timeValue}>{formatHourMinute(bedTime)}</AppText>
                   <Feather name="clock" size={18} color={COLORS.textSecondary} />
                 </View>
               </Pressable>
 
               <Pressable style={styles.timeCard} onPress={() => openPicker('wakeTime')}>
-                <Text style={styles.timeLabel}>Giờ thức dậy</Text>
+                <AppText style={styles.timeLabel}>Giờ thức dậy</AppText>
                 <View style={styles.timeValueRow}>
-                  <Text style={styles.timeValue}>{formatHourMinute(wakeTime)}</Text>
+                  <AppText style={styles.timeValue}>{formatHourMinute(wakeTime)}</AppText>
                   <Feather name="sun" size={18} color={COLORS.textSecondary} />
                 </View>
               </Pressable>
@@ -215,8 +204,8 @@ const SleepEntryScreen: React.FC = () => {
                     onPress={() => setSleepQuality(option.value)}
                     activeOpacity={0.85}>
                     <View style={styles.qualityTextBlock}>
-                      <Text style={styles.qualityTitle}>{option.title}</Text>
-                      <Text style={styles.qualitySubtitle}>{option.subtitle}</Text>
+                      <AppText style={styles.qualityTitle}>{option.title}</AppText>
+                      <AppText style={styles.qualitySubtitle}>{option.subtitle}</AppText>
                     </View>
 
                     <View style={styles.timelineHolder}>
@@ -242,10 +231,10 @@ const SleepEntryScreen: React.FC = () => {
             </View>
 
             <View>
-              <Text style={styles.sectionTitle}>Ghi chú thêm</Text>
+              <AppText style={styles.sectionTitle}>Ghi chú thêm</AppText>
               <View style={styles.noteCard}>
                 <TextInput
-                  style={styles.noteInput}
+                  style={[styles.noteInput, { fontFamily: FONTS.regular }]}
                   placeholder="Mô tả nhanh cảm giác khi thức dậy..."
                   placeholderTextColor={COLORS.placeholder}
                   multiline
@@ -266,7 +255,7 @@ const SleepEntryScreen: React.FC = () => {
                 <ActivityIndicator color={COLORS.buttonPrimaryText} />
               ) : (
                 <View style={styles.submitContent}>
-                  <Text style={styles.submitText}>Cập nhật giấc ngủ</Text>
+                  <AppText style={styles.submitText}>Cập nhật giấc ngủ</AppText>
                   <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
                 </View>
               )}
@@ -289,7 +278,7 @@ const SleepEntryScreen: React.FC = () => {
               <View style={styles.iosPickerCard}>
                 <View style={styles.iosPickerHeader}>
                   <Pressable onPress={closePicker}>
-                    <Text style={styles.iosPickerDone}>Xong</Text>
+                    <AppText style={styles.iosPickerDone}>Xong</AppText>
                   </Pressable>
                 </View>
                 <DateTimePicker

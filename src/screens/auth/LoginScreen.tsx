@@ -1,19 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+  Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { CustomButton, CustomInput } from '@/components';
+import { CustomButton, CustomInput, AppText } from '@/components';
 import { COLORS } from '@/theme';
 import { AuthContext } from '@/context/AuthContext';
 import { styles } from '@/screens/auth/LoginScreen.styles';
@@ -53,7 +45,7 @@ const LoginScreen = () => {
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}>
           <View style={styles.headerContainer}>
-            <Text style={styles.title}>{t('auth.login.title')}</Text>
+            <AppText style={styles.title}>{t('auth.login.title')}</AppText>
           </View>
 
           <View style={styles.formContainer}>
@@ -95,12 +87,12 @@ const LoginScreen = () => {
             </View>
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>
+              <AppText style={styles.footerText}>
                 {t('auth.login.noAccountText')}{' '}
-                <Text style={styles.linkText} onPress={() => navigation.navigate('Register')}>
+                <AppText style={styles.linkText} onPress={() => navigation.navigate('Register')}>
                   {t('auth.login.registerLink')}
-                </Text>
-              </Text>
+                </AppText>
+              </AppText>
               <TouchableOpacity
                 onPress={() =>
                   Alert.alert(
@@ -108,9 +100,9 @@ const LoginScreen = () => {
                     t('auth.login.forgotPasswordMessage'),
                   )
                 }>
-                <Text style={[styles.linkText, styles.forgotPasswordLink]}>
+                <AppText style={[styles.linkText, styles.forgotPasswordLink]}>
                   {t('auth.login.forgotPassword')}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             </View>
           </View>

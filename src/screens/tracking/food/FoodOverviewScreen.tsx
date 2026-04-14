@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { AppText } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -173,18 +166,18 @@ const FoodOverviewScreen: React.FC = () => {
                 <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
                   <Feather name="chevron-left" size={22} color={COLORS.white} />
                 </Pressable>
-                <Text style={styles.headerTitle}>Nhật ký dinh dưỡng</Text>
+                <AppText style={styles.headerTitle}>Nhật ký dinh dưỡng</AppText>
               </View>
 
-              <Text style={styles.headerSubtitle}>
+              <AppText style={styles.headerSubtitle}>
                 Chất lượng ăn uống hôm nay của bạn
-              </Text>
+              </AppText>
 
               <View style={styles.statusRow}>
                 <View>
-                  <Text style={styles.statusLabel}>
+                  <AppText style={styles.statusLabel}>
                     {todayStatus?.label ?? 'Chưa có dữ liệu'}
-                  </Text>
+                  </AppText>
                 </View>
                 <View style={styles.statusIconCircle}>
                   <MaterialCommunityIcons
@@ -198,7 +191,7 @@ const FoodOverviewScreen: React.FC = () => {
 
             <View style={styles.body}>
               <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Thống kê dinh dưỡng</Text>
+                <AppText style={styles.sectionTitle}>Thống kê dinh dưỡng</AppText>
                 <Pressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                   <Feather name="more-vertical" size={18} color={COLORS.textPrimary} />
                 </Pressable>
@@ -212,7 +205,7 @@ const FoodOverviewScreen: React.FC = () => {
                   }>
                   <Feather name="chevron-left" size={18} color={COLORS.textPrimary} />
                 </Pressable>
-                <Text style={styles.weekRangeLabel}>{weekRangeLabel}</Text>
+                <AppText style={styles.weekRangeLabel}>{weekRangeLabel}</AppText>
                 <Pressable
                   style={styles.weekNavButton}
                   onPress={() =>
@@ -226,7 +219,7 @@ const FoodOverviewScreen: React.FC = () => {
                 {isLoading ? (
                   <View style={styles.loadingWrap}>
                     <ActivityIndicator color={COLORS.primary} />
-                    <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+                    <AppText style={styles.loadingText}>Đang tải dữ liệu...</AppText>
                   </View>
                 ) : (
                   <View style={styles.chartArea}>
@@ -263,7 +256,7 @@ const FoodOverviewScreen: React.FC = () => {
                                 />
                               ) : null}
                             </View>
-                            <Text style={styles.dayLabel}>{day.label}</Text>
+                            <AppText style={styles.dayLabel}>{day.label}</AppText>
                           </View>
                         );
                       })}

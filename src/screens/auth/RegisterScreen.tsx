@@ -1,14 +1,5 @@
 import React, { useContext, useState } from 'react';
-import {
-  View,
-  Text,
-  StatusBar,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StatusBar, Alert, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 // Import
 import { AuthContext } from '@/context/AuthContext';
 import { COLORS } from '@/theme';
-import { CustomButton, CustomInput } from '@/components';
+import { CustomButton, CustomInput, AppText } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '@/screens/auth/RegisterScreen.styles';
 import { RegisterPayload, UserRole } from '@/types';
@@ -240,7 +231,7 @@ const RegisterScreen = ({ navigation }: any) => {
         style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           
-          <Text style={styles.title}>{t('auth.register.title')}</Text>
+          <AppText style={styles.title}>{t('auth.register.title')}</AppText>
 
           <View style={styles.formContainer}>
             <CustomInput
@@ -281,7 +272,7 @@ const RegisterScreen = ({ navigation }: any) => {
             {emailError && (
               <View style={styles.errorBox}>
                 <Ionicons name="alert-circle" size={18} color={COLORS.errorText} />
-                <Text style={styles.errorText}>{t('auth.register.invalidEmail')}</Text>
+                <AppText style={styles.errorText}>{t('auth.register.invalidEmail')}</AppText>
               </View>
             )}
 
@@ -309,7 +300,7 @@ const RegisterScreen = ({ navigation }: any) => {
               onTogglePassword={() => setShowConfirmPass(!showConfirmPass)}
             />
 
-            <Text style={styles.roleSectionTitle}>{t('auth.register.roleSectionTitle')}</Text>
+            <AppText style={styles.roleSectionTitle}>{t('auth.register.roleSectionTitle')}</AppText>
             <View style={styles.roleSelectorContainer}>
               {ROLE_OPTIONS.map(option => {
                 const isSelected = selectedRole === option.value;
@@ -328,13 +319,13 @@ const RegisterScreen = ({ navigation }: any) => {
                       size={20}
                       color={isSelected ? COLORS.primary : COLORS.textSecondary}
                     />
-                    <Text
+                    <AppText
                       style={[
                         styles.roleCardText,
                         isSelected && styles.roleCardTextSelected,
                       ]}>
                       {option.label}
-                    </Text>
+                    </AppText>
                   </TouchableOpacity>
                 );
               })}
@@ -353,16 +344,16 @@ const RegisterScreen = ({ navigation }: any) => {
                 size={22} 
                 color={COLORS.text} 
               />
-              <Text style={styles.checkboxText}>
-                {t('auth.register.agreePrefix')}<Text style={styles.linkText}>{t('auth.register.agreeTermsLink')}</Text>
-              </Text>
+              <AppText style={styles.checkboxText}>
+                {t('auth.register.agreePrefix')}<AppText style={styles.linkText}>{t('auth.register.agreeTermsLink')}</AppText>
+              </AppText>
             </TouchableOpacity>
 
             {/* Link đã có tài khoản */}
             <View style={{flexDirection: 'row', marginBottom: 20}}>
-              <Text style={{color: COLORS.textSecondary}}>{t('auth.register.alreadyHaveAccount')} </Text>
+              <AppText style={{color: COLORS.textSecondary}}>{t('auth.register.alreadyHaveAccount')} </AppText>
                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                  <Text style={styles.loginLink}>{t('auth.register.loginLink')}</Text>
+                  <AppText style={styles.loginLink}>{t('auth.register.loginLink')}</AppText>
                </TouchableOpacity>
             </View>
 
@@ -374,17 +365,17 @@ const RegisterScreen = ({ navigation }: any) => {
             />
 
             {/* Hoặc */}
-            <Text style={styles.orText}>{t('auth.register.orText')}</Text>
+            <AppText style={styles.orText}>{t('auth.register.orText')}</AppText>
 
             {/* Nút Social Dài */}
             <TouchableOpacity style={styles.socialBtnLong}>
                <FontAwesome name="google" size={20} color={COLORS.google} />
-               <Text style={styles.socialBtnText}>{t('auth.register.continueWithGoogle')}</Text>
+               <AppText style={styles.socialBtnText}>{t('auth.register.continueWithGoogle')}</AppText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.socialBtnLong}>
                <FontAwesome name="facebook" size={20} color={COLORS.facebook} />
-               <Text style={styles.socialBtnText}>{t('auth.register.continueWithFacebook')}</Text>
+               <AppText style={styles.socialBtnText}>{t('auth.register.continueWithFacebook')}</AppText>
             </TouchableOpacity>
 
           </View>

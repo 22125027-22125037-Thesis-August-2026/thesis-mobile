@@ -1,12 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+  ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { AppText } from '@/components';
 import { NavigationContext, NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
@@ -93,7 +89,7 @@ const DiaryDashboardScreen: React.FC = () => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingWrap}>
           <ActivityIndicator color={COLORS.buttonPrimary} size="large" />
-          <Text style={styles.loadingText}>{t('dashboard.loading')}</Text>
+          <AppText style={styles.loadingText}>{t('dashboard.loading')}</AppText>
         </View>
       </SafeAreaView>
     );
@@ -110,8 +106,8 @@ const DiaryDashboardScreen: React.FC = () => {
               <Feather name="arrow-left" size={22} color={COLORS.textPrimary} />
             </Pressable>
 
-            <Text style={styles.headerTitle}>{t('dashboard.headerTitle')}</Text>
-            <Text style={styles.headerSubtitle}>{t('dashboard.headerSubtitle')}</Text>
+            <AppText style={styles.headerTitle}>{t('dashboard.headerTitle')}</AppText>
+            <AppText style={styles.headerSubtitle}>{t('dashboard.headerSubtitle')}</AppText>
           </View>
 
           <Pressable style={styles.settingsButton} onPress={() => {}}>
@@ -120,21 +116,21 @@ const DiaryDashboardScreen: React.FC = () => {
         </View>
 
         <View style={styles.chartSection}>
-          <Text style={styles.chartPlaceholderText}>{t('dashboard.chartPlaceholder')}</Text>
+          <AppText style={styles.chartPlaceholderText}>{t('dashboard.chartPlaceholder')}</AppText>
         </View>
 
         <View>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('dashboard.sectionAll')}</Text>
+            <AppText style={styles.sectionTitle}>{t('dashboard.sectionAll')}</AppText>
             <Pressable style={styles.sortButton} onPress={() => {}}>
-              <Text style={styles.sortText}>{t('dashboard.sortNewest')}</Text>
+              <AppText style={styles.sortText}>{t('dashboard.sortNewest')}</AppText>
               <Feather name="chevron-down" size={16} color={COLORS.textPrimary} />
             </Pressable>
           </View>
 
           {entries.length === 0 ? (
             <View style={styles.emptyStateWrap}>
-              <Text style={styles.emptyStateText}>{t('dashboard.emptyState')}</Text>
+              <AppText style={styles.emptyStateText}>{t('dashboard.emptyState')}</AppText>
             </View>
           ) : (
             <ScrollView
@@ -162,7 +158,7 @@ const DiaryDashboardScreen: React.FC = () => {
                             color={moodUi.tagBackgroundColor}
                           />
                         </View>
-                        <Text style={styles.entryDateText}>{formatDate(entry.createdAt)}</Text>
+                        <AppText style={styles.entryDateText}>{formatDate(entry.createdAt)}</AppText>
                       </View>
 
                       <Ionicons
@@ -177,18 +173,18 @@ const DiaryDashboardScreen: React.FC = () => {
                         styles.moodTagPill,
                         { backgroundColor: moodUi.tagBackgroundColor },
                       ]}>
-                      <Text style={[styles.moodTagText, { color: moodUi.tagTextColor }]}>
+                      <AppText style={[styles.moodTagText, { color: moodUi.tagTextColor }]}>
                         {t(moodUi.labelKey)}
-                      </Text>
+                      </AppText>
                     </View>
 
-                    <Text numberOfLines={1} style={styles.entryTitle}>
+                    <AppText numberOfLines={1} style={styles.entryTitle}>
                       {getEntryTitle(entry, t)}
-                    </Text>
+                    </AppText>
 
-                    <Text numberOfLines={2} style={styles.entrySnippet}>
+                    <AppText numberOfLines={2} style={styles.entrySnippet}>
                       {entry.content}
-                    </Text>
+                    </AppText>
                   </Pressable>
                 );
               })}
@@ -198,7 +194,7 @@ const DiaryDashboardScreen: React.FC = () => {
 
         <View style={styles.statsSection}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('dashboard.statsTitle')}</Text>
+            <AppText style={styles.sectionTitle}>{t('dashboard.statsTitle')}</AppText>
             <Ionicons name="ellipsis-horizontal" size={20} color={COLORS.placeholder} />
           </View>
 
@@ -208,8 +204,8 @@ const DiaryDashboardScreen: React.FC = () => {
                 <Feather name="file-text" size={20} color={COLORS.accentPositive} />
               </View>
               <View>
-                <Text style={styles.statValue}>{t('dashboard.completedCount', { count: completedCount })}</Text>
-                <Text style={styles.statLabel}>{t('dashboard.statsCompleted')}</Text>
+                <AppText style={styles.statValue}>{t('dashboard.completedCount', { count: completedCount })}</AppText>
+                <AppText style={styles.statLabel}>{t('dashboard.statsCompleted')}</AppText>
               </View>
             </View>
 
@@ -218,7 +214,7 @@ const DiaryDashboardScreen: React.FC = () => {
                 <Ionicons name="bar-chart-outline" size={22} color={COLORS.accentNeutral} />
               </View>
               <View>
-                <Text style={styles.statValueCompact}>{t('dashboard.statsNeutral')}</Text>
+                <AppText style={styles.statValueCompact}>{t('dashboard.statsNeutral')}</AppText>
               </View>
             </View>
           </View>

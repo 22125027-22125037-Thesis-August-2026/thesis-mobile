@@ -1,10 +1,11 @@
 import React from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { AppText } from '@/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '@/theme';
+import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/ConsultationFeedbackScreen.styles';
 
@@ -30,42 +31,42 @@ const ConsultationFeedbackScreen: React.FC = () => {
       </TouchableOpacity>
 
       <View style={styles.card}>
-        <Text style={styles.summaryTitle}>Tổng kết buổi tham vấn</Text>
-        <Text style={styles.summarySubtitle}>Video</Text>
-        <Text style={styles.summaryTime}>12:33 PM</Text>
-        <Text style={styles.summaryDate}>Ngày 14 Tháng 2, 2025</Text>
+        <AppText style={styles.summaryTitle}>Tổng kết buổi tham vấn</AppText>
+        <AppText style={styles.summarySubtitle}>Video</AppText>
+        <AppText style={styles.summaryTime}>12:33 PM</AppText>
+        <AppText style={styles.summaryDate}>Ngày 14 Tháng 2, 2025</AppText>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Chuyên gia tâm lý</Text>
+        <AppText style={styles.cardTitle}>Chuyên gia tâm lý</AppText>
         <View style={styles.therapistRow}>
           <View style={styles.avatar}>
             <Ionicons name="person-outline" size={30} color={COLORS.consultationFeedbackSecondary} />
           </View>
           <View>
-            <Text style={styles.therapistName}>Nguyen Van A</Text>
-            <Text style={styles.therapistDescription}>
+            <AppText style={styles.therapistName}>Nguyen Van A</AppText>
+            <AppText style={styles.therapistDescription}>
               6 năm kinh nghiệm trong lĩnh vực tâm lý Trẻ vị thành niên và thanh thiếu niên
-            </Text>
+            </AppText>
           </View>
         </View>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Đánh giá buổi tham vấn</Text>
+        <AppText style={styles.cardTitle}>Đánh giá buổi tham vấn</AppText>
         <View style={styles.ratingRow}>
           {RATING_EMOJIS.map((emoji) => (
             <View key={emoji} style={styles.ratingCircle}>
-              <Text style={styles.ratingEmoji}>{emoji}</Text>
+              <AppText style={styles.ratingEmoji}>{emoji}</AppText>
             </View>
           ))}
         </View>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Review</Text>
+        <AppText style={styles.cardTitle}>Review</AppText>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { fontFamily: FONTS.regular }]}
           placeholder={t('booking.consultationFeedback.feedbackPlaceholder')}
           placeholderTextColor={COLORS.consultationFeedbackSecondary}
           multiline
@@ -73,29 +74,29 @@ const ConsultationFeedbackScreen: React.FC = () => {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Bài tập về nhà 1</Text>
-        <Text style={styles.subtitleStrong}>Đi dạo trong công viên</Text>
-        <Text style={styles.descriptionText}>
+        <AppText style={styles.cardTitle}>Bài tập về nhà 1</AppText>
+        <AppText style={styles.subtitleStrong}>Đi dạo trong công viên</AppText>
+        <AppText style={styles.descriptionText}>
           Dành 1 buổi chiều trong tuần để đi dạo trong công viên
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Buổi tham vấn tiếp theo</Text>
+        <AppText style={styles.cardTitle}>Buổi tham vấn tiếp theo</AppText>
         <TouchableOpacity style={styles.primaryButton} activeOpacity={0.9}>
-          <Text style={styles.primaryButtonText}>Đặt lịch</Text>
+          <AppText style={styles.primaryButtonText}>Đặt lịch</AppText>
         </TouchableOpacity>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Lí do cho buổi tham vấn</Text>
-        <Text style={styles.descriptionText}>
+        <AppText style={styles.cardTitle}>Lí do cho buổi tham vấn</AppText>
+        <AppText style={styles.descriptionText}>
           Dạo này tôi lo lắng cho tương lai, mất ăn mất ngủ...
-        </Text>
+        </AppText>
       </View>
 
       <TouchableOpacity style={styles.confirmButton} activeOpacity={0.9}>
-        <Text style={styles.confirmButtonText}>Xác nhận</Text>
+        <AppText style={styles.confirmButtonText}>Xác nhận</AppText>
       </TouchableOpacity>
     </ScrollView>
   );
