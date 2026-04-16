@@ -74,7 +74,7 @@ const TherapistBookingLanding: React.FC = () => {
       return;
     }
 
-    navigation.navigate('Chat');
+    navigation.navigate('TherapistDetails', { id: activeTherapist.id });
   };
 
   return (
