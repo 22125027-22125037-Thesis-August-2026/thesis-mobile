@@ -11,6 +11,7 @@ export type RootStackParamList = {
   // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
   TherapyOverview: undefined;
 
+  TherapistBookingLanding: { matchingSuccess?: boolean } | undefined;
   TherapistFilter: { matchingSuccess?: boolean } | undefined;
   MatchingForm: undefined;
   TherapistList: undefined;

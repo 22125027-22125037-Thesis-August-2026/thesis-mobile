@@ -1,6 +1,7 @@
 // src/api/therapistApi.ts
 
 // ✅ Correct
+import axios from 'axios';
 import therapistAxiosClient from '@/api/therapistAxiosClient';
 import { MatchingFormData } from '@/types';
 
@@ -189,6 +190,34 @@ export interface BookSessionData {
   timeSlot: string;
 }
 
+export interface ActiveAssignedTherapist {
+  assignmentId: string;
+  profileId: string;
+  assignedAt: string;
+  id: string;
+  fullName: string;
+  specialization: string;
+  communicationStyle: string;
+  location: string;
+  avatarUrl: string | null;
+  status: string;
+}
+
+interface AssignedTherapistResponse {
+  assignmentId: string;
+  profileId: string;
+  status: string;
+  assignedAt: string;
+  therapist: {
+    id: string;
+    full_name: string;
+    specialization: string;
+    communication_style: string;
+    location?: string;
+    avatar_url?: string;
+  };
+}
+
 export const getTherapists = async (): Promise<Therapist[]> => {
   try {
     const response = await therapistAxiosClient.get<Therapist[]>('/api/v1/therapists');
@@ -228,6 +257,37 @@ export const saveMatchingData = async (
     const payload = toMatchingPreferencesPayload(data);
     await therapistAxiosClient.post('/api/v1/matching/preferences', payload);
   } catch (error) {
+    throw error;
+  }
+};
+
+export const getActiveAssignedTherapist = async (
+  profileId: string,
+): Promise<ActiveAssignedTherapist | null> => {
+  try {
+    const response = await therapistAxiosClient.get<AssignedTherapistResponse>(
+      `/api/v1/profiles/${profileId}/assigned-therapist`,
+    );
+    const assigned = response.data;
+
+    return {
+      assignmentId: assigned.assignmentId,
+      profileId: assigned.profileId,
+      assignedAt: assigned.assignedAt,
+      id: assigned.therapist.id,
+      fullName: assigned.therapist.full_name,
+      specialization: assigned.therapist.specialization,
+      communicationStyle: assigned.therapist.communication_style,
+      location: assigned.therapist.location ?? 'Đang cập nhật cơ sở',
+      avatarUrl: assigned.therapist.avatar_url ?? null,
+      status: assigned.status,
+    };
+  } catch (error) {
+    // Backend returns 404 when the profile has no ACTIVE assignment.
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+
     throw error;
   }
 };

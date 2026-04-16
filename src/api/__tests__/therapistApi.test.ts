@@ -6,6 +6,7 @@ import {
   getTherapistDetails,
   bookSession,
   saveMatchingData,
+  getActiveAssignedTherapist,
   Therapist,
   BookSessionData,
   Specialty,
@@ -118,5 +119,51 @@ describe('therapistApi', () => {
       },
       communication_style: 'guide',
     });
+  });
+
+  it('getActiveAssignedTherapist returns assigned therapist from profile endpoint', async () => {
+    const profileId = 'profile-123';
+    mockedAxios.get.mockResolvedValueOnce({
+      data: {
+        assignmentId: 'assign-1',
+        profileId,
+        status: 'ACTIVE',
+        assignedAt: '2026-04-15T08:10:19.251Z',
+        therapist: {
+          id: 'therapist-2',
+          full_name: 'Dr. Active',
+          specialization: 'Anxiety',
+          communication_style: 'empathetic',
+        },
+      },
+    });
+
+    const result = await getActiveAssignedTherapist(profileId);
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      '/api/v1/profiles/profile-123/assigned-therapist',
+    );
+    expect(result).toEqual({
+      assignmentId: 'assign-1',
+      profileId,
+      assignedAt: '2026-04-15T08:10:19.251Z',
+      id: 'therapist-2',
+      fullName: 'Dr. Active',
+      specialization: 'Anxiety',
+      communicationStyle: 'empathetic',
+      location: 'Đang cập nhật cơ sở',
+      avatarUrl: null,
+      status: 'ACTIVE',
+    });
+  });
+
+  it('getActiveAssignedTherapist returns null when backend returns 404', async () => {
+    mockedAxios.get.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 404 },
+    });
+
+    const result = await getActiveAssignedTherapist('profile-404');
+    expect(result).toBeNull();
   });
 });

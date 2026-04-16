@@ -1,88 +1,81 @@
 // src/screens/booking/TherapistFilterScreen.tsx
-import React, { useState } from 'react';
-import { View, ScrollView, Image, TouchableOpacity, ImageBackground, Modal } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import {
+  View,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  ImageBackground,
+  ActivityIndicator,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '@/theme';
 import styles from '@/screens/booking/TherapistFilterScreen.styles';
 import { RootStackParamList } from '@/navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { CustomButton, AppText } from '@/components';
+import { AppText } from '@/components';
+import { ActiveAssignedTherapist, getActiveAssignedTherapist } from '@/api';
+import { AuthContext } from '@/context/AuthContext';
 
-const SPECIALTIES = [
-  'Tâm lý học lâm sàng',
-  'Tham vấn học đường',
-  'Tâm lý trẻ em',
-  'Tâm lý người lớn',
-  'Trị liệu gia đình',
-  'Trầm cảm',
-  'Lo âu',
-  'Stress',
-];
-const YEARS = ['1-3', '4-7', '8+'];
-const GENDERS = ['Nam', 'Nữ', 'Khác'];
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'TherapistFilter'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'TherapistBookingLanding'>;
 
 const TherapistFilterScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
-  const [selectedYear, setSelectedYear] = useState<string | null>(null);
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const auth = useContext(AuthContext);
+  const profileId = auth?.userInfo?.profileId;
+  const [activeTherapist, setActiveTherapist] = useState<ActiveAssignedTherapist | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const handleSpecialtyPress = (item: string) => {
-    setSelectedSpecialties((prev) =>
-      prev.includes(item) ? prev.filter((s) => s !== item) : [...prev, item]
-    );
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchActiveTherapist = async () => {
+      if (!profileId) {
+        if (isMounted) {
+          setActiveTherapist(null);
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const therapist = await getActiveAssignedTherapist(profileId);
+        if (isMounted) {
+          setActiveTherapist(therapist);
+        }
+      } catch (error) {
+        console.error('[TherapistFilterScreen] Failed to load active therapist:', error);
+        if (isMounted) {
+          setActiveTherapist(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchActiveTherapist();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [profileId]);
+
+  const handleNavigateMatchingForm = () => {
+    navigation.navigate('MatchingForm');
   };
 
-  const handleYearPress = (item: string) => {
-    setSelectedYear(item === selectedYear ? null : item);
+  const handleChatAction = () => {
+    if (!activeTherapist) {
+      navigation.navigate('MatchingForm');
+      return;
+    }
+
+    navigation.navigate('Chat');
   };
-
-  const handleGenderPress = (item: string) => {
-    setSelectedGender(item === selectedGender ? null : item);
-  };
-
-  const resetSpecialties = () => setSelectedSpecialties([]);
-  const resetYear = () => setSelectedYear(null);
-  const resetGender = () => setSelectedGender(null);
-
-  const handleSubmit = () => {
-    navigation.navigate('TherapistDetails', { id: '1' });
-  };
-
-  const renderChips = (
-    options: string[],
-    selected: string[] | string | null,
-    onPress: (item: string) => void,
-    multi?: boolean,
-  ) => (
-    <View style={styles.chipContainer}>
-      {options.map((item) => {
-        const isSelected = multi
-          ? Array.isArray(selected) && selected.includes(item)
-          : selected === item;
-        return (
-          <AppText
-            key={item}
-            style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
-            onPress={() => onPress(item)}
-          >
-            {item}
-          </AppText>
-        );
-      })}
-    </View>
-  );
-
-  const renderResetButton = (onPress: () => void) => (
-    <TouchableOpacity style={styles.resetBtn} onPress={onPress} activeOpacity={0.7}>
-      <Ionicons name="close-circle" size={16} color={COLORS.primary} />
-      <AppText style={styles.resetBtnText}>Reset</AppText>
-    </TouchableOpacity>
-  );
 
   return (
     <View style={styles.container}>
@@ -92,13 +85,10 @@ const TherapistFilterScreen: React.FC = () => {
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color={COLORS.white} />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.7} onPress={() => setShowUpdateModal(true)}>
-            <AppText style={styles.switchLink}>Tôi muốn đổi chuyên gia</AppText>
-          </TouchableOpacity>
         </View>
         <AppText style={styles.brandText}>uMatter</AppText>
         <AppText style={styles.subHeader}>
-          Tùy chỉnh mong muốn về chuyên gia của bạn
+          Kết nối và trò chuyện cùng chuyên gia trị liệu phù hợp với bạn
         </AppText>
         <Image
           source={require('../../assets/booking/doctor.png')}
@@ -114,76 +104,65 @@ const TherapistFilterScreen: React.FC = () => {
         resizeMode="cover"
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Specialty Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <AppText style={styles.sectionTitle}>Chuyên môn</AppText>
-              {renderResetButton(resetSpecialties)}
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={COLORS.primary} />
+              <AppText style={styles.loadingText}>Đang tải chuyên gia của bạn...</AppText>
             </View>
-            {renderChips(SPECIALTIES, selectedSpecialties, handleSpecialtyPress, true)}
-          </View>
+          ) : null}
 
-          {/* Years of Experience Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <AppText style={styles.sectionTitle}>Số năm kinh nghiệm</AppText>
-              {renderResetButton(resetYear)}
+          {activeTherapist ? (
+            <View style={styles.therapistCard}>
+              <Image
+                source={
+                  activeTherapist.avatarUrl
+                    ? { uri: activeTherapist.avatarUrl }
+                    : require('../../assets/booking/doctor.png')
+                }
+                style={styles.therapistAvatar}
+                resizeMode="cover"
+              />
+              <View style={styles.therapistInfo}>
+                <AppText style={styles.therapistName}>{activeTherapist.fullName}</AppText>
+                <AppText style={styles.therapistSpecialization}>
+                  {activeTherapist.specialization}
+                </AppText>
+                <View style={styles.locationRow}>
+                  <Ionicons name="location-outline" size={14} color={COLORS.textSecondary} />
+                  <AppText style={styles.locationText}>{activeTherapist.location}</AppText>
+                </View>
+              </View>
             </View>
-            {renderChips(YEARS, selectedYear, handleYearPress)}
-          </View>
-
-          {/* Gender Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <AppText style={styles.sectionTitle}>Giới tính</AppText>
-              {renderResetButton(resetGender)}
+          ) : (
+            <View style={styles.emptyCard}>
+              <AppText style={styles.emptyCardTitle}>Bạn chưa có chuyên gia đang hoạt động</AppText>
+              <AppText style={styles.emptyCardText}>
+                Hoàn tất bảng ghép nối để hệ thống đề xuất chuyên gia phù hợp cho bạn.
+              </AppText>
             </View>
-            {renderChips(GENDERS, selectedGender, handleGenderPress)}
-          </View>
+          )}
         </ScrollView>
       </ImageBackground>
 
-      {/* Update Info Modal */}
-      <Modal
-        visible={showUpdateModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowUpdateModal(false)}
-      >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalBox}>
-            <AppText style={styles.modalText}>
-              Bạn có muốn cập nhật thông tin mới của mình trong bảng câu hỏi ghép
-              nối chuyên gia trị liệu không?
-            </AppText>
-            <TouchableOpacity
-              style={styles.modalBtnOutline}
-              onPress={() => setShowUpdateModal(false)}
-              activeOpacity={0.7}
-            >
-              <AppText style={styles.modalBtnOutlineText}>
-                Không, thông tin trong đó vẫn đúng
-              </AppText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.modalBtnPrimary}
-              onPress={() => {
-                setShowUpdateModal(false);
-                navigation.navigate('MatchingForm');
-              }}
-              activeOpacity={0.7}
-            >
-              <AppText style={styles.modalBtnPrimaryText}>
-                Có, tôi muốn thay đổi 1 vài thông tin
-              </AppText>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Footer Button - Green Pill */}
+      {/* Footer Buttons */}
       <View style={styles.footer}>
-        <CustomButton title="Trò chuyện với chuyên gia" onPress={handleSubmit} />
+        {activeTherapist ? (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.actionButtonSecondary]}
+            onPress={handleNavigateMatchingForm}
+            activeOpacity={0.85}
+          >
+            <AppText style={styles.actionButtonText}>Tôi muốn đổi chuyên gia</AppText>
+          </TouchableOpacity>
+        ) : null}
+
+        <TouchableOpacity
+          style={[styles.actionButton, styles.actionButtonPrimary]}
+          onPress={handleChatAction}
+          activeOpacity={0.85}
+        >
+          <AppText style={styles.actionButtonText}>Trò chuyện với chuyên gia</AppText>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -80,7 +80,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleNavigateTherapistFilter = (): void => {
-    navigation.navigate('TherapistFilter');
+    navigation.navigate('TherapistBookingLanding');
   };
 
   const today = new Date();

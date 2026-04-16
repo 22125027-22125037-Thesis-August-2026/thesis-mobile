@@ -26,8 +26,8 @@ import {
   RegisterScreen,
   SleepEntryScreen,
   SleepOverviewScreen,
+  TherapistBookingLandingScreen,
   TherapistDetailScreen,
-  TherapistFilterScreen,
   TherapyOverviewScreen,
   VideoConsultationScreen,
   WaitingRoomScreen,
@@ -112,7 +112,8 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
-      <Stack.Screen name="TherapistFilter" component={TherapistFilterScreen} />
+      <Stack.Screen name="TherapistBookingLanding" component={TherapistBookingLandingScreen} />
+      <Stack.Screen name="TherapistFilter" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
       <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />
       <Stack.Screen name="Booking" component={BookingScreen} />
