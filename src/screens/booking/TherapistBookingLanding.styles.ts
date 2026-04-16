@@ -1,4 +1,4 @@
-// src/screens/booking/TherapistFilterScreen.styles.ts
+// src/screens/booking/TherapistBookingLanding.styles.ts
 import { StyleSheet, Dimensions } from 'react-native';
 import { COLORS } from '@/theme';
 

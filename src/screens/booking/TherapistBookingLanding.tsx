@@ -1,4 +1,4 @@
-// src/screens/booking/TherapistFilterScreen.tsx
+// src/screens/booking/TherapistBookingLanding.tsx
 import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
@@ -11,7 +11,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '@/theme';
-import styles from '@/screens/booking/TherapistFilterScreen.styles';
+import styles from '@/screens/booking/TherapistBookingLanding.styles';
 import { RootStackParamList } from '@/navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AppText } from '@/components';
@@ -20,7 +20,7 @@ import { AuthContext } from '@/context/AuthContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'TherapistBookingLanding'>;
 
-const TherapistFilterScreen: React.FC = () => {
+const TherapistBookingLanding: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const auth = useContext(AuthContext);
   const profileId = auth?.userInfo?.profileId;
@@ -46,7 +46,7 @@ const TherapistFilterScreen: React.FC = () => {
           setActiveTherapist(therapist);
         }
       } catch (error) {
-        console.error('[TherapistFilterScreen] Failed to load active therapist:', error);
+        console.error('[TherapistBookingLanding] Failed to load active therapist:', error);
         if (isMounted) {
           setActiveTherapist(null);
         }
@@ -168,4 +168,4 @@ const TherapistFilterScreen: React.FC = () => {
   );
 };
 
-export default TherapistFilterScreen;
+export default TherapistBookingLanding;
