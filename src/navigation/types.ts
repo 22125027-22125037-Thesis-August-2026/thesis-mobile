@@ -30,6 +30,7 @@ export type RootStackParamList = {
     slotStartDatetime: string;
     method: 'Video' | 'Chat';
     reason?: string;
+    isBooked?: boolean;
   };
   VideoConsultation: undefined;
   // Resolved from Therapist-Feature

@@ -8,10 +8,12 @@ import {
   bookSession,
   saveMatchingData,
   getActiveAssignedTherapist,
+  getUpcomingAppointment,
   Therapist,
   TherapistDetail,
   CreateBookingPayload,
   BookingResponse,
+  UpcomingAppointment,
   Specialty,
 } from '@/api/therapistApi';
 import { MatchingFormData } from '@/types';
@@ -212,6 +214,37 @@ describe('therapistApi', () => {
     });
 
     const result = await getActiveAssignedTherapist('profile-404');
+    expect(result).toBeNull();
+  });
+
+  it('getUpcomingAppointment returns closest upcoming appointment', async () => {
+    const profileId = 'profile-upcoming';
+    const appointment: UpcomingAppointment = {
+      appointmentId: 'appointment-1',
+      profileId,
+      therapistId: 'therapist-3',
+      slotId: 'slot-22',
+      mode: 'VIDEO',
+      status: 'UPCOMING',
+      startDatetime: '2026-04-20T08:00:00Z',
+    };
+
+    mockedAxios.get.mockResolvedValueOnce({ data: appointment });
+    const result = await getUpcomingAppointment(profileId);
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      '/api/v1/profiles/profile-upcoming/appointments/upcoming',
+    );
+    expect(result).toEqual(appointment);
+  });
+
+  it('getUpcomingAppointment returns null when backend returns 404', async () => {
+    mockedAxios.get.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 404 },
+    });
+
+    const result = await getUpcomingAppointment('profile-no-upcoming');
     expect(result).toBeNull();
   });
 });

@@ -66,6 +66,7 @@ const WaitingRoomScreen: React.FC = () => {
     slotStartDatetime,
     method,
     reason = FALLBACK_REASON,
+    isBooked: routeIsBooked = false,
   } = route.params;
 
   const [now, setNow] = useState<Date>(new Date());
@@ -73,7 +74,7 @@ const WaitingRoomScreen: React.FC = () => {
   const [therapistError, setTherapistError] = useState<string>('');
   const [isLoadingTherapist, setIsLoadingTherapist] = useState<boolean>(true);
   const [isBooking, setIsBooking] = useState<boolean>(false);
-  const [isBooked, setIsBooked] = useState<boolean>(false);
+  const [isBooked, setIsBooked] = useState<boolean>(routeIsBooked);
   const [bookingError, setBookingError] = useState<string>('');
 
   useEffect(() => {

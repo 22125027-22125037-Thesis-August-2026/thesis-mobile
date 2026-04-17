@@ -251,6 +251,16 @@ export interface ActiveAssignedTherapist {
   status: string;
 }
 
+export interface UpcomingAppointment {
+  appointmentId: string;
+  profileId: string;
+  therapistId: string;
+  slotId: string;
+  mode: 'VIDEO' | 'CHAT';
+  status: string;
+  startDatetime: string;
+}
+
 interface AssignedTherapistResponse {
   assignmentId: string;
   profileId: string;
@@ -353,6 +363,25 @@ export const getActiveAssignedTherapist = async (
     };
   } catch (error) {
     // Backend returns 404 when the profile has no ACTIVE assignment.
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
+export const getUpcomingAppointment = async (
+  profileId: string,
+): Promise<UpcomingAppointment | null> => {
+  try {
+    const response = await therapistAxiosClient.get<UpcomingAppointment>(
+      `/api/v1/profiles/${profileId}/appointments/upcoming`,
+    );
+
+    return response.data;
+  } catch (error) {
+    // Backend returns 404 when profile has no UPCOMING appointment.
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       return null;
     }
