@@ -155,6 +155,10 @@ const TherapistBookingLanding: React.FC = () => {
     navigation.navigate('MatchingForm');
   };
 
+  const handleNavigateAppointmentsHistory = () => {
+    navigation.navigate('AppointmentsHistory');
+  };
+
   const handleChatAction = () => {
     if (upcomingAppointment) {
       navigation.navigate('WaitingRoom', {
@@ -303,6 +307,14 @@ const TherapistBookingLanding: React.FC = () => {
       </ImageBackground>
 
       <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.actionButtonHistory]}
+          onPress={handleNavigateAppointmentsHistory}
+          activeOpacity={0.85}
+        >
+          <AppText style={styles.actionButtonText}>Lịch sử tham vấn chuyên gia</AppText>
+        </TouchableOpacity>
+
         {activeTherapist ? (
           <TouchableOpacity
             style={[styles.actionButton, styles.actionButtonSecondary]}

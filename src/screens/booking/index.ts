@@ -1,4 +1,5 @@
 export { default as BookingScreen } from './BookingScreen';
+export { default as AppointmentsHistoryScreen } from './AppointmentsHistoryScreen';
 export { default as ConsultationDetailScreen } from './ConsultationDetailScreen';
 export { default as ConsultationFeedbackScreen } from './ConsultationFeedbackScreen';
 export { default as MatchingFormScreen } from './MatchingFormScreen';

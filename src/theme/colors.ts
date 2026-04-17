@@ -69,6 +69,7 @@ export const COLORS = {
   foodHeaderOrange: '#FF8C00',
   foodChartEmpty: '#F1F1F1',
   foodFab: '#1E1A16',
+  appointmentsActive: '#355C3A',
   therapyBackground: '#FDFBF7',
   therapyHeroBackground: '#F0F4E8',
   therapyPrimaryButton: '#372A21',

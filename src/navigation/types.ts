@@ -12,6 +12,7 @@ export type RootStackParamList = {
   TherapyOverview: undefined;
 
   TherapistBookingLanding: { matchingSuccess?: boolean } | undefined;
+  AppointmentsHistory: undefined;
   TherapistFilter: { matchingSuccess?: boolean } | undefined;
   MatchingForm: undefined;
   TherapistList: undefined;
