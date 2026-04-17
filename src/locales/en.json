@@ -244,6 +244,18 @@
       "question": "connect with a therapist?",
       "chatButton": "Chat with therapist"
     },
+    "bookingScreen": {
+      "headerTitle": "Book appointment",
+      "timeSectionTitle": "Select time",
+      "loadingSlots": "Loading available slots...",
+      "selectDateHint": "Please select a date to view available slots.",
+      "noSlotsForDate": "No available slots for the selected date.",
+      "confirmButton": "Confirm",
+      "errorProfileMissing": "Unable to find profile information to resolve therapist.",
+      "errorNoActiveTherapist": "No active therapist is currently assigned to your profile.",
+      "errorTherapistResolveFailed": "Unable to load your assigned therapist.",
+      "errorSlotsLoadFailed": "Unable to load therapist availability slots."
+    },
     "videoConsultation": {
       "readyTitle": "Ready to connect with an expert",
       "initializingText": "Initializing Zoom...",

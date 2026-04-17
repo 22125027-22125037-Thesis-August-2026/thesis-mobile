@@ -217,6 +217,16 @@ export interface TherapistDetail {
   reviews: TherapistReview[];
 }
 
+export interface TherapistAvailableSlot {
+  slotId: string;
+  startDatetime: string;
+  endDatetime: string;
+}
+
+interface TherapistAvailableSlotsResponse {
+  content: TherapistAvailableSlot[];
+}
+
 export interface BookSessionData {
   therapistId: string;
   userId: string;
@@ -268,6 +278,27 @@ export const getTherapistDetails = async (id: string): Promise<TherapistDetail> 
       `/api/v1/therapists/${id}`,
     );
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getTherapistAvailableSlots = async (
+  therapistId: string,
+): Promise<TherapistAvailableSlot[]> => {
+  try {
+    const response = await therapistAxiosClient.get<TherapistAvailableSlotsResponse>(
+      `/api/v1/therapists/${therapistId}/slots`,
+      {
+        params: {
+          page: 0,
+          size: 200,
+          sort: 'startDatetime,asc',
+        },
+      },
+    );
+
+    return response.data.content ?? [];
   } catch (error) {
     throw error;
   }

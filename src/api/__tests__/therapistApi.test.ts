@@ -4,6 +4,7 @@ import therapistAxiosClient from '@/api/therapistAxiosClient';
 import {
   getTherapists,
   getTherapistDetails,
+  getTherapistAvailableSlots,
   bookSession,
   saveMatchingData,
   getActiveAssignedTherapist,
@@ -88,6 +89,28 @@ describe('therapistApi', () => {
 
     expect(result).toEqual(therapist);
     expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapists/1');
+  });
+
+  it('getTherapistAvailableSlots returns paginated slot content', async () => {
+    const slots = [
+      {
+        slotId: 'slot-1',
+        startDatetime: '2026-04-20T08:00:00Z',
+        endDatetime: '2026-04-20T08:50:00Z',
+      },
+    ];
+
+    mockedAxios.get.mockResolvedValueOnce({ data: { content: slots } });
+    const result = await getTherapistAvailableSlots('therapist-1');
+
+    expect(result).toEqual(slots);
+    expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapists/therapist-1/slots', {
+      params: {
+        page: 0,
+        size: 200,
+        sort: 'startDatetime,asc',
+      },
+    });
   });
 
   it('bookSession posts booking data', async () => {
