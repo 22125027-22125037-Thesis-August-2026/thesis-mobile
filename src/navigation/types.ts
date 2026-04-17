@@ -12,20 +12,26 @@ export type RootStackParamList = {
   TherapyOverview: undefined;
 
   TherapistBookingLanding: { matchingSuccess?: boolean } | undefined;
+  AppointmentsHistory: undefined;
   TherapistFilter: { matchingSuccess?: boolean } | undefined;
   MatchingForm: undefined;
   TherapistList: undefined;
   TherapistDetails: { id: string };
   Booking: { therapistId: string };
   ConsultationDetail: {
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
     selectedDate: string;
     selectedTime: string;
   };
   WaitingRoom: {
-    date: string;
-    time: string;
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
     method: 'Video' | 'Chat';
     reason?: string;
+    isBooked?: boolean;
   };
   VideoConsultation: undefined;
   // Resolved from Therapist-Feature

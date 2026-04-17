@@ -23,6 +23,11 @@ JWT claim usage in this API:
 - Principal ID comes from `profileId` claim, or falls back to JWT `sub`
 - Role comes from `role` claim and is normalized to `ROLE_*`
 
+Profile-scoped authorization pattern used in controllers:
+
+- `@PreAuthorize("#profileId.toString() == authentication.name or hasRole('ROLE_ADMIN')")`
+- Meaning: allow when caller is the same profile (`self`) or has `ROLE_ADMIN`.
+
 ## Common Error Response Format
 
 Errors are returned as RFC 7807 `ProblemDetail` JSON.
@@ -65,6 +70,8 @@ Known titles:
 | --- | --- | --- | --- | --- |
 | POST | `/api/v1/bookings` | Yes | Any authenticated user | Create a booking from an available slot |
 | GET | `/api/v1/bookings/{appointmentId}/join` | Yes | Any authenticated user | Join a video session |
+| GET | `/api/v1/profiles/{profileId}/appointments/upcoming` | Yes | `self` or `ROLE_ADMIN` | Get the closest upcoming appointment for a profile |
+| GET | `/api/v1/therapists/{id}` | Yes | Any authenticated user | Get therapist detail profile payload |
 | GET | `/api/v1/therapists/{id}/slots` | Yes | Any authenticated user | Get pageable future available slots |
 | POST | `/api/v1/notes` | Yes | `ROLE_THERAPIST` | Submit a clinical note |
 | POST | `/api/v1/reviews` | Yes | `ROLE_PATIENT` | Submit a therapist review |
@@ -134,7 +141,99 @@ Possible errors:
 - `404` appointment not found
 - `401` unauthenticated
 
-### 3. Get Therapist Available Slots
+### 3. Get Closest Upcoming Appointment
+
+- Method/Path: `GET /api/v1/profiles/{profileId}/appointments/upcoming`
+- Auth: Required
+- Description: Returns the closest future appointment for the requested profile where status is `UPCOMING`.
+
+Path params:
+
+- `profileId` (UUID profile ID)
+
+Authorization:
+
+- Allowed when JWT principal ID equals path `profileId`.
+- Allowed when caller has `ROLE_ADMIN`.
+- Otherwise returns `403`.
+
+Response `200` (example):
+
+```json
+{
+  "appointmentId": "76d7800a-ae23-4f65-9d3d-c9536e2bdf5a",
+  "profileId": "76d7800a-ae23-4f65-9d3d-c9536e2bdf5a",
+  "therapistId": "5f2afc57-d6e4-4dd4-a2f2-34b2520ff31f",
+  "slotId": "9b3ea8e0-7eaf-4b9f-a72e-932c9ce0e0d6",
+  "mode": "VIDEO",
+  "status": "UPCOMING",
+  "startDatetime": "2026-04-20T08:00:00Z"
+}
+```
+
+Possible errors:
+
+- `403` caller is not the same profile and not admin
+- `404` no upcoming appointment found for requested profile
+- `401` unauthenticated
+
+### 4. Get Therapist Detail
+
+- Method/Path: `GET /api/v1/therapists/{id}`
+- Auth: Required
+- Description: Returns therapist profile details with stats, active weekly working hours, and review list.
+
+Path params:
+
+- `id` (UUID therapist ID)
+
+Response `200` (example):
+
+```json
+{
+  "id": "5f2afc57-d6e4-4dd4-a2f2-34b2520ff31f",
+  "fullName": "Dr. Sarah Johnson",
+  "avatarUrl": "",
+  "specialty": "Anxiety & Panic Disorders",
+  "location": "United States",
+  "bio": "Specialized in cognitive behavioral therapy techniques.",
+  "stats": {
+    "patientCount": 42,
+    "yearsOfExperience": 12,
+    "averageRating": 4.85,
+    "reviewCount": 10
+  },
+  "workingHours": [
+    {
+      "dayLabel": "Monday",
+      "startTime": "08:00",
+      "endTime": "16:00"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "f4a1ad89-b6df-4867-9fe8-0d01fd3265f5",
+      "reviewerName": "Anonymous Patient",
+      "reviewerAvatarUrl": null,
+      "rating": 5,
+      "comment": "Very helpful session",
+      "createdAt": "2026-04-15T07:40:03.011Z"
+    }
+  ]
+}
+```
+
+Notes:
+
+- `avatarUrl` is currently returned as an empty string because therapist avatar storage is not yet modeled in schema.
+- Reviewer identity fields are anonymized in this API (`reviewerName` defaults to `Anonymous Patient`, `reviewerAvatarUrl` is `null`).
+
+Possible errors:
+
+- `404` therapist not found
+- `401` unauthenticated
+
+### 5. Get Therapist Available Slots
 
 - Method/Path: `GET /api/v1/therapists/{id}/slots`
 - Auth: Required
@@ -179,7 +278,7 @@ Possible errors:
 - `404` therapist not found
 - `401` unauthenticated
 
-### 4. Submit Clinical Note
+### 6. Submit Clinical Note
 
 - Method/Path: `POST /api/v1/notes`
 - Auth: Required
@@ -217,7 +316,7 @@ Possible errors:
 - `409` note already exists for appointment
 - `401` unauthenticated
 
-### 5. Submit Review
+### 7. Submit Review
 
 - Method/Path: `POST /api/v1/reviews`
 - Auth: Required
@@ -258,7 +357,7 @@ Possible errors:
 - `409` review already exists
 - `401` unauthenticated
 
-### 6. Save Matching Preferences
+### 8. Save Matching Preferences
 
 - Method/Path: `POST /api/v1/matching/preferences`
 - Auth: Required
@@ -297,7 +396,7 @@ Possible errors:
 - `400` validation failure
 - `401` unauthenticated
 
-### 7. Find Matching Therapists
+### 9. Find Matching Therapists
 
 - Method/Path: `GET /api/v1/matching/therapists`
 - Auth: Required
@@ -323,7 +422,7 @@ Possible errors:
 - `404` matching preferences not found for caller
 - `401` unauthenticated
 
-### 8. Assign Therapist
+### 10. Assign Therapist
 
 - Method/Path: `POST /api/v1/matching/assign/{therapistId}`
 - Auth: Required
@@ -342,7 +441,7 @@ Possible errors:
 - `404` therapist not found
 - `401` unauthenticated
 
-### 9. Get Active Assigned Therapist
+### 11. Get Active Assigned Therapist
 
 - Method/Path: `GET /api/v1/profiles/{profileId}/assigned-therapist`
 - Auth: Required
@@ -393,7 +492,7 @@ Response `403` (example):
 }
 ```
 
-### 10. Trigger Slot Generation (Test Endpoint)
+### 12. Trigger Slot Generation (Test Endpoint)
 
 - Method/Path: `POST /api/v1/test/trigger-generation`
 - Auth: Not required
@@ -407,7 +506,7 @@ Response `200`:
 }
 ```
 
-### 11. Trigger Slot Cleanup (Test Endpoint)
+### 13. Trigger Slot Cleanup (Test Endpoint)
 
 - Method/Path: `POST /api/v1/test/trigger-cleanup`
 - Auth: Not required
@@ -443,6 +542,13 @@ Get active assigned therapist:
 
 ```bash
 curl "http://localhost:8082/api/v1/profiles/<profile-id>/assigned-therapist" \
+  -H "Authorization: Bearer <token>"
+```
+
+Get closest upcoming appointment:
+
+```bash
+curl "http://localhost:8082/api/v1/profiles/<profile-id>/appointments/upcoming" \
   -H "Authorization: Bearer <token>"
 ```
 

@@ -12,6 +12,7 @@ import { AuthContext, AuthProvider } from '@/context/AuthContext';
 import { COLORS } from '@/theme';
 import { applyGlobalTypographyDefaults } from '@/theme/applyGlobalTypography';
 import {
+  AppointmentsHistoryScreen,
   BookingScreen,
   ChatScreen,
   ConsultationDetailScreen,
@@ -113,6 +114,7 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="TherapistBookingLanding" component={TherapistBookingLandingScreen} />
+      <Stack.Screen name="AppointmentsHistory" component={AppointmentsHistoryScreen} />
       <Stack.Screen name="TherapistFilter" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
       <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />

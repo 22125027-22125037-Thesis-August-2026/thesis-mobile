@@ -7,6 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/ConsultationDetailScreen.styles';
+import { useTranslation } from 'react-i18next';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'ConsultationDetail'>;
 type ConsultationDetailRouteProp = RouteProp<RootStackParamList, 'ConsultationDetail'>;
@@ -14,17 +15,19 @@ type ConsultationDetailRouteProp = RouteProp<RootStackParamList, 'ConsultationDe
 type CommunicationMethod = 'Video' | 'Chat';
 
 const ConsultationDetailScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<ConsultationDetailRouteProp>();
   const [description, setDescription] = useState<string>('');
   const [selectedMethod, setSelectedMethod] = useState<CommunicationMethod>('Video');
 
-  const { selectedDate, selectedTime } = route.params;
+  const { therapistId, slotId, slotStartDatetime, selectedDate, selectedTime } = route.params;
 
   const handleNext = () => {
     navigation.navigate('WaitingRoom', {
-      date: selectedDate,
-      time: selectedTime,
+      therapistId,
+      slotId,
+      slotStartDatetime,
       method: selectedMethod,
       reason: description,
     });
@@ -49,25 +52,30 @@ const ConsultationDetailScreen: React.FC = () => {
               <View style={styles.avatarPlaceholder}>
                 <Ionicons name="person-outline" size={18} color={COLORS.textSecondary} />
               </View>
-              <AppText style={styles.headerTitle}>Tham vấn chuyên gia</AppText>
+              <AppText style={styles.headerTitle}>{t('booking.consultationDetail.headerTitle')}</AppText>
             </View>
           </View>
 
           <View style={styles.section}>
-            <AppText style={styles.sectionLabel}>Bạn mong muốn gì sau buổi tham vấn</AppText>
+            <AppText style={styles.sectionLabel}>{t('booking.consultationDetail.sectionLabel')}</AppText>
             <TextInput
               style={[styles.textArea, { fontFamily: FONTS.regular }]}
-              placeholder="Miêu tả tình trạng, triệu chứng, mong muốn hiện tại của bạn"
+              placeholder={t('booking.consultationDetail.descriptionPlaceholder')}
               placeholderTextColor={COLORS.placeholder}
               multiline
               value={description}
               onChangeText={setDescription}
             />
-            <AppText style={styles.metaText}>{`Lịch hẹn đã chọn: ${selectedDate} - ${selectedTime}`}</AppText>
+            <AppText style={styles.metaText}>
+              {t('booking.consultationDetail.selectedAppointment', {
+                date: selectedDate,
+                time: selectedTime,
+              })}
+            </AppText>
           </View>
 
           <View style={styles.section}>
-            <AppText style={styles.methodTitle}>Bạn muốn giao tiếp với chuyên gia như thế nào</AppText>
+            <AppText style={styles.methodTitle}>{t('booking.consultationDetail.methodTitle')}</AppText>
             <View style={styles.methodRow}>
               <TouchableOpacity
                 style={[
@@ -90,7 +98,7 @@ const ConsultationDetailScreen: React.FC = () => {
                       : styles.methodButtonTextInactive,
                   ]}
                 >
-                  Video
+                    {t('booking.consultationDetail.methods.video')}
                 </AppText>
               </TouchableOpacity>
 
@@ -115,7 +123,7 @@ const ConsultationDetailScreen: React.FC = () => {
                       : styles.methodButtonTextInactive,
                   ]}
                 >
-                  Chat
+                    {t('booking.consultationDetail.methods.chat')}
                 </AppText>
               </TouchableOpacity>
             </View>
@@ -125,7 +133,7 @@ const ConsultationDetailScreen: React.FC = () => {
 
       <View style={styles.footer}>
         <TouchableOpacity style={styles.nextButton} activeOpacity={0.85} onPress={handleNext}>
-          <AppText style={styles.nextButtonText}>Tiếp</AppText>
+          <AppText style={styles.nextButtonText}>{t('booking.consultationDetail.confirmButton')}</AppText>
         </TouchableOpacity>
       </View>
     </View>

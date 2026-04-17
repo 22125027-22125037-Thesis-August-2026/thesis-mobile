@@ -244,6 +244,18 @@
       "question": "nối chuyên gia trị liệu không?",
       "chatButton": "Trò chuyện với chuyên gia"
     },
+    "bookingScreen": {
+      "headerTitle": "Đặt lịch hẹn",
+      "timeSectionTitle": "Chọn giờ",
+      "loadingSlots": "Đang tải lịch trống...",
+      "selectDateHint": "Vui lòng chọn ngày để xem lịch trống.",
+      "noSlotsForDate": "Không có lịch trống cho ngày đã chọn.",
+      "confirmButton": "Xác nhận",
+      "errorProfileMissing": "Không tìm thấy hồ sơ người dùng để xác định chuyên gia.",
+      "errorNoActiveTherapist": "Bạn chưa có chuyên gia đang hoạt động.",
+      "errorTherapistResolveFailed": "Không thể tải thông tin chuyên gia của bạn.",
+      "errorSlotsLoadFailed": "Không thể tải lịch trống của chuyên gia."
+    },
     "videoConsultation": {
       "readyTitle": "Sẵn sàng kết nối với chuyên gia",
       "initializingText": "Đang khởi tạo Zoom...",
@@ -252,6 +264,18 @@
       "invalidTokenError": "JWT token không hợp lệ hoặc không khớp Meeting SDK credentials. Vui lòng tạo lại SDK JWT từ backend.",
       "initError": "Không thể khởi tạo Zoom. Vui lòng kiểm tra JWT token và thử lại.",
       "defaultError": "Không thể khởi tạo Zoom."
+    },
+    "consultationDetail": {
+      "headerTitle": "Tham vấn chuyên gia",
+      "sectionLabel": "Bạn mong muốn gì sau buổi tham vấn",
+      "descriptionPlaceholder": "Miêu tả tình trạng, triệu chứng, mong muốn hiện tại của bạn",
+      "selectedAppointment": "Lịch hẹn đã chọn: {{date}} - {{time}}",
+      "methodTitle": "Bạn muốn giao tiếp với chuyên gia như thế nào",
+      "methods": {
+        "video": "Video",
+        "chat": "Chat"
+      },
+      "confirmButton": "Xác nhận"
     },
     "consultationFeedback": {
       "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"

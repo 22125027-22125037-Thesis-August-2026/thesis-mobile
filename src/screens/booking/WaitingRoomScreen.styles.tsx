@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.chipSelected,
+    backgroundColor: COLORS.consultationFeedbackBackground,
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 13,
     lineHeight: 18,
-    color: COLORS.primary,
+    color: COLORS.consultationFeedbackPrimary,
     fontWeight: '600',
   },
   joinButton: {
@@ -92,15 +92,32 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 48,
     borderRadius: 14,
-    backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  joinButtonActive: {
+    backgroundColor: COLORS.warning,
+  },
+  joinButtonDisabled: {
+    backgroundColor: COLORS.placeholder,
   },
   joinButtonText: {
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '700',
-    color: COLORS.white,
+    color: COLORS.text,
+  },
+  helperText: {
+    marginTop: 8,
+    fontSize: 13,
+    lineHeight: 18,
+    color: COLORS.textSecondary,
+  },
+  errorText: {
+    marginTop: 8,
+    fontSize: 13,
+    lineHeight: 18,
+    color: COLORS.errorText,
   },
   infoTitle: {
     fontSize: 18,
@@ -114,19 +131,24 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: COLORS.text,
   },
-  therapistRow: {
+  therapistCard: {
     marginTop: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 15,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  avatarWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    overflow: 'hidden',
-    backgroundColor: COLORS.journalBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
+  therapistImage: {
+    width: 74,
+    height: 74,
+    borderRadius: 12,
+    backgroundColor: COLORS.inputBackground,
   },
   therapistInfo: {
     marginLeft: 12,
@@ -138,10 +160,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.text,
   },
-  therapistDescription: {
-    marginTop: 4,
+  therapistSpecialty: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    marginBottom: 6,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationText: {
+    marginLeft: 4,
     fontSize: 13,
-    lineHeight: 19,
     color: COLORS.textSecondary,
   },
 });

@@ -65,6 +65,24 @@ const styles = StyleSheet.create({
   timeGrid: {
     marginTop: 4,
   },
+  slotsInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    marginBottom: 2,
+  },
+  slotsInfoText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    marginTop: 8,
+  },
+  slotsInfoTextInline: {
+    marginTop: 0,
+    marginLeft: 8,
+  },
+  slotsErrorText: {
+    color: COLORS.errorText,
+  },
   timeButton: {
     width: '31%',
     borderRadius: 12,

@@ -183,11 +183,59 @@ export interface Therapist {
   availability: AvailabilitySlot[];
 }
 
-export interface BookSessionData {
-  therapistId: string;
-  userId: string;
-  date: string;
-  timeSlot: string;
+export interface TherapistReview {
+  id: string;
+  reviewerName: string;
+  reviewerAvatarUrl: string | null;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface TherapistWorkingHour {
+  dayLabel: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface TherapistDetailStats {
+  patientCount: number;
+  yearsOfExperience: number;
+  averageRating: number;
+  reviewCount: number;
+}
+
+export interface TherapistDetail {
+  id: string;
+  fullName: string;
+  avatarUrl: string;
+  specialty: string;
+  location: string;
+  bio: string;
+  stats: TherapistDetailStats;
+  workingHours: TherapistWorkingHour[];
+  reviews: TherapistReview[];
+}
+
+export interface TherapistAvailableSlot {
+  slotId: string;
+  startDatetime: string;
+  endDatetime: string;
+}
+
+interface TherapistAvailableSlotsResponse {
+  content: TherapistAvailableSlot[];
+}
+
+export interface CreateBookingPayload {
+  slotId: string;
+}
+
+export interface BookingResponse {
+  appointmentId: string;
+  slotId: string;
+  status: string;
+  message: string;
 }
 
 export interface ActiveAssignedTherapist {
@@ -201,6 +249,16 @@ export interface ActiveAssignedTherapist {
   location: string;
   avatarUrl: string | null;
   status: string;
+}
+
+export interface UpcomingAppointment {
+  appointmentId: string;
+  profileId: string;
+  therapistId: string;
+  slotId: string;
+  mode: 'VIDEO' | 'CHAT';
+  status: string;
+  startDatetime: string;
 }
 
 interface AssignedTherapistResponse {
@@ -228,9 +286,9 @@ export const getTherapists = async (): Promise<Therapist[]> => {
   }
 };
 
-export const getTherapistDetails = async (id: string): Promise<Therapist> => {
+export const getTherapistDetails = async (id: string): Promise<TherapistDetail> => {
   try {
-    const response = await therapistAxiosClient.get<Therapist>(
+    const response = await therapistAxiosClient.get<TherapistDetail>(
       `/api/v1/therapists/${id}`,
     );
     return response.data;
@@ -239,11 +297,32 @@ export const getTherapistDetails = async (id: string): Promise<Therapist> => {
   }
 };
 
-export const bookSession = async (
-  data: BookSessionData,
-): Promise<Record<string, unknown>> => {
+export const getTherapistAvailableSlots = async (
+  therapistId: string,
+): Promise<TherapistAvailableSlot[]> => {
   try {
-    const response = await therapistAxiosClient.post('/api/v1/bookings', data);
+    const response = await therapistAxiosClient.get<TherapistAvailableSlotsResponse>(
+      `/api/v1/therapists/${therapistId}/slots`,
+      {
+        params: {
+          page: 0,
+          size: 200,
+          sort: 'startDatetime,asc',
+        },
+      },
+    );
+
+    return response.data.content ?? [];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const bookSession = async (
+  data: CreateBookingPayload,
+): Promise<BookingResponse> => {
+  try {
+    const response = await therapistAxiosClient.post<BookingResponse>('/api/v1/bookings', data);
     return response.data;
   } catch (error) {
     throw error;
@@ -284,6 +363,25 @@ export const getActiveAssignedTherapist = async (
     };
   } catch (error) {
     // Backend returns 404 when the profile has no ACTIVE assignment.
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
+export const getUpcomingAppointment = async (
+  profileId: string,
+): Promise<UpcomingAppointment | null> => {
+  try {
+    const response = await therapistAxiosClient.get<UpcomingAppointment>(
+      `/api/v1/profiles/${profileId}/appointments/upcoming`,
+    );
+
+    return response.data;
+  } catch (error) {
+    // Backend returns 404 when profile has no UPCOMING appointment.
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       return null;
     }
