@@ -16,6 +16,7 @@ import {
   BookingScreen,
   ChatScreen,
   ConsultationDetailScreen,
+  ConsultationFeedbackScreen,
   DiaryDashboardScreen,
   DiaryEntryScreen,
   DiaryOverviewScreen,
@@ -121,6 +122,7 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="Booking" component={BookingScreen} />
       <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
       <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
+      <Stack.Screen name="ConsultationFeedback" component={ConsultationFeedbackScreen} />
       <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
       <Stack.Screen name="SleepOverview" component={SleepOverviewScreen} />
       <Stack.Screen name="SleepEntry" component={SleepEntryScreen} />
@@ -141,6 +143,7 @@ const renderTherapistExperienceRoutes = () => {
       <Stack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
       <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
+      <Stack.Screen name="ConsultationFeedback" component={ConsultationFeedbackScreen} />
       <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
     </>
   );

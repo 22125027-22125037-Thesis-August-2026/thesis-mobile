@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { AppText } from '@/components';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import CryptoJS from 'crypto-js';
@@ -23,6 +23,7 @@ type ZoomTestingJwtPayload = {
 };
 
 type VideoConsultationNavigationProp = NativeStackNavigationProp<RootStackParamList, 'VideoConsultation'>;
+type VideoConsultationRouteProp = RouteProp<RootStackParamList, 'VideoConsultation'>;
 
 const base64url = (source: CryptoJS.lib.WordArray): string => {
   let encodedSource = CryptoJS.enc.Base64.stringify(source);
@@ -61,6 +62,7 @@ const generateTestingToken = async (): Promise<string> => {
 
 const VideoConsultationScreen: React.FC = () => {
   const navigation = useNavigation<VideoConsultationNavigationProp>();
+  const route = useRoute<VideoConsultationRouteProp>();
   const { t } = useTranslation();
   const [isZoomInitialized, setIsZoomInitialized] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
@@ -150,7 +152,10 @@ const VideoConsultationScreen: React.FC = () => {
      * 4. If completion API succeeds, navigate to ConsultationFeedback for post-session review.
      * 5. If completion API fails, show retry/error state and avoid navigating prematurely.
      */
-    navigation.navigate('ConsultationFeedback');
+    navigation.navigate('ConsultationFeedback', {
+      ...route.params,
+      endedAt: new Date().toISOString(),
+    });
   };
 
   return (

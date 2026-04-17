@@ -33,9 +33,28 @@ export type RootStackParamList = {
     reason?: string;
     isBooked?: boolean;
   };
-  VideoConsultation: undefined;
+  VideoConsultation: {
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
+    method: 'Video' | 'Chat';
+    reason?: string;
+    therapistName?: string;
+    therapistSpecialty?: string;
+    therapistAvatarUrl?: string | null;
+  };
   // Resolved from Therapist-Feature
-  ConsultationFeedback: undefined;
+  ConsultationFeedback: {
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
+    method: 'Video' | 'Chat';
+    reason?: string;
+    therapistName?: string;
+    therapistSpecialty?: string;
+    therapistAvatarUrl?: string | null;
+    endedAt?: string;
+  };
   // Resolved from main
   SleepOverview: undefined;
   SleepEntry: undefined;

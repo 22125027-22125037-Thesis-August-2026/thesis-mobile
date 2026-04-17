@@ -278,6 +278,18 @@
       "confirmButton": "Confirm"
     },
     "consultationFeedback": {
+      "summaryTitle": "Consultation summary",
+      "therapistTitle": "Therapist",
+      "ratingTitle": "Rate this consultation",
+      "reviewTitle": "Review",
+      "homeworkTitle": "Homework 1",
+      "homeworkSubtitle": "Take a walk in the park",
+      "homeworkDescription": "Spend one afternoon this week taking a walk in the park.",
+      "nextSessionTitle": "Next consultation",
+      "bookButton": "Book appointment",
+      "reasonTitle": "Reason for consultation",
+      "noReason": "No reason was provided for this consultation.",
+      "confirmButton": "Confirm",
       "feedbackPlaceholder": "I found this session very effective"
     }
   },

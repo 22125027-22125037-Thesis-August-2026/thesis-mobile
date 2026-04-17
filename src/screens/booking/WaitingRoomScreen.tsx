@@ -167,7 +167,16 @@ const WaitingRoomScreen: React.FC = () => {
         return;
       }
 
-      navigation.navigate('VideoConsultation');
+      navigation.navigate('VideoConsultation', {
+        therapistId,
+        slotId,
+        slotStartDatetime,
+        method,
+        reason,
+        therapistName,
+        therapistSpecialty,
+        therapistAvatarUrl: therapist?.avatarUrl ?? null,
+      });
       return;
     }
 
