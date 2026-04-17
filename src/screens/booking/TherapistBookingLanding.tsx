@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   ImageBackground,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -151,6 +152,27 @@ const TherapistBookingLanding: React.FC = () => {
     };
   }, [profileId]);
 
+  const handleNavigateHome = React.useCallback(() => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      }),
+    );
+  }, [navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onHardwareBack = () => {
+        handleNavigateHome();
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onHardwareBack);
+      return () => subscription.remove();
+    }, [handleNavigateHome]),
+  );
+
   const handleNavigateMatchingForm = () => {
     navigation.navigate('MatchingForm');
   };
@@ -216,7 +238,7 @@ const TherapistBookingLanding: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerTopRow}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backButton} onPress={handleNavigateHome}>
             <Ionicons name="arrow-back" size={24} color={COLORS.white} />
           </TouchableOpacity>
         </View>
@@ -256,13 +278,18 @@ const TherapistBookingLanding: React.FC = () => {
                 resizeMode="cover"
               />
               <View style={styles.therapistInfo}>
-                <AppText style={styles.therapistName}>{activeTherapist.fullName}</AppText>
+                <AppText style={styles.therapistLabel}>Chuyên gia đang đồng hành</AppText>
+                <AppText style={styles.therapistName} numberOfLines={2}>
+                  {activeTherapist.fullName}
+                </AppText>
                 <AppText style={styles.therapistSpecialization}>
-                  {activeTherapist.specialization}
+                  {activeTherapist.specialization || 'Chưa cập nhật chuyên môn'}
                 </AppText>
                 <View style={styles.locationRow}>
                   <Ionicons name="location-outline" size={14} color={COLORS.textSecondary} />
-                  <AppText style={styles.locationText}>{activeTherapist.location}</AppText>
+                  <AppText style={styles.locationText} numberOfLines={1}>
+                    {activeTherapist.location || 'Chưa cập nhật địa điểm'}
+                  </AppText>
                 </View>
               </View>
             </View>
@@ -305,36 +332,38 @@ const TherapistBookingLanding: React.FC = () => {
               </View>
             </TouchableOpacity>
           ) : null}
+
+          <View style={styles.footerSpacer} />
+
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.actionButtonHistory]}
+              onPress={handleNavigateAppointmentsHistory}
+              activeOpacity={0.85}
+            >
+              <AppText style={styles.actionButtonText}>Lịch sử tham vấn chuyên gia</AppText>
+            </TouchableOpacity>
+
+            {activeTherapist ? (
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionButtonSecondary]}
+                onPress={handleNavigateMatchingForm}
+                activeOpacity={0.85}
+              >
+                <AppText style={styles.actionButtonText}>Tôi muốn đổi chuyên gia</AppText>
+              </TouchableOpacity>
+            ) : null}
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.actionButtonPrimary]}
+              onPress={handleChatAction}
+              activeOpacity={0.85}
+            >
+              <AppText style={styles.actionButtonText}>Trò chuyện với chuyên gia</AppText>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </ImageBackground>
-
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.actionButtonHistory]}
-          onPress={handleNavigateAppointmentsHistory}
-          activeOpacity={0.85}
-        >
-          <AppText style={styles.actionButtonText}>Lịch sử tham vấn chuyên gia</AppText>
-        </TouchableOpacity>
-
-        {activeTherapist ? (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.actionButtonSecondary]}
-            onPress={handleNavigateMatchingForm}
-            activeOpacity={0.85}
-          >
-            <AppText style={styles.actionButtonText}>Tôi muốn đổi chuyên gia</AppText>
-          </TouchableOpacity>
-        ) : null}
-
-        <TouchableOpacity
-          style={[styles.actionButton, styles.actionButtonPrimary]}
-          onPress={handleChatAction}
-          activeOpacity={0.85}
-        >
-          <AppText style={styles.actionButtonText}>Trò chuyện với chuyên gia</AppText>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
