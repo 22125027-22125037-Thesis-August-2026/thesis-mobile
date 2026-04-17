@@ -265,6 +265,18 @@
       "initError": "Unable to initialize Zoom. Please check JWT token and try again.",
       "defaultError": "Unable to initialize Zoom."
     },
+    "consultationDetail": {
+      "headerTitle": "Expert consultation",
+      "sectionLabel": "What do you hope to achieve after this consultation?",
+      "descriptionPlaceholder": "Describe your condition, symptoms, and current expectations",
+      "selectedAppointment": "Selected appointment: {{date}} - {{time}}",
+      "methodTitle": "How would you like to communicate with the expert?",
+      "methods": {
+        "video": "Video",
+        "chat": "Chat"
+      },
+      "confirmButton": "Confirm"
+    },
     "consultationFeedback": {
       "feedbackPlaceholder": "I found this session very effective"
     }

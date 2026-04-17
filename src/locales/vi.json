@@ -265,6 +265,18 @@
       "initError": "Không thể khởi tạo Zoom. Vui lòng kiểm tra JWT token và thử lại.",
       "defaultError": "Không thể khởi tạo Zoom."
     },
+    "consultationDetail": {
+      "headerTitle": "Tham vấn chuyên gia",
+      "sectionLabel": "Bạn mong muốn gì sau buổi tham vấn",
+      "descriptionPlaceholder": "Miêu tả tình trạng, triệu chứng, mong muốn hiện tại của bạn",
+      "selectedAppointment": "Lịch hẹn đã chọn: {{date}} - {{time}}",
+      "methodTitle": "Bạn muốn giao tiếp với chuyên gia như thế nào",
+      "methods": {
+        "video": "Video",
+        "chat": "Chat"
+      },
+      "confirmButton": "Xác nhận"
+    },
     "consultationFeedback": {
       "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"
     }
