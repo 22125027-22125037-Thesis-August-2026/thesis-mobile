@@ -278,6 +278,21 @@
       "confirmButton": "Xác nhận"
     },
     "consultationFeedback": {
+      "summaryTitle": "Tổng kết buổi tham vấn",
+      "therapistTitle": "Chuyên gia tâm lý",
+      "ratingTitle": "Đánh giá buổi tham vấn",
+      "reviewTitle": "Review",
+      "homeworkTitle": "Bài tập về nhà 1",
+      "homeworkSubtitle": "Đi dạo trong công viên",
+      "homeworkDescription": "Dành 1 buổi chiều trong tuần để đi dạo trong công viên",
+      "nextSessionTitle": "Buổi tham vấn tiếp theo",
+      "bookButton": "Đặt lịch",
+      "reasonTitle": "Lí do cho buổi tham vấn",
+      "noReason": "Bạn chưa cung cấp lí do cho buổi tham vấn này.",
+      "submittingButton": "Đang gửi...",
+      "submitErrorMissingAppointment": "Không thể gửi đánh giá vì thiếu thông tin lịch hẹn.",
+      "submitErrorGeneric": "Không thể gửi đánh giá. Vui lòng thử lại.",
+      "confirmButton": "Xác nhận",
       "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"
     }
   },

@@ -238,6 +238,22 @@ export interface BookingResponse {
   message: string;
 }
 
+export interface SubmitReviewPayload {
+  appointmentId: string;
+  rating: number;
+  comment: string;
+}
+
+export interface SubmitReviewResponse {
+  reviewId: string;
+  appointmentId: string;
+  therapistId: string;
+  rating: number;
+  therapistRatingAvg: number;
+  createdAt: string;
+  message: string;
+}
+
 export interface ActiveAssignedTherapist {
   assignmentId: string;
   profileId: string;
@@ -323,6 +339,17 @@ export const bookSession = async (
 ): Promise<BookingResponse> => {
   try {
     const response = await therapistAxiosClient.post<BookingResponse>('/api/v1/bookings', data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const submitReview = async (
+  data: SubmitReviewPayload,
+): Promise<SubmitReviewResponse> => {
+  try {
+    const response = await therapistAxiosClient.post<SubmitReviewResponse>('/api/v1/reviews', data);
     return response.data;
   } catch (error) {
     throw error;
