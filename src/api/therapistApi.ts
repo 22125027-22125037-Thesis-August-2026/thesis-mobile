@@ -183,6 +183,40 @@ export interface Therapist {
   availability: AvailabilitySlot[];
 }
 
+export interface TherapistReview {
+  id: string;
+  reviewerName: string;
+  reviewerAvatarUrl: string | null;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface TherapistWorkingHour {
+  dayLabel: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface TherapistDetailStats {
+  patientCount: number;
+  yearsOfExperience: number;
+  averageRating: number;
+  reviewCount: number;
+}
+
+export interface TherapistDetail {
+  id: string;
+  fullName: string;
+  avatarUrl: string;
+  specialty: string;
+  location: string;
+  bio: string;
+  stats: TherapistDetailStats;
+  workingHours: TherapistWorkingHour[];
+  reviews: TherapistReview[];
+}
+
 export interface BookSessionData {
   therapistId: string;
   userId: string;
@@ -228,9 +262,9 @@ export const getTherapists = async (): Promise<Therapist[]> => {
   }
 };
 
-export const getTherapistDetails = async (id: string): Promise<Therapist> => {
+export const getTherapistDetails = async (id: string): Promise<TherapistDetail> => {
   try {
-    const response = await therapistAxiosClient.get<Therapist>(
+    const response = await therapistAxiosClient.get<TherapistDetail>(
       `/api/v1/therapists/${id}`,
     );
     return response.data;

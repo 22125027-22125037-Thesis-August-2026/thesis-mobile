@@ -8,6 +8,7 @@ import {
   saveMatchingData,
   getActiveAssignedTherapist,
   Therapist,
+  TherapistDetail,
   BookSessionData,
   Specialty,
 } from '@/api/therapistApi';
@@ -50,15 +51,36 @@ describe('therapistApi', () => {
   });
 
   it('getTherapistDetails returns therapist details', async () => {
-    const therapist: Therapist = {
+    const therapist: TherapistDetail = {
       id: '1',
-      name: 'Alice',
+      fullName: 'Alice',
+      avatarUrl: '',
       specialty: Specialty.CognitiveBehavioral,
-      bio: '',
-      rating: 5,
-      pricePerHour: 100,
-      imageUrl: '',
-      availability: [],
+      location: 'Ho Chi Minh City',
+      bio: 'Bio',
+      stats: {
+        patientCount: 42,
+        yearsOfExperience: 12,
+        averageRating: 4.8,
+        reviewCount: 10,
+      },
+      workingHours: [
+        {
+          dayLabel: 'Monday',
+          startTime: '08:00',
+          endTime: '16:00',
+        },
+      ],
+      reviews: [
+        {
+          id: 'review-1',
+          reviewerName: 'Anonymous Patient',
+          reviewerAvatarUrl: null,
+          rating: 5,
+          comment: 'Very helpful',
+          createdAt: '2026-04-15T07:40:03.011Z',
+        },
+      ],
     };
 
     mockedAxios.get.mockResolvedValueOnce({ data: therapist });
