@@ -293,11 +293,14 @@ const BookingScreen: React.FC = () => {
   };
 
   const handleConfirm = () => {
-    if (!canConfirm || !selectedSlot) {
+    if (!canConfirm || !selectedSlot || !resolvedTherapistId) {
       return;
     }
 
     navigation.navigate('ConsultationDetail', {
+      therapistId: resolvedTherapistId,
+      slotId: selectedSlot.id,
+      slotStartDatetime: selectedSlot.startDatetime,
       selectedDate,
       selectedTime: selectedSlot.label,
     });

@@ -227,11 +227,15 @@ interface TherapistAvailableSlotsResponse {
   content: TherapistAvailableSlot[];
 }
 
-export interface BookSessionData {
-  therapistId: string;
-  userId: string;
-  date: string;
-  timeSlot: string;
+export interface CreateBookingPayload {
+  slotId: string;
+}
+
+export interface BookingResponse {
+  appointmentId: string;
+  slotId: string;
+  status: string;
+  message: string;
 }
 
 export interface ActiveAssignedTherapist {
@@ -305,10 +309,10 @@ export const getTherapistAvailableSlots = async (
 };
 
 export const bookSession = async (
-  data: BookSessionData,
-): Promise<Record<string, unknown>> => {
+  data: CreateBookingPayload,
+): Promise<BookingResponse> => {
   try {
-    const response = await therapistAxiosClient.post('/api/v1/bookings', data);
+    const response = await therapistAxiosClient.post<BookingResponse>('/api/v1/bookings', data);
     return response.data;
   } catch (error) {
     throw error;

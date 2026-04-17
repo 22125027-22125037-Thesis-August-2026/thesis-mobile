@@ -18,12 +18,16 @@ export type RootStackParamList = {
   TherapistDetails: { id: string };
   Booking: { therapistId: string };
   ConsultationDetail: {
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
     selectedDate: string;
     selectedTime: string;
   };
   WaitingRoom: {
-    date: string;
-    time: string;
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
     method: 'Video' | 'Chat';
     reason?: string;
   };

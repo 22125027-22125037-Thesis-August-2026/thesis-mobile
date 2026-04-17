@@ -21,12 +21,13 @@ const ConsultationDetailScreen: React.FC = () => {
   const [description, setDescription] = useState<string>('');
   const [selectedMethod, setSelectedMethod] = useState<CommunicationMethod>('Video');
 
-  const { selectedDate, selectedTime } = route.params;
+  const { therapistId, slotId, slotStartDatetime, selectedDate, selectedTime } = route.params;
 
   const handleNext = () => {
     navigation.navigate('WaitingRoom', {
-      date: selectedDate,
-      time: selectedTime,
+      therapistId,
+      slotId,
+      slotStartDatetime,
       method: selectedMethod,
       reason: description,
     });

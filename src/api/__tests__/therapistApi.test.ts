@@ -10,7 +10,8 @@ import {
   getActiveAssignedTherapist,
   Therapist,
   TherapistDetail,
-  BookSessionData,
+  CreateBookingPayload,
+  BookingResponse,
   Specialty,
 } from '@/api/therapistApi';
 import { MatchingFormData } from '@/types';
@@ -114,13 +115,15 @@ describe('therapistApi', () => {
   });
 
   it('bookSession posts booking data', async () => {
-    const bookingData: BookSessionData = {
-      therapistId: '1',
-      userId: '2',
-      date: '2024-06-01',
-      timeSlot: '09:00-10:00',
+    const bookingData: CreateBookingPayload = {
+      slotId: 'slot-1',
     };
-    const bookingResponse: Record<string, unknown> = { success: true };
+    const bookingResponse: BookingResponse = {
+      appointmentId: 'appointment-1',
+      slotId: 'slot-1',
+      status: 'UPCOMING',
+      message: 'Booking created successfully',
+    };
 
     mockedAxios.post.mockResolvedValueOnce({ data: bookingResponse });
     const result = await bookSession(bookingData);
