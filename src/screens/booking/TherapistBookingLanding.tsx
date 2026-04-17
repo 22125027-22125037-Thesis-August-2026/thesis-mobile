@@ -162,6 +162,7 @@ const TherapistBookingLanding: React.FC = () => {
   const handleChatAction = () => {
     if (upcomingAppointment) {
       navigation.navigate('WaitingRoom', {
+        appointmentId: upcomingAppointment.appointmentId,
         therapistId: upcomingAppointment.therapistId,
         slotId: upcomingAppointment.slotId,
         slotStartDatetime: upcomingAppointment.startDatetime,
@@ -185,6 +186,7 @@ const TherapistBookingLanding: React.FC = () => {
     }
 
     navigation.navigate('WaitingRoom', {
+      appointmentId: upcomingAppointment.appointmentId,
       therapistId: upcomingAppointment.therapistId,
       slotId: upcomingAppointment.slotId,
       slotStartDatetime: upcomingAppointment.startDatetime,

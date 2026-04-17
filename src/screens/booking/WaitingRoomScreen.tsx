@@ -61,6 +61,7 @@ const WaitingRoomScreen: React.FC = () => {
   const navigation = useNavigation<WaitingRoomNavigationProp>();
   const route = useRoute<WaitingRoomRouteProp>();
   const {
+    appointmentId: routeAppointmentId,
     therapistId,
     slotId,
     slotStartDatetime,
@@ -75,6 +76,7 @@ const WaitingRoomScreen: React.FC = () => {
   const [isLoadingTherapist, setIsLoadingTherapist] = useState<boolean>(true);
   const [isBooking, setIsBooking] = useState<boolean>(false);
   const [isBooked, setIsBooked] = useState<boolean>(routeIsBooked);
+  const [appointmentId, setAppointmentId] = useState<string | undefined>(routeAppointmentId);
   const [bookingError, setBookingError] = useState<string>('');
 
   useEffect(() => {
@@ -168,6 +170,7 @@ const WaitingRoomScreen: React.FC = () => {
       }
 
       navigation.navigate('VideoConsultation', {
+        appointmentId,
         therapistId,
         slotId,
         slotStartDatetime,
@@ -184,7 +187,8 @@ const WaitingRoomScreen: React.FC = () => {
     setBookingError('');
 
     try {
-      await bookSession({ slotId });
+      const bookingResponse = await bookSession({ slotId });
+      setAppointmentId(bookingResponse.appointmentId);
       setIsBooked(true);
     } catch (error) {
       const axiosError = error as AxiosError<{ detail?: string; message?: string }>;

@@ -289,6 +289,9 @@
       "bookButton": "Book appointment",
       "reasonTitle": "Reason for consultation",
       "noReason": "No reason was provided for this consultation.",
+      "submittingButton": "Submitting...",
+      "submitErrorMissingAppointment": "Cannot submit review because appointment information is missing.",
+      "submitErrorGeneric": "Unable to submit review. Please try again.",
       "confirmButton": "Confirm",
       "feedbackPlaceholder": "I found this session very effective"
     }

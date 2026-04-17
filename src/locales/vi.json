@@ -289,6 +289,9 @@
       "bookButton": "Đặt lịch",
       "reasonTitle": "Lí do cho buổi tham vấn",
       "noReason": "Bạn chưa cung cấp lí do cho buổi tham vấn này.",
+      "submittingButton": "Đang gửi...",
+      "submitErrorMissingAppointment": "Không thể gửi đánh giá vì thiếu thông tin lịch hẹn.",
+      "submitErrorGeneric": "Không thể gửi đánh giá. Vui lòng thử lại.",
       "confirmButton": "Xác nhận",
       "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"
     }

@@ -26,6 +26,7 @@ export type RootStackParamList = {
     selectedTime: string;
   };
   WaitingRoom: {
+    appointmentId?: string;
     therapistId: string;
     slotId: string;
     slotStartDatetime: string;
@@ -34,6 +35,7 @@ export type RootStackParamList = {
     isBooked?: boolean;
   };
   VideoConsultation: {
+    appointmentId?: string;
     therapistId: string;
     slotId: string;
     slotStartDatetime: string;
@@ -45,6 +47,7 @@ export type RootStackParamList = {
   };
   // Resolved from Therapist-Feature
   ConsultationFeedback: {
+    appointmentId?: string;
     therapistId: string;
     slotId: string;
     slotStartDatetime: string;

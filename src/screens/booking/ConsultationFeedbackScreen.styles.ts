@@ -155,6 +155,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.white,
   },
+  submitErrorText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: COLORS.errorText,
+  },
 });
 
 export default styles;
