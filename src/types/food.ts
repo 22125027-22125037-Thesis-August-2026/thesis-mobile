@@ -2,6 +2,7 @@ export interface FoodLogRequest {
   mealType: string;
   foodDescription: string;
   satietyLevel: string;
+  entryDate?: string; // ISO format: YYYY-MM-DD
 }
 
 export interface FoodLogResponse {
@@ -9,5 +10,6 @@ export interface FoodLogResponse {
   mealType: string;
   foodDescription: string;
   satietyLevel: string;
+  entryDate?: string; // ISO format: YYYY-MM-DD
   createdAt: string;
 }

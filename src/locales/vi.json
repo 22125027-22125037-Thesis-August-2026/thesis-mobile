@@ -75,7 +75,7 @@
   "sleep": {
     "entry": {
       "headerTitle": "Chất lượng giấc ngủ",
-      "mainQuestion": "Hôm qua bạn ngủ ngon chứ?",
+      "mainQuestion": "Bạn đã ngủ ngon chứ?",
       "bedTimeLabel": "Giờ đi ngủ",
       "wakeTimeLabel": "Giờ thức dậy",
       "noteLabel": "Ghi chú thêm",
@@ -147,7 +147,7 @@
     },
     "entry": {
       "screenTitle": "Nhật ký dinh dưỡng",
-      "mainQuestion": "Hôm nay bạn ăn uống tốt chứ?",
+      "mainQuestion": "Bạn đã ăn uống tốt chứ?",
       "descriptionLabel": "Bạn có thể mô tả thêm ở đây nhé...",
       "descriptionPlaceholder": "Mô tả chi tiết bữa ăn của bạn...",
       "submitButton": "Cập nhật dinh dưỡng",
@@ -311,6 +311,9 @@
   "home": {
     "overview": {
       "dailyLogsTitle": "Nhật kí hằng ngày",
+      "sleepCardTitle": "Chất lượng giấc mơ",
+      "diaryCardTitle": "Góc tâm tư",
+      "foodCardTitle": "Nhật ký dinh dưỡng",
       "sleepQualityTitle": "Chất lượng giấc mơ",
       "sleepQualityNoData": "Chưa có dữ liệu",
       "diaryTitle": "Góc tâm tư",

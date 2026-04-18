@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -10,6 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { AppText } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -94,17 +98,68 @@ const MAX_DESCRIPTION_LENGTH = 300;
 
 const FoodEntryScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [mealType, setMealType] = useState<string>('LUNCH');
   const [satietyLevel, setSatietyLevel] = useState<number>(4);
   const [foodDescription, setFoodDescription] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+
+  const timeLocale = i18n.resolvedLanguage?.startsWith('vi')
+    ? 'vi-VN'
+    : 'en-US';
 
   const canSubmit = useMemo(
     () => foodDescription.trim().length > 0 && !isSubmitting,
     [foodDescription, isSubmitting],
   );
+
+  const formatDateDisplay = (): string => {
+    const weekday = selectedDate.toLocaleDateString(timeLocale, {
+      weekday: 'long',
+    });
+    const date = selectedDate.toLocaleDateString(timeLocale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    return `${weekday}, ${date}`;
+  };
+
+  const formatDateForAPI = (): string => {
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const year = selectedDate.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleDateChange = (
+    event: DateTimePickerEvent,
+    selectedDate?: Date,
+  ): void => {
+    if (event.type === 'dismissed') {
+      setShowDatePicker(false);
+      return;
+    }
+
+    if (selectedDate) {
+      // Disable future dates
+      if (selectedDate > new Date()) {
+        Alert.alert(
+          t('food.entry.validationTitle'),
+          'Không thể chọn ngày trong tương lai',
+        );
+        return;
+      }
+      setSelectedDate(selectedDate);
+    }
+
+    if (Platform.OS !== 'ios') {
+      setShowDatePicker(false);
+    }
+  };
 
   const handleSubmit = async (): Promise<void> => {
     if (!canSubmit) {
@@ -121,6 +176,7 @@ const FoodEntryScreen: React.FC = () => {
       mealType,
       foodDescription: foodDescription.trim(),
       satietyLevel: satietyLevelValue || 'NORMAL',
+      entryDate: formatDateForAPI(),
     };
 
     try {
@@ -163,38 +219,16 @@ const FoodEntryScreen: React.FC = () => {
               {t('food.entry.mainQuestion')}
             </AppText>
 
-            <View style={styles.mealTypesSection}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.mealTypesContainer}
-              >
-                {MEAL_TYPES.map(meal => {
-                  const isSelected = mealType === meal.value;
-
-                  return (
-                    <TouchableOpacity
-                      key={meal.value}
-                      style={[
-                        styles.mealTypeChip,
-                        isSelected && styles.mealTypeChipSelected,
-                      ]}
-                      onPress={() => setMealType(meal.value)}
-                      activeOpacity={0.85}
-                    >
-                      <AppText
-                        style={[
-                          styles.mealTypeText,
-                          isSelected && styles.mealTypeTextSelected,
-                        ]}
-                      >
-                        {t(meal.labelKey)}
-                      </AppText>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            </View>
+            {/* Date Selector */}
+            <Pressable
+              style={styles.dateSelector}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Feather name="calendar" size={18} color={COLORS.primary} />
+              <AppText style={styles.dateSelectorText}>
+                {formatDateDisplay()}
+              </AppText>
+            </Pressable>
 
             <View style={styles.selectorSection}>
               {SATIETY_LEVELS.map(option => {
@@ -264,20 +298,6 @@ const FoodEntryScreen: React.FC = () => {
                 <View style={styles.descriptionFooter}>
                   <View style={styles.toolbarButtons}>
                     <Pressable style={styles.toolbarButton}>
-                      <Feather
-                        name="rotate-ccw"
-                        size={18}
-                        color={COLORS.textSecondary}
-                      />
-                    </Pressable>
-                    <Pressable style={styles.toolbarButton}>
-                      <Feather
-                        name="rotate-cw"
-                        size={18}
-                        color={COLORS.textSecondary}
-                      />
-                    </Pressable>
-                    <Pressable style={styles.toolbarButton}>
                       <MaterialCommunityIcons
                         name="camera"
                         size={18}
@@ -293,6 +313,43 @@ const FoodEntryScreen: React.FC = () => {
             </View>
           </ScrollView>
         </View>
+
+        {/* Date Picker */}
+        {showDatePicker && Platform.OS === 'ios' ? (
+          <Modal
+            transparent
+            animationType="slide"
+            visible={showDatePicker}
+            onRequestClose={() => setShowDatePicker(false)}
+          >
+            <View style={styles.datePickerModal}>
+              <View style={styles.datePickerContainer}>
+                <View style={styles.datePickerHeader}>
+                  <Pressable onPress={() => setShowDatePicker(false)}>
+                    <AppText style={styles.datePickerHeaderText}>Done</AppText>
+                  </Pressable>
+                </View>
+                <DateTimePicker
+                  value={selectedDate}
+                  mode="date"
+                  display="spinner"
+                  onChange={handleDateChange}
+                  maximumDate={new Date()}
+                />
+              </View>
+            </View>
+          </Modal>
+        ) : null}
+
+        {showDatePicker && Platform.OS !== 'ios' ? (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+            maximumDate={new Date()}
+          />
+        ) : null}
 
         <View style={styles.footer}>
           <Pressable

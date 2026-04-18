@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   SafeAreaView,
@@ -11,15 +12,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { AppText } from '@/components';
 import {
   NavigationProp,
   ParamListBase,
   useNavigation,
 } from '@react-navigation/native';
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from '@react-native-community/datetimepicker';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +30,7 @@ import { COLORS, FONTS } from '@/theme';
 import { SleepLogRequest } from '@/types';
 import { styles } from '@/screens/tracking/sleep/SleepEntryScreen.styles';
 
-type PickerTarget = 'bedTime' | 'wakeTime' | null;
+type PickerTarget = 'bedTime' | 'wakeTime' | 'entryDate' | null;
 
 type SleepQualityOption = {
   value: number;
@@ -90,6 +91,12 @@ const getDefaultWakeTime = (): Date => {
   return defaultDate;
 };
 
+const getDefaultDate = (): Date => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return yesterday;
+};
+
 const getTimeLocale = (language: string): string => {
   return language.startsWith('vi') ? 'vi-VN' : 'en-US';
 };
@@ -107,24 +114,55 @@ const SleepEntryScreen: React.FC = () => {
   const { i18n, t } = useTranslation();
   const timeLocale = getTimeLocale(i18n.resolvedLanguage ?? i18n.language);
 
+  const [selectedDate, setSelectedDate] = useState<Date>(getDefaultDate);
   const [bedTime, setBedTime] = useState<Date>(getDefaultBedTime);
   const [wakeTime, setWakeTime] = useState<Date>(getDefaultWakeTime);
   const [sleepQuality, setSleepQuality] = useState<number>(3);
   const [note, setNote] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [pickerTarget, setPickerTarget] = useState<PickerTarget>(null);
+  const [showDatePickerModal, setShowDatePickerModal] =
+    useState<boolean>(false);
 
   const canSubmit = useMemo(() => !isSubmitting, [isSubmitting]);
 
+  const formatDateDisplay = (): string => {
+    const weekday = selectedDate.toLocaleDateString(timeLocale, {
+      weekday: 'long',
+    });
+    const date = selectedDate.toLocaleDateString(timeLocale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    return `${weekday}, ${date}`;
+  };
+
+  const formatDateForAPI = (): string => {
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const year = selectedDate.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
   const openPicker = (target: Exclude<PickerTarget, null>): void => {
+    if (target === 'entryDate') {
+      setShowDatePickerModal(true);
+    }
     setPickerTarget(target);
   };
 
   const closePicker = (): void => {
     setPickerTarget(null);
+    setShowDatePickerModal(false);
   };
 
-  const currentPickerValue = pickerTarget === 'wakeTime' ? wakeTime : bedTime;
+  const currentPickerValue =
+    pickerTarget === 'wakeTime'
+      ? wakeTime
+      : pickerTarget === 'entryDate'
+      ? selectedDate
+      : bedTime;
 
   const updateTargetTime = (nextDate: Date): void => {
     if (pickerTarget === 'bedTime') {
@@ -134,6 +172,11 @@ const SleepEntryScreen: React.FC = () => {
 
     if (pickerTarget === 'wakeTime') {
       setWakeTime(nextDate);
+      return;
+    }
+
+    if (pickerTarget === 'entryDate') {
+      setSelectedDate(nextDate);
     }
   };
 
@@ -163,6 +206,7 @@ const SleepEntryScreen: React.FC = () => {
       wakeTime: wakeTime.toISOString(),
       sleepQuality,
       note: note.trim(),
+      entryDate: formatDateForAPI(),
     };
 
     try {
@@ -208,6 +252,17 @@ const SleepEntryScreen: React.FC = () => {
               {t('sleep.entry.mainQuestion')}
             </AppText>
 
+            {/* Date Selector */}
+            <Pressable
+              style={styles.dateSelector}
+              onPress={() => openPicker('entryDate')}
+            >
+              <Feather name="calendar" size={18} color={COLORS.primary} />
+              <AppText style={styles.dateSelectorText}>
+                {formatDateDisplay()}
+              </AppText>
+            </Pressable>
+
             <View style={styles.timeRow}>
               <Pressable
                 style={styles.timeCard}
@@ -220,11 +275,7 @@ const SleepEntryScreen: React.FC = () => {
                   <AppText style={styles.timeValue}>
                     {formatHourMinute(bedTime, timeLocale)}
                   </AppText>
-                  <Feather
-                    name="clock"
-                    size={18}
-                    color={COLORS.textSecondary}
-                  />
+                  <Feather name="moon" size={18} color={COLORS.textSecondary} />
                 </View>
               </Pressable>
 
@@ -261,9 +312,6 @@ const SleepEntryScreen: React.FC = () => {
                     <View style={styles.qualityTextBlock}>
                       <AppText style={styles.qualityTitle}>
                         {t(option.titleKey)}
-                      </AppText>
-                      <AppText style={styles.qualitySubtitle}>
-                        {t(option.subtitleKey)}
                       </AppText>
                     </View>
 
@@ -339,10 +387,11 @@ const SleepEntryScreen: React.FC = () => {
           {pickerTarget && Platform.OS !== 'ios' ? (
             <DateTimePicker
               value={currentPickerValue}
-              mode="time"
+              mode={pickerTarget === 'entryDate' ? 'date' : 'time'}
               is24Hour
               display="default"
               onChange={handlePickerChange}
+              maximumDate={new Date()}
             />
           ) : null}
 
@@ -362,10 +411,11 @@ const SleepEntryScreen: React.FC = () => {
                 </View>
                 <DateTimePicker
                   value={currentPickerValue}
-                  mode="time"
+                  mode={pickerTarget === 'entryDate' ? 'date' : 'time'}
                   is24Hour
                   display="spinner"
                   onChange={handlePickerChange}
+                  maximumDate={new Date()}
                 />
               </View>
             </>

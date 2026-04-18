@@ -48,6 +48,22 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: SPACING.sm,
   },
+  dateSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.chip,
+    borderWidth: SPACING.borderWidth,
+    borderColor: COLORS.primary,
+    gap: SPACING.sm,
+  },
+  dateSelectorText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
   timeRow: {
     flexDirection: 'row',
     columnGap: SPACING.sm,

@@ -75,7 +75,7 @@
   "sleep": {
     "entry": {
       "headerTitle": "Sleep Quality",
-      "mainQuestion": "Did you sleep well last night?",
+      "mainQuestion": "Did you have a good sleep?",
       "bedTimeLabel": "Bedtime",
       "wakeTimeLabel": "Wake time",
       "noteLabel": "Add a note",
@@ -147,7 +147,7 @@
     },
     "entry": {
       "screenTitle": "Nutrition Journal",
-      "mainQuestion": "Did you eat well today?",
+      "mainQuestion": "Did you eat well?",
       "descriptionLabel": "You can describe more here...",
       "descriptionPlaceholder": "Describe your meal in detail...",
       "submitButton": "Update nutrition",
@@ -311,6 +311,9 @@
   "home": {
     "overview": {
       "dailyLogsTitle": "Daily Logs",
+      "sleepCardTitle": "Sleep Quality",
+      "diaryCardTitle": "Mind Corner",
+      "foodCardTitle": "Nutrition Journal",
       "sleepQualityTitle": "Dream Quality",
       "sleepQualityNoData": "No data yet",
       "diaryTitle": "Mind Corner",
