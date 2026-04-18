@@ -148,7 +148,7 @@ const HomeScreen: React.FC = () => {
         </View>
 
         {/* ===== HEALTH STATS CAROUSEL ===== */}
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <AppText style={styles.sectionTitle}>Thống kê sức khỏe cảm xúc</AppText>
             <Pressable>
@@ -161,7 +161,6 @@ const HomeScreen: React.FC = () => {
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
             contentContainerStyle={styles.carouselContainer}>
-            {/* Emotion Score Card */}
             <View style={[styles.healthCard, styles.healthCardGreen]}>
               <View style={styles.cardLabelRow}>
                 <AppText style={styles.cardLabel}>Điểm cảm xúc</AppText>
@@ -179,7 +178,6 @@ const HomeScreen: React.FC = () => {
               </View>
             </View>
 
-            {/* Mood Card */}
             <View style={[styles.healthCard, styles.healthCardOrange]}>
               <AppText style={styles.moodLabel}>Mood</AppText>
               <View style={styles.moodFace}>
@@ -188,7 +186,7 @@ const HomeScreen: React.FC = () => {
               <AppText style={styles.moodText}>{moodDisplay.text}</AppText>
             </View>
           </ScrollView>
-        </View>
+        </View> */}
 
         {/* ===== DAILY LOGS SECTION (CRITICAL NAVIGATION HUB) ===== */}
         <View style={styles.section}>
@@ -240,25 +238,6 @@ const HomeScreen: React.FC = () => {
                 <AppText style={styles.logCardSubtitle}>
                   {summary?.diaryStreak ? t('home.overview.diaryStreakFormat', {count: summary.diaryStreak}) : t('home.overview.diaryNoStreak')}
                 </AppText>
-              </View>
-            </View>
-            <View style={styles.logCardRight}>
-              <View style={styles.gridIndicator}>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                </View>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                </View>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                </View>
               </View>
             </View>
           </Pressable>

@@ -1,9 +1,25 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ActivityIndicator, Alert, Image, KeyboardAvoidingView, Pressable, Platform, ScrollView, TextInput, View } from 'react-native';
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Pressable,
+  Platform,
+  ScrollView,
+  TextInput,
+  View,
+  Modal,
+} from 'react-native';
+import DatePicker from '@react-native-community/datetimepicker';
 import { AppText } from '@/components';
-import { NavigationContext, NavigationProp, RouteProp, useRoute } from '@react-navigation/native';
+import {
+  NavigationContext,
+  NavigationProp,
+  RouteProp,
+  useRoute,
+} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -22,7 +38,7 @@ import { TrackingStackParamList } from '@/navigation';
 import { AttachmentFile } from '@/types';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
 
-const MAX_CONTENT_LENGTH = 300;
+const MAX_CONTENT_LENGTH = 500;
 const MAX_ATTACHMENTS = 5;
 
 const DiaryEntryScreen: React.FC = () => {
@@ -45,6 +61,8 @@ const DiaryEntryScreen: React.FC = () => {
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoadingEntry, setIsLoadingEntry] = useState<boolean>(false);
+  const [entryDate, setEntryDate] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
   const canSubmit = useMemo(
     () => content.trim().length > 0 && !isSubmitting && !isLoadingEntry,
@@ -75,13 +93,20 @@ const DiaryEntryScreen: React.FC = () => {
         setMoodTag(resolvedMood);
         setPositivityScore(getMoodScore(resolvedMood));
 
-        const mappedAttachments: AttachmentFile[] = (entry.attachments ?? []).map(
-          attachment => ({
-            uri: attachment.fileUrl,
-            name: attachment.fileName,
-            type: 'image/jpeg',
-          }),
-        );
+        // Initialize entryDate from the entry or default to today
+        if (entry.entryDate) {
+          setEntryDate(new Date(entry.entryDate));
+        } else {
+          setEntryDate(new Date());
+        }
+
+        const mappedAttachments: AttachmentFile[] = (
+          entry.attachments ?? []
+        ).map(attachment => ({
+          uri: attachment.fileUrl,
+          name: attachment.fileName,
+          type: 'image/jpeg',
+        }));
 
         setAttachments(mappedAttachments);
       } catch (error) {
@@ -107,7 +132,11 @@ const DiaryEntryScreen: React.FC = () => {
       quality: 0.8,
     });
 
-    if (response.didCancel || !response.assets || response.assets.length === 0) {
+    if (
+      response.didCancel ||
+      !response.assets ||
+      response.assets.length === 0
+    ) {
       return;
     }
 
@@ -129,7 +158,10 @@ const DiaryEntryScreen: React.FC = () => {
     }
 
     if (attachments.length >= MAX_ATTACHMENTS) {
-      Alert.alert(t('entry.selectionLimitTitle'), t('entry.selectionLimitMessage'));
+      Alert.alert(
+        t('entry.selectionLimitTitle'),
+        t('entry.selectionLimitMessage'),
+      );
       return;
     }
 
@@ -146,9 +178,53 @@ const DiaryEntryScreen: React.FC = () => {
     setAttachments(previous => [...previous, ...filesToAppend]);
   };
 
+  const handleDateChange = (event: any, selectedDate?: Date): void => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+
+    if (selectedDate) {
+      // Disable future dates
+      if (selectedDate > new Date()) {
+        Alert.alert(
+          t('entry.validationTitle'),
+          'Bạn không thể chọn ngày trong tương lai',
+        );
+        return;
+      }
+      setEntryDate(selectedDate);
+    }
+  };
+
+  const formatEntryDate = (): string => {
+    const day = entryDate.getDate();
+    const month = entryDate.getMonth() + 1;
+    const year = entryDate.getFullYear();
+
+    // For Vietnamese, format as "Ngày 15 tháng 4, 2026"
+    const locale =
+      t('entry.dateFormat') === '{{day}}/{{month}}/{{year}}' ? 'en' : 'vi';
+
+    if (locale === 'vi') {
+      return `Ngày ${day} tháng ${month}, ${year}`;
+    } else {
+      return `${day}/${month}/${year}`;
+    }
+  };
+
+  const formatDateForAPI = (): string => {
+    const day = String(entryDate.getDate()).padStart(2, '0');
+    const month = String(entryDate.getMonth() + 1).padStart(2, '0');
+    const year = entryDate.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
   const handleSubmit = async (): Promise<void> => {
     if (!content.trim()) {
-      Alert.alert(t('entry.validationTitle'), t('entry.validationContentRequired'));
+      Alert.alert(
+        t('entry.validationTitle'),
+        t('entry.validationContentRequired'),
+      );
       return;
     }
 
@@ -161,21 +237,32 @@ const DiaryEntryScreen: React.FC = () => {
       content,
       moodTag,
       positivityScore: mappedScore,
+      entryDate: formatDateForAPI(),
     };
     const imageUris = attachments.map(attachment => attachment.uri);
+    console.log(
+      'Submitting diary entry with payload:',
+      diaryPayload,
+      'and images:',
+      imageUris,
+    );
 
     try {
       const response = entryId
         ? await diaryApi.updateDiaryEntry(entryId, diaryPayload, imageUris)
         : await diaryApi.createDiaryEntry(diaryPayload, imageUris);
 
-      Alert.alert(t('entry.successTitle'), t('entry.successDiaryId', { id: response.id }));
+      Alert.alert(
+        t('entry.successTitle'),
+        t('entry.successDiaryId', { id: response.id }),
+      );
       setTitle('');
       setContent('');
       setAttachments([]);
       setMoodTag('TERRIBLE');
       setPositivityScore(8);
-      navigation?.navigate('DiaryDashboard');
+      setEntryDate(new Date());
+      navigation?.navigate('DiaryOverview');
     } catch {
       Alert.alert(t('entry.errorTitle'), t('entry.errorCreateDiary'));
     } finally {
@@ -187,17 +274,24 @@ const DiaryEntryScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <View style={styles.screen}>
           <ScrollView
             contentContainerStyle={styles.container}
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.headerRow}>
               <Pressable
                 style={styles.headerBackButton}
-                onPress={() => navigation?.navigate('DiaryDashboard')}
-                disabled={isSubmitting || isLoadingEntry}>
-                <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
+                onPress={() => navigation?.navigate('DiaryOverview')}
+                disabled={isSubmitting || isLoadingEntry}
+              >
+                <Feather
+                  name="arrow-left"
+                  size={20}
+                  color={COLORS.textPrimary}
+                />
               </Pressable>
               <AppText style={styles.screenTitle}>
                 {entryId ? t('entry.editTitle') : t('entry.screenTitle')}
@@ -205,7 +299,108 @@ const DiaryEntryScreen: React.FC = () => {
             </View>
 
             <View style={styles.section}>
-              <AppText style={styles.sectionLabel}>{t('entry.titleLabel')}</AppText>
+              <AppText style={styles.sectionLabel}>
+                {t('entry.moodLabel')}
+              </AppText>
+              <View style={styles.moodRow}>
+                {MOOD_SELECTOR_OPTIONS.map(mood => {
+                  const isSelected = mood.value === moodTag;
+
+                  return (
+                    <Pressable
+                      key={mood.value}
+                      style={[
+                        styles.moodOuter,
+                        isSelected && styles.moodOuterSelected,
+                      ]}
+                      onPress={() => setMoodTag(mood.value)}
+                      disabled={isSubmitting}
+                    >
+                      <View
+                        style={[
+                          styles.moodInner,
+                          { backgroundColor: mood.color },
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name={isSelected ? mood.activeIcon : mood.icon}
+                          size={28}
+                          color={COLORS.journalMoodFace}
+                        />
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Date Picker Section */}
+            <View style={styles.section}>
+              <AppText style={styles.sectionLabel}>
+                {t('entry.dateLabel')}
+              </AppText>
+              <Pressable
+                style={styles.datePickerButton}
+                onPress={() => setShowDatePicker(true)}
+                disabled={isSubmitting || isLoadingEntry}
+              >
+                <Feather name="calendar" size={18} color={COLORS.primary} />
+                <AppText style={styles.datePickerText}>
+                  {formatEntryDate()}
+                </AppText>
+              </Pressable>
+            </View>
+
+            {/* Date Picker Modal */}
+            {showDatePicker &&
+              (Platform.OS === 'ios' ? (
+                <Modal
+                  transparent
+                  animationType="slide"
+                  visible={showDatePicker}
+                  onRequestClose={() => setShowDatePicker(false)}
+                >
+                  <View style={styles.datePickerModal}>
+                    <View style={styles.datePickerContainer}>
+                      <View style={styles.datePickerHeader}>
+                        <Pressable onPress={() => setShowDatePicker(false)}>
+                          <AppText style={styles.datePickerHeaderText}>
+                            {t('entry.selectDate')}
+                          </AppText>
+                        </Pressable>
+                      </View>
+                      <DatePicker
+                        value={entryDate}
+                        mode="date"
+                        display="spinner"
+                        onChange={handleDateChange}
+                        maximumDate={new Date()}
+                      />
+                      <Pressable
+                        style={styles.datePickerConfirmButton}
+                        onPress={() => setShowDatePicker(false)}
+                      >
+                        <AppText style={styles.datePickerConfirmText}>
+                          {t('auth.common.notificationTitle')}
+                        </AppText>
+                      </Pressable>
+                    </View>
+                  </View>
+                </Modal>
+              ) : (
+                <DatePicker
+                  value={entryDate}
+                  mode="date"
+                  display="default"
+                  onChange={handleDateChange}
+                  maximumDate={new Date()}
+                />
+              ))}
+
+            <View style={styles.section}>
+              <AppText style={styles.sectionLabel}>
+                {t('entry.titleLabel')}
+              </AppText>
               <View style={styles.titleInputContainer}>
                 <Feather name="file-text" size={18} color={COLORS.inputIcon} />
                 <TextInput
@@ -221,39 +416,9 @@ const DiaryEntryScreen: React.FC = () => {
             </View>
 
             <View style={styles.section}>
-              <AppText style={styles.sectionLabel}>{t('entry.moodLabel')}</AppText>
-              <View style={styles.moodRow}>
-                {MOOD_SELECTOR_OPTIONS.map(mood => {
-                  const isSelected = mood.value === moodTag;
-
-                  return (
-                    <Pressable
-                      key={mood.value}
-                      style={[
-                        styles.moodOuter,
-                        isSelected && styles.moodOuterSelected,
-                      ]}
-                      onPress={() => setMoodTag(mood.value)}
-                      disabled={isSubmitting}>
-                      <View
-                        style={[
-                          styles.moodInner,
-                          { backgroundColor: mood.color },
-                        ]}>
-                        <MaterialCommunityIcons
-                          name={isSelected ? mood.activeIcon : mood.icon}
-                          size={28}
-                          color={COLORS.journalMoodFace}
-                        />
-                      </View>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <AppText style={styles.sectionLabel}>{t('entry.contentLabel')}</AppText>
+              <AppText style={styles.sectionLabel}>
+                {t('entry.contentLabel')}
+              </AppText>
               <View style={styles.contentCard}>
                 <TextInput
                   style={[styles.contentInput, { fontFamily: FONTS.regular }]}
@@ -268,26 +433,30 @@ const DiaryEntryScreen: React.FC = () => {
                 />
 
                 <View style={styles.toolbarRow}>
-                  <View style={styles.toolbarLeft}>
-                    <Pressable style={styles.iconPillButton} onPress={() => {}}>
-                      <Ionicons name="arrow-undo" size={18} color={COLORS.textPrimary} />
-                    </Pressable>
-                    <Pressable style={styles.iconPillButton} onPress={() => {}}>
-                      <Ionicons name="arrow-redo" size={18} color={COLORS.textPrimary} />
-                    </Pressable>
-                  </View>
-
                   <Pressable
                     style={styles.addPhotoButton}
                     onPress={handlePickImage}
-                    disabled={isSubmitting}>
-                    <Feather name="camera" size={16} color={COLORS.journalCounter} />
-                    <AppText style={styles.addPhotoText}>{t('entry.addPhoto')}</AppText>
+                    disabled={isSubmitting}
+                  >
+                    <Feather
+                      name="camera"
+                      size={16}
+                      color={COLORS.journalCounter}
+                    />
+                    <AppText style={styles.addPhotoText}>
+                      {t('entry.addPhoto')}
+                    </AppText>
                   </Pressable>
 
                   <View style={styles.counterRow}>
-                    <Feather name="file-text" size={14} color={COLORS.journalCounter} />
-                    <AppText style={styles.counterText}>{t('entry.counter', { count: content.length })}</AppText>
+                    <Feather
+                      name="file-text"
+                      size={14}
+                      color={COLORS.journalCounter}
+                    />
+                    <AppText style={styles.counterText}>
+                      {t('entry.counter', { count: content.length })}
+                    </AppText>
                   </View>
                 </View>
 
@@ -295,7 +464,8 @@ const DiaryEntryScreen: React.FC = () => {
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.attachmentsPreviewRow}>
+                    contentContainerStyle={styles.attachmentsPreviewRow}
+                  >
                     {attachments.map((file, index) => (
                       <Image
                         key={`${file.name}-${index}`}
@@ -311,15 +481,25 @@ const DiaryEntryScreen: React.FC = () => {
 
           <View style={styles.submitArea}>
             <Pressable
-              style={[styles.submitButton, !canSubmit && styles.submitButtonDisabled]}
+              style={[
+                styles.submitButton,
+                !canSubmit && styles.submitButtonDisabled,
+              ]}
               onPress={handleSubmit}
-              disabled={!canSubmit}>
+              disabled={!canSubmit}
+            >
               {isSubmitting ? (
                 <ActivityIndicator color={COLORS.buttonPrimaryText} />
               ) : (
                 <View style={styles.submitContent}>
-                  <AppText style={styles.submitText}>{t('entry.submitButton')}</AppText>
-                  <Feather name="check" size={20} color={COLORS.buttonPrimaryText} />
+                  <AppText style={styles.submitText}>
+                    {t('entry.submitButton')}
+                  </AppText>
+                  <Feather
+                    name="check"
+                    size={20}
+                    color={COLORS.buttonPrimaryText}
+                  />
                 </View>
               )}
             </Pressable>

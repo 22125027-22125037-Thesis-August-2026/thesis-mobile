@@ -3,6 +3,7 @@ export interface DiaryEntryRequest {
   content: string;
   moodTag?: string;
   positivityScore?: number;
+  entryDate?: string; // ISO format: YYYY-MM-DD
 }
 
 export interface MediaAttachmentResponse {
@@ -18,6 +19,7 @@ export interface DiaryEntryResponse {
   moodTag: string | null;
   positivityScore: number | null;
   attachments: MediaAttachmentResponse[];
+  entryDate: string; // ISO format: YYYY-MM-DD
   createdAt: string;
   updatedAt: string;
 }

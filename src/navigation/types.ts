@@ -63,7 +63,6 @@ export type RootStackParamList = {
   SleepOverview: undefined;
   SleepEntry: undefined;
   DiaryOverview: undefined;
-  DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;
   FoodOverview: undefined;
   FoodEntry: undefined;
@@ -77,7 +76,6 @@ export type TrackingStackParamList = {
   TherapyOverview: undefined;
 
   DiaryOverview: undefined;
-  DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;
   SleepOverview: undefined;
   SleepEntry: undefined;

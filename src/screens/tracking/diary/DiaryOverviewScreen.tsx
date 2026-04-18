@@ -1,146 +1,99 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View } from 'react-native';
-import { AppText } from '@/components';
-import { NavigationContext, NavigationProp } from '@react-navigation/native';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  TextInput,
+  View,
+  Platform,
+  Modal,
+} from 'react-native';
+import DatePicker from '@react-native-community/datetimepicker';
+import {
+  useFocusEffect,
+  NavigationContext,
+  NavigationProp,
+} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { diaryApi } from '@/api';
-import { MoodTone, getMoodTone } from '@/constants';
-import { COLORS } from '@/theme';
+import { getMoodCardUi } from '@/constants';
+import { AppText } from '@/components';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
 import { TrackingStackParamList } from '@/navigation';
 import { DiaryEntryResponse } from '@/types';
 import { styles } from './DiaryOverviewScreen.styles';
 
-type MoodCellTone = MoodTone | 'empty';
+// ===== UTILITY FUNCTIONS =====
 
-type GridCell = {
-  key: string;
-  mood: MoodCellTone;
-  dayLabel: string;
-  isCurrentMonth: boolean;
-};
+const formatDate = (dateString: string): string => {
+  console.log('Formatting date:', dateString);
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '--/--/----';
 
-const WEEKDAY_KEYS = [
-  'overview.weekdayMon',
-  'overview.weekdayTue',
-  'overview.weekdayWed',
-  'overview.weekdayThu',
-  'overview.weekdayFri',
-  'overview.weekdaySat',
-  'overview.weekdaySun',
-] as const;
-
-const shiftMonth = (date: Date, delta: number): Date => {
-  return new Date(date.getFullYear(), date.getMonth() + delta, 1);
-};
-
-const findTodayEntry = (entries: DiaryEntryResponse[]): DiaryEntryResponse | undefined => {
-  const today = new Date();
-
-  return entries.find(entry => {
-    const createdDate = new Date(entry.createdAt);
-
-    return (
-      !Number.isNaN(createdDate.getTime()) &&
-      createdDate.getFullYear() === today.getFullYear() &&
-      createdDate.getMonth() === today.getMonth() &&
-      createdDate.getDate() === today.getDate()
-    );
-  });
-};
-
-const toDateKey = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
   const day = `${date.getDate()}`.padStart(2, '0');
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const year = date.getFullYear();
 
-  return `${year}-${month}-${day}`;
+  return `${day}/${month}/${year}`;
 };
 
-const getMoodDotStyle = (mood: MoodCellTone): { backgroundColor: string; borderColor: string } => {
-  if (mood === 'negative') {
-    return {
-      backgroundColor: COLORS.accentNegative,
-      borderColor: COLORS.accentNegative,
-    };
+const isDateInRange = (
+  entryDateStr: string,
+  fromDate: Date | null,
+  toDate: Date | null,
+): boolean => {
+  const entryDate = new Date(entryDateStr);
+  entryDate.setHours(0, 0, 0, 0);
+
+  if (fromDate) {
+    const from = new Date(fromDate);
+    from.setHours(0, 0, 0, 0);
+    if (entryDate < from) return false;
   }
 
-  if (mood === 'neutral') {
-    return {
-      backgroundColor: COLORS.accentNeutral,
-      borderColor: COLORS.accentNeutral,
-    };
+  if (toDate) {
+    const to = new Date(toDate);
+    to.setHours(23, 59, 59, 999);
+    if (entryDate > to) return false;
   }
 
-  if (mood === 'positive') {
-    return {
-      backgroundColor: COLORS.accentPositive,
-      borderColor: COLORS.accentPositive,
-    };
-  }
-
-  return {
-    backgroundColor: COLORS.surface,
-    borderColor: COLORS.inputBorder,
-  };
+  return true;
 };
 
-const generateMoodGrid = (entries: DiaryEntryResponse[], monthDate: Date): GridCell[] => {
-  const year = monthDate.getFullYear();
-  const month = monthDate.getMonth();
-  const firstDayOfMonth = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const leadingDays = (firstDayOfMonth.getDay() + 6) % 7;
-  const totalCells = Math.ceil((leadingDays + daysInMonth) / 7) * 7;
+const calculateStreak = (entries: DiaryEntryResponse[]): number => {
+  if (entries.length === 0) return 0;
 
-  const moodByDate = new Map<string, MoodCellTone>();
   const sortedEntries = [...entries].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
-  sortedEntries.forEach(entry => {
-    const createdAt = new Date(entry.createdAt);
+  let streak = 0;
+  let currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
 
-    if (
-      Number.isNaN(createdAt.getTime()) ||
-      createdAt.getFullYear() !== year ||
-      createdAt.getMonth() !== month
-    ) {
-      return;
+  for (const entry of sortedEntries) {
+    const entryDate = new Date(entry.createdAt);
+    entryDate.setHours(0, 0, 0, 0);
+
+    const diffTime = currentDate.getTime() - entryDate.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    if (diffDays === streak) {
+      streak++;
+      currentDate = new Date(entryDate);
+    } else if (diffDays > streak) {
+      break;
     }
+  }
 
-    const dateKey = toDateKey(createdAt);
-
-    if (!moodByDate.has(dateKey)) {
-      moodByDate.set(dateKey, getMoodTone(entry.moodTag, entry.positivityScore));
-    }
-  });
-
-  return Array.from({ length: totalCells }, (_, index) => {
-    const dayNumber = index - leadingDays + 1;
-    const isCurrentMonth = dayNumber >= 1 && dayNumber <= daysInMonth;
-
-    if (!isCurrentMonth) {
-      return {
-        key: `mood-cell-${index}`,
-        mood: 'empty',
-        dayLabel: '',
-        isCurrentMonth: false,
-      };
-    }
-
-    const dateKey = toDateKey(new Date(year, month, dayNumber));
-
-    return {
-      key: `mood-cell-${year}-${month + 1}-${dayNumber}`,
-      mood: moodByDate.get(dateKey) ?? 'empty',
-      dayLabel: String(dayNumber),
-      isCurrentMonth: true,
-    };
-  });
+  return streak;
 };
+
+// ===== MAIN COMPONENT =====
 
 const DiaryOverviewScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -149,62 +102,182 @@ const DiaryOverviewScreen: React.FC = () => {
     | undefined;
   const [entries, setEntries] = useState<DiaryEntryResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [calendarDate, setCalendarDate] = useState<Date>(() => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1);
-  });
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
+  const [showFromDatePicker, setShowFromDatePicker] = useState<boolean>(false);
+  const [showToDatePicker, setShowToDatePicker] = useState<boolean>(false);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchEntries = async (): Promise<void> => {
-      setIsLoading(true);
-
-      try {
-        const data = await diaryApi.getDiaryEntries();
-
-        if (isMounted) {
-          setEntries(data);
-        }
-      } catch (error) {
-        console.error('[DiaryOverview] Failed to fetch entries:', error);
-        if (isMounted) {
-          setEntries([]);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchEntries();
-
-    return () => {
-      isMounted = false;
-    };
+  const fetchEntries = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const data = await diaryApi.getDiaryEntries();
+      setEntries(data);
+    } catch (error) {
+      console.error('[DiaryOverview] Failed to fetch entries:', error);
+      setEntries([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const yearlyCountText = useMemo(
-    () => t('overview.yearCount', { count: entries.length }),
-    [entries.length],
+  useFocusEffect(
+    useCallback(() => {
+      fetchEntries();
+    }, [fetchEntries]),
   );
-  const monthTitleText = useMemo(
-    () =>
-      t('overview.monthTitle', {
-        month: calendarDate.getMonth() + 1,
-        year: calendarDate.getFullYear(),
-      }),
-    [calendarDate],
+
+  const streak = useMemo(() => calculateStreak(entries), [entries]);
+
+  const filteredEntries = useMemo(() => {
+    let filtered = entries;
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        entry =>
+          entry.title?.toLowerCase().includes(query) ||
+          entry.content?.toLowerCase().includes(query),
+      );
+    }
+
+    // Date range filter
+    filtered = filtered.filter(entry =>
+      isDateInRange(entry.entryDate, fromDate, toDate),
+    );
+
+    // Sort by entryDate descending
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.entryDate ?? a.createdAt).getTime();
+      const dateB = new Date(b.entryDate ?? b.createdAt).getTime();
+      return dateB - dateA;
+    });
+  }, [entries, searchQuery, fromDate, toDate]);
+
+  const handleEntryPress = (entryId: string) => {
+    navigation?.navigate('DiaryEntry', { entryId });
+  };
+
+  const handleNewEntry = () => {
+    navigation?.navigate('DiaryEntry');
+  };
+
+  const handleFromDateChange = (event: any, selectedDate?: Date): void => {
+    if (Platform.OS === 'android') {
+      setShowFromDatePicker(false);
+    }
+    if (selectedDate) {
+      setFromDate(selectedDate);
+    }
+  };
+
+  const handleToDateChange = (event: any, selectedDate?: Date): void => {
+    if (Platform.OS === 'android') {
+      setShowToDatePicker(false);
+    }
+    if (selectedDate) {
+      setToDate(selectedDate);
+    }
+  };
+
+  const formatDateDisplay = (date: Date | null): string => {
+    if (!date) return '';
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const renderDiaryCard = ({
+    item,
+    index,
+  }: {
+    item: DiaryEntryResponse;
+    index: number;
+  }) => {
+    const moodUi = getMoodCardUi(item.moodTag);
+    const isLastItem = index === filteredEntries.length - 1;
+
+    return (
+      <View style={styles.timelineItem}>
+        {/* Timeline Line */}
+        <View
+          style={[styles.timelineLine, isLastItem && styles.timelineLineHidden]}
+        />
+
+        {/* Timeline Dot with Mood Icon */}
+        <View
+          style={[
+            styles.timelineDot,
+            { borderColor: moodUi.iconBackgroundColor },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name={moodUi.moodIcon}
+            size={28}
+            color={moodUi.iconBackgroundColor}
+          />
+        </View>
+
+        {/* Card Content - Full Width */}
+        <Pressable
+          style={styles.entryCard}
+          onPress={() => handleEntryPress(item.id)}
+        >
+          <View style={styles.cardHeader}>
+            <View style={styles.cardHeaderLeft}>
+              <View style={styles.cardMeta}>
+                <AppText style={styles.entryDate}>
+                  {formatDate(item.entryDate)}
+                </AppText>
+              </View>
+              {item.title?.trim() && (
+                <AppText style={styles.entryTitle}>{item.title}</AppText>
+              )}
+            </View>
+          </View>
+
+          <AppText style={styles.entryContent}>{item.content}</AppText>
+        </Pressable>
+      </View>
+    );
+  };
+
+  const renderEmptyState = () => (
+    <View style={styles.emptyStateWrap}>
+      <MaterialCommunityIcons
+        name="notebook-outline"
+        size={64}
+        color={COLORS.textSecondary}
+      />
+      <AppText style={styles.emptyStateTitle}>
+        {t('overview.emptyState')}
+      </AppText>
+      <AppText style={styles.emptyStateSubtitle}>
+        {searchQuery
+          ? t('overview.emptyStateSearchResult')
+          : t('overview.emptyStateNoEntries')}
+      </AppText>
+      <Pressable style={styles.emptyStateButton} onPress={handleNewEntry}>
+        <Feather
+          name="plus"
+          size={18}
+          color={COLORS.white}
+          style={{ marginRight: SPACING.xs }}
+        />
+        <AppText style={styles.emptyStateButtonText}>
+          {t('overview.newEntryButton')}
+        </AppText>
+      </Pressable>
+    </View>
   );
-  const moodGrid = useMemo(() => generateMoodGrid(entries, calendarDate), [entries, calendarDate]);
-  const todayEntry = useMemo(() => findTodayEntry(entries), [entries]);
 
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingWrap}>
-          <ActivityIndicator size="large" color={COLORS.buttonPrimary} />
+          <ActivityIndicator size="large" color={COLORS.primary} />
           <AppText style={styles.loadingText}>{t('overview.loading')}</AppText>
         </View>
       </SafeAreaView>
@@ -213,115 +286,183 @@ const DiaryOverviewScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.headerWrap}>
-          <View style={styles.headerBackground}>
-            <View style={[styles.headerRing, styles.headerRingTopLeft]} />
-            <View style={[styles.headerRing, styles.headerRingTopRight]} />
-            <View style={[styles.headerRing, styles.headerRingMidRight]} />
-            <View style={[styles.headerRing, styles.headerRingBottomLeft]} />
-            <View style={[styles.headerRing, styles.headerRingSmall]} />
-            <View style={styles.headerInner}>
-              <View style={styles.headerTopRow}>
-                <Pressable
-                  style={styles.backButton}
-                  onPress={() => navigation?.navigate('Home')}
-                  disabled={!navigation}>
-                  <Feather name="chevron-left" size={24} color={COLORS.white} />
-                </Pressable>
-                <AppText style={styles.headerTitle}>{t('overview.headerTitle')}</AppText>
-              </View>
+      <View style={styles.container}>
+        {/* Header with Back Button */}
+        <View style={styles.headerSection}>
+          <Pressable
+            style={styles.headerBackButton}
+            onPress={() => navigation?.navigate('MainTabs' as any)}
+          >
+            <Feather name="chevron-left" size={24} color={COLORS.textPrimary} />
+          </Pressable>
+          <AppText style={styles.headerTitle}>
+            {t('overview.headerTitle')}
+          </AppText>
+          <View style={{ width: 24 }} />
+        </View>
 
-              <View style={styles.centerWrap}>
-                <AppText style={styles.scoreText}>{yearlyCountText}</AppText>
-                <AppText style={styles.subtitle}>{t('overview.subtitleLine1')}{`\n`}{t('overview.subtitleLine2')}</AppText>
-              </View>
+        {/* Search Bar & Streak Widget */}
+        <View style={styles.searchStreakSection}>
+          <View style={styles.searchInputWrap}>
+            <Feather name="search" size={18} color={COLORS.placeholder} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder={t('overview.searchPlaceholder')}
+              placeholderTextColor={COLORS.placeholder}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {searchQuery.length > 0 && (
+              <Pressable onPress={() => setSearchQuery('')}>
+                <Feather name="x" size={18} color={COLORS.placeholder} />
+              </Pressable>
+            )}
+          </View>
+
+          {/* Streak Widget */}
+          <View style={styles.streakWidget}>
+            <AppText style={styles.streakFire}>🔥</AppText>
+            <View style={styles.streakContent}>
+              <AppText style={styles.streakNumber}>{streak}</AppText>
+              <AppText style={styles.streakLabel}>
+                {t('overview.streakLabel')}
+              </AppText>
             </View>
           </View>
+        </View>
+
+        {/* Date Range Filter Row */}
+        <View style={styles.dateRangeFilterRow}>
+          <Pressable
+            style={styles.dateRangeButton}
+            onPress={() => setShowFromDatePicker(true)}
+          >
+            <Feather name="calendar" size={16} color={COLORS.primary} />
+            <AppText style={styles.dateRangeButtonText}>
+              {fromDate
+                ? formatDateDisplay(fromDate)
+                : t('overview.dateRangeFromLabel')}
+            </AppText>
+          </Pressable>
 
           <Pressable
-            style={styles.fabButton}
-            onPress={() => {
-              if (!navigation) {
-                return;
-              }
-
-              if (todayEntry) {
-                navigation.navigate('DiaryEntry', { entryId: todayEntry.id });
-                return;
-              }
-
-              navigation.navigate('DiaryEntry');
-            }}>
-            <Feather name="plus" size={34} color={COLORS.white} />
+            style={styles.dateRangeButton}
+            onPress={() => setShowToDatePicker(true)}
+          >
+            <Feather name="calendar" size={16} color={COLORS.primary} />
+            <AppText style={styles.dateRangeButtonText}>
+              {toDate
+                ? formatDateDisplay(toDate)
+                : t('overview.dateRangeToLabel')}
+            </AppText>
           </Pressable>
-        </View>
 
-        <View style={styles.contentWrap}>
-          <View style={styles.sectionHeaderRow}>
-            <AppText style={styles.sectionTitle}>{t('overview.sectionTitle')}</AppText>
-            <Pressable onPress={() => navigation?.navigate('DiaryDashboard')}>
-              <Ionicons
-                name="ellipsis-vertical"
-                size={20}
-                color={COLORS.placeholder}
-              />
-            </Pressable>
-          </View>
-
-          <View style={styles.monthHeaderRow}>
+          {(fromDate || toDate) && (
             <Pressable
-              style={styles.monthNavButton}
-              onPress={() => setCalendarDate(previous => shiftMonth(previous, -1))}>
-              <Feather name="chevron-left" size={18} color={COLORS.textPrimary} />
-            </Pressable>
-
-            <AppText style={styles.monthTitle}>{monthTitleText}</AppText>
-
-            <Pressable
-              style={styles.monthNavButton}
-              onPress={() => setCalendarDate(previous => shiftMonth(previous, 1))}>
-              <Feather name="chevron-right" size={18} color={COLORS.textPrimary} />
-            </Pressable>
-          </View>
-
-          <View style={styles.weekdayRow}>
-            {WEEKDAY_KEYS.map(weekdayKey => (
-              <AppText key={weekdayKey} style={styles.weekdayText}>
-                {t(weekdayKey)}
+              style={styles.dateRangeClearButton}
+              onPress={() => {
+                setFromDate(null);
+                setToDate(null);
+              }}
+            >
+              <AppText style={styles.dateRangeClearText}>
+                {t('overview.dateRangeClearButton')}
               </AppText>
-            ))}
-          </View>
-
-          <View style={styles.gridWrap}>
-            {moodGrid.map(cell => {
-              const dotColor = getMoodDotStyle(cell.mood);
-
-              return (
-                <View
-                  key={cell.key}
-                  style={[
-                    styles.moodDot,
-                    !cell.isCurrentMonth && styles.moodDotInactive,
-                    {
-                      backgroundColor: dotColor.backgroundColor,
-                      borderColor: dotColor.borderColor,
-                    },
-                  ]}>
-                  <AppText
-                    style={[
-                      styles.dayText,
-                      !cell.isCurrentMonth && styles.dayTextInactive,
-                      cell.mood !== 'empty' && styles.dayTextFilled,
-                    ]}>
-                    {cell.dayLabel}
-                  </AppText>
-                </View>
-              );
-            })}
-          </View>
+            </Pressable>
+          )}
         </View>
-      </ScrollView>
+
+        {/* From Date Picker */}
+        {showFromDatePicker &&
+          (Platform.OS === 'ios' ? (
+            <Modal
+              transparent
+              animationType="slide"
+              visible={showFromDatePicker}
+              onRequestClose={() => setShowFromDatePicker(false)}
+            >
+              <View style={styles.datePickerModal}>
+                <View style={styles.datePickerContainer}>
+                  <View style={styles.datePickerHeader}>
+                    <Pressable onPress={() => setShowFromDatePicker(false)}>
+                      <AppText style={styles.datePickerHeaderText}>
+                        Done
+                      </AppText>
+                    </Pressable>
+                  </View>
+                  <DatePicker
+                    value={fromDate ?? new Date()}
+                    mode="date"
+                    display="spinner"
+                    onChange={handleFromDateChange}
+                  />
+                </View>
+              </View>
+            </Modal>
+          ) : (
+            <DatePicker
+              value={fromDate ?? new Date()}
+              mode="date"
+              display="default"
+              onChange={handleFromDateChange}
+            />
+          ))}
+
+        {/* To Date Picker */}
+        {showToDatePicker &&
+          (Platform.OS === 'ios' ? (
+            <Modal
+              transparent
+              animationType="slide"
+              visible={showToDatePicker}
+              onRequestClose={() => setShowToDatePicker(false)}
+            >
+              <View style={styles.datePickerModal}>
+                <View style={styles.datePickerContainer}>
+                  <View style={styles.datePickerHeader}>
+                    <Pressable onPress={() => setShowToDatePicker(false)}>
+                      <AppText style={styles.datePickerHeaderText}>
+                        Done
+                      </AppText>
+                    </Pressable>
+                  </View>
+                  <DatePicker
+                    value={toDate ?? new Date()}
+                    mode="date"
+                    display="spinner"
+                    onChange={handleToDateChange}
+                  />
+                </View>
+              </View>
+            </Modal>
+          ) : (
+            <DatePicker
+              value={toDate ?? new Date()}
+              mode="date"
+              display="default"
+              onChange={handleToDateChange}
+            />
+          ))}
+
+        {/* Timeline Feed */}
+        {filteredEntries.length === 0 ? (
+          renderEmptyState()
+        ) : (
+          <FlatList
+            data={filteredEntries}
+            renderItem={renderDiaryCard}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.timelineContent}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+          />
+        )}
+
+        {/* FAB - Create New Entry */}
+        <Pressable style={styles.fab} onPress={handleNewEntry}>
+          <Feather name="plus" size={28} color={COLORS.white} />
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 };

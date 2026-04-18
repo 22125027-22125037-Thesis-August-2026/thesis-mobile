@@ -17,7 +17,6 @@ import {
   ChatScreen,
   ConsultationDetailScreen,
   ConsultationFeedbackScreen,
-  DiaryDashboardScreen,
   DiaryEntryScreen,
   DiaryOverviewScreen,
   FoodEntryScreen,
@@ -135,7 +134,6 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="SleepOverview" component={SleepOverviewScreen} />
       <Stack.Screen name="SleepEntry" component={SleepEntryScreen} />
       <Stack.Screen name="DiaryOverview" component={DiaryOverviewScreen} />
-      <Stack.Screen name="DiaryDashboard" component={DiaryDashboardScreen} />
       <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
       <Stack.Screen name="FoodOverview" component={FoodOverviewScreen} />
       <Stack.Screen name="FoodEntry" component={FoodEntryScreen} />
