@@ -262,7 +262,7 @@ const MatchingFormScreen: React.FC = () => {
     setIsSubmitting(true);
     try {
       await saveMatchingData(formData);
-      navigation.navigate('TherapistFilter', { matchingSuccess: true });
+      navigation.navigate('TherapistBookingLanding', { matchingSuccess: true });
     } catch {
       Alert.alert(t('auth.common.errorTitle'), t('matching.submitError'));
     } finally {

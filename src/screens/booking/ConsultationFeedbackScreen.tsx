@@ -1,10 +1,12 @@
-import React from 'react';
-import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Image, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 import { AppText } from '@/components';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { AxiosError } from 'axios';
+import { getTherapistDetails, submitReview, TherapistDetail } from '@/api';
 import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/ConsultationFeedbackScreen.styles';
@@ -13,12 +15,126 @@ type ConsultationFeedbackNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'ConsultationFeedback'
 >;
+type ConsultationFeedbackRouteProp = RouteProp<RootStackParamList, 'ConsultationFeedback'>;
 
 const RATING_EMOJIS = ['😞', '🙁', '😐', '🙂', '😄'] as const;
+const FALLBACK_AVATAR = require('../../assets/booking/doctor.png');
+
+const parseDate = (dateValue: string | undefined): Date | null => {
+  if (!dateValue) {
+    return null;
+  }
+
+  const parsed = new Date(dateValue);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
 
 const ConsultationFeedbackScreen: React.FC = () => {
   const navigation = useNavigation<ConsultationFeedbackNavigationProp>();
+  const route = useRoute<ConsultationFeedbackRouteProp>();
   const { t } = useTranslation();
+  const [selectedRating, setSelectedRating] = useState<number>(4);
+  const [reviewText, setReviewText] = useState<string>('');
+  const [therapist, setTherapist] = useState<TherapistDetail | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string>('');
+
+  const {
+    appointmentId,
+    therapistId,
+    slotStartDatetime,
+    method,
+    reason,
+    therapistName,
+    therapistSpecialty,
+    therapistAvatarUrl,
+  } = route.params;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadTherapist = async (): Promise<void> => {
+      try {
+        const therapistDetails = await getTherapistDetails(therapistId);
+        if (isMounted) {
+          setTherapist(therapistDetails);
+        }
+      } catch {
+        if (isMounted) {
+          setTherapist(null);
+        }
+      }
+    };
+
+    void loadTherapist();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [therapistId]);
+
+  const startedAt = useMemo(() => parseDate(slotStartDatetime), [slotStartDatetime]);
+  const summaryTime = useMemo(() => {
+    if (!startedAt) {
+      return '--:--';
+    }
+
+    return startedAt.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  }, [startedAt]);
+
+  const summaryDate = useMemo(() => {
+    if (!startedAt) {
+      return '--/--/----';
+    }
+
+    return startedAt.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  }, [startedAt]);
+
+  const resolvedTherapistName = therapist?.fullName?.trim() || therapistName || 'Đang cập nhật';
+  const resolvedTherapistSpecialty = therapist?.specialty?.trim() || therapistSpecialty || 'Đang cập nhật chuyên môn';
+  const avatarSource = therapist?.avatarUrl
+    ? { uri: therapist.avatarUrl }
+    : therapistAvatarUrl
+      ? { uri: therapistAvatarUrl }
+      : FALLBACK_AVATAR;
+
+  const methodLabel = method === 'Chat'
+    ? t('booking.consultationDetail.methods.chat')
+    : t('booking.consultationDetail.methods.video');
+
+  const handleConfirmReview = async (): Promise<void> => {
+    if (!appointmentId) {
+      setSubmitError(t('booking.consultationFeedback.submitErrorMissingAppointment'));
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      await submitReview({
+        appointmentId,
+        rating: selectedRating,
+        comment: reviewText.trim(),
+      });
+
+      navigation.navigate('TherapistBookingLanding');
+    } catch (error) {
+      const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
+      const backendMessage = axiosError.response?.data?.detail ?? axiosError.response?.data?.message;
+      setSubmitError(backendMessage ?? t('booking.consultationFeedback.submitErrorGeneric'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -31,72 +147,80 @@ const ConsultationFeedbackScreen: React.FC = () => {
       </TouchableOpacity>
 
       <View style={styles.card}>
-        <AppText style={styles.summaryTitle}>Tổng kết buổi tham vấn</AppText>
-        <AppText style={styles.summarySubtitle}>Video</AppText>
-        <AppText style={styles.summaryTime}>12:33 PM</AppText>
-        <AppText style={styles.summaryDate}>Ngày 14 Tháng 2, 2025</AppText>
+        <AppText style={styles.summaryTitle}>{t('booking.consultationFeedback.summaryTitle')}</AppText>
+        <AppText style={styles.summarySubtitle}>{methodLabel}</AppText>
+        <AppText style={styles.summaryTime}>{summaryTime}</AppText>
+        <AppText style={styles.summaryDate}>{summaryDate}</AppText>
       </View>
 
       <View style={styles.card}>
-        <AppText style={styles.cardTitle}>Chuyên gia tâm lý</AppText>
+        <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.therapistTitle')}</AppText>
         <View style={styles.therapistRow}>
-          <View style={styles.avatar}>
-            <Ionicons name="person-outline" size={30} color={COLORS.consultationFeedbackSecondary} />
-          </View>
+          <Image source={avatarSource} style={styles.avatar} resizeMode="cover" />
           <View>
-            <AppText style={styles.therapistName}>Nguyen Van A</AppText>
-            <AppText style={styles.therapistDescription}>
-              6 năm kinh nghiệm trong lĩnh vực tâm lý Trẻ vị thành niên và thanh thiếu niên
-            </AppText>
+            <AppText style={styles.therapistName}>{resolvedTherapistName}</AppText>
+            <AppText style={styles.therapistDescription}>{resolvedTherapistSpecialty}</AppText>
           </View>
         </View>
       </View>
 
       <View style={styles.card}>
-        <AppText style={styles.cardTitle}>Đánh giá buổi tham vấn</AppText>
+        <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.ratingTitle')}</AppText>
         <View style={styles.ratingRow}>
-          {RATING_EMOJIS.map((emoji) => (
-            <View key={emoji} style={styles.ratingCircle}>
+          {RATING_EMOJIS.map((emoji, index) => (
+            <TouchableOpacity
+              key={emoji}
+              style={styles.ratingCircle}
+              activeOpacity={0.85}
+              onPress={() => setSelectedRating(index + 1)}
+            >
               <AppText style={styles.ratingEmoji}>{emoji}</AppText>
-            </View>
+              {selectedRating === index + 1 ? (
+                <Ionicons name="checkmark-circle" size={14} color={COLORS.consultationFeedbackPrimary} />
+              ) : null}
+            </TouchableOpacity>
           ))}
         </View>
       </View>
 
       <View style={styles.card}>
-        <AppText style={styles.cardTitle}>Review</AppText>
+        <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.reviewTitle')}</AppText>
         <TextInput
           style={[styles.input, { fontFamily: FONTS.regular }]}
           placeholder={t('booking.consultationFeedback.feedbackPlaceholder')}
           placeholderTextColor={COLORS.consultationFeedbackSecondary}
           multiline
+          value={reviewText}
+          onChangeText={setReviewText}
         />
       </View>
 
       <View style={styles.card}>
-        <AppText style={styles.cardTitle}>Bài tập về nhà 1</AppText>
-        <AppText style={styles.subtitleStrong}>Đi dạo trong công viên</AppText>
+        <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.homeworkTitle')}</AppText>
+        <AppText style={styles.subtitleStrong}>{t('booking.consultationFeedback.homeworkSubtitle')}</AppText>
         <AppText style={styles.descriptionText}>
-          Dành 1 buổi chiều trong tuần để đi dạo trong công viên
+          {t('booking.consultationFeedback.homeworkDescription')}
         </AppText>
       </View>
 
       <View style={styles.card}>
-        <AppText style={styles.cardTitle}>Buổi tham vấn tiếp theo</AppText>
-        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.9}>
-          <AppText style={styles.primaryButtonText}>Đặt lịch</AppText>
-        </TouchableOpacity>
+        <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.reasonTitle')}</AppText>
+        <AppText style={styles.descriptionText}>{reason || t('booking.consultationFeedback.noReason')}</AppText>
       </View>
 
-      <View style={styles.card}>
-        <AppText style={styles.cardTitle}>Lí do cho buổi tham vấn</AppText>
-        <AppText style={styles.descriptionText}>
-          Dạo này tôi lo lắng cho tương lai, mất ăn mất ngủ...
+      {submitError ? <AppText style={styles.submitErrorText}>{submitError}</AppText> : null}
+
+      <TouchableOpacity
+        style={styles.confirmButton}
+        activeOpacity={0.9}
+        onPress={() => void handleConfirmReview()}
+        disabled={isSubmitting}
+      >
+        <AppText style={styles.confirmButtonText}>
+          {isSubmitting
+            ? t('booking.consultationFeedback.submittingButton')
+            : t('booking.consultationFeedback.confirmButton')}
         </AppText>
-      </View>
-
-      <TouchableOpacity style={styles.confirmButton} activeOpacity={0.9}>
-        <AppText style={styles.confirmButtonText}>Xác nhận</AppText>
       </TouchableOpacity>
     </ScrollView>
   );

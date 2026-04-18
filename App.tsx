@@ -12,6 +12,7 @@ import { AuthContext, AuthProvider } from '@/context/AuthContext';
 import { COLORS } from '@/theme';
 import { applyGlobalTypographyDefaults } from '@/theme/applyGlobalTypography';
 import {
+  AppointmentsHistoryScreen,
   BookingScreen,
   ChatScreen,
   ConsultationDetailScreen,
@@ -27,8 +28,8 @@ import {
   RegisterScreen,
   SleepEntryScreen,
   SleepOverviewScreen,
+  TherapistBookingLandingScreen,
   TherapistDetailScreen,
-  TherapistFilterScreen,
   TherapyOverviewScreen,
   VideoConsultationScreen,
   WaitingRoomScreen,
@@ -121,23 +122,15 @@ const renderTeenExperienceRoutes = () => {
 
       {/* Nested Screens (Deep Linking Stacks) */}
       <Stack.Screen name="Chat" component={ChatScreen} />
-      <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
-      <Stack.Screen name="TherapistFilter" component={TherapistFilterScreen} />
+      <Stack.Screen name="TherapistBookingLanding" component={TherapistBookingLandingScreen} />
+      <Stack.Screen name="AppointmentsHistory" component={AppointmentsHistoryScreen} />
+      <Stack.Screen name="TherapistFilter" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
       <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />
       <Stack.Screen name="Booking" component={BookingScreen} />
-      <Stack.Screen
-        name="ConsultationDetail"
-        component={ConsultationDetailScreen}
-      />
-      <Stack.Screen
-        name="ConsultationFeedback"
-        component={ConsultationFeedbackScreen}
-      />
-      <Stack.Screen
-        name="VideoConsultation"
-        component={VideoConsultationScreen}
-      />
+      <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
+      <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
+      <Stack.Screen name="ConsultationFeedback" component={ConsultationFeedbackScreen} />
       <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
       <Stack.Screen name="SleepOverview" component={SleepOverviewScreen} />
       <Stack.Screen name="SleepEntry" component={SleepEntryScreen} />
@@ -156,14 +149,9 @@ const renderTherapistExperienceRoutes = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
-      <Stack.Screen
-        name="ConsultationDetail"
-        component={ConsultationDetailScreen}
-      />
-      <Stack.Screen
-        name="VideoConsultation"
-        component={VideoConsultationScreen}
-      />
+      <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
+      <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
+      <Stack.Screen name="ConsultationFeedback" component={ConsultationFeedbackScreen} />
       <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
     </>
   );
@@ -231,9 +219,7 @@ const AppNav: React.FC = () => {
     >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken ? (
-          <Stack.Group screenOptions={{ animationEnabled: false }}>
-            {renderRoleBasedRoutes(userInfo?.role)}
-          </Stack.Group>
+          renderRoleBasedRoutes(userInfo?.role)
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />

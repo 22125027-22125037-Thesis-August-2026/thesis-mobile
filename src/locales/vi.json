@@ -244,6 +244,18 @@
       "question": "nối chuyên gia trị liệu không?",
       "chatButton": "Trò chuyện với chuyên gia"
     },
+    "bookingScreen": {
+      "headerTitle": "Đặt lịch hẹn",
+      "timeSectionTitle": "Chọn giờ",
+      "loadingSlots": "Đang tải lịch trống...",
+      "selectDateHint": "Vui lòng chọn ngày để xem lịch trống.",
+      "noSlotsForDate": "Không có lịch trống cho ngày đã chọn.",
+      "confirmButton": "Xác nhận",
+      "errorProfileMissing": "Không tìm thấy hồ sơ người dùng để xác định chuyên gia.",
+      "errorNoActiveTherapist": "Bạn chưa có chuyên gia đang hoạt động.",
+      "errorTherapistResolveFailed": "Không thể tải thông tin chuyên gia của bạn.",
+      "errorSlotsLoadFailed": "Không thể tải lịch trống của chuyên gia."
+    },
     "videoConsultation": {
       "readyTitle": "Sẵn sàng kết nối với chuyên gia",
       "initializingText": "Đang khởi tạo Zoom...",
@@ -253,7 +265,34 @@
       "initError": "Không thể khởi tạo Zoom. Vui lòng kiểm tra JWT token và thử lại.",
       "defaultError": "Không thể khởi tạo Zoom."
     },
+    "consultationDetail": {
+      "headerTitle": "Tham vấn chuyên gia",
+      "sectionLabel": "Bạn mong muốn gì sau buổi tham vấn",
+      "descriptionPlaceholder": "Miêu tả tình trạng, triệu chứng, mong muốn hiện tại của bạn",
+      "selectedAppointment": "Lịch hẹn đã chọn: {{date}} - {{time}}",
+      "methodTitle": "Bạn muốn giao tiếp với chuyên gia như thế nào",
+      "methods": {
+        "video": "Video",
+        "chat": "Chat"
+      },
+      "confirmButton": "Xác nhận"
+    },
     "consultationFeedback": {
+      "summaryTitle": "Tổng kết buổi tham vấn",
+      "therapistTitle": "Chuyên gia tâm lý",
+      "ratingTitle": "Đánh giá buổi tham vấn",
+      "reviewTitle": "Review",
+      "homeworkTitle": "Bài tập về nhà 1",
+      "homeworkSubtitle": "Đi dạo trong công viên",
+      "homeworkDescription": "Dành 1 buổi chiều trong tuần để đi dạo trong công viên",
+      "nextSessionTitle": "Buổi tham vấn tiếp theo",
+      "bookButton": "Đặt lịch",
+      "reasonTitle": "Lí do cho buổi tham vấn",
+      "noReason": "Bạn chưa cung cấp lí do cho buổi tham vấn này.",
+      "submittingButton": "Đang gửi...",
+      "submitErrorMissingAppointment": "Không thể gửi đánh giá vì thiếu thông tin lịch hẹn.",
+      "submitErrorGeneric": "Không thể gửi đánh giá. Vui lòng thử lại.",
+      "confirmButton": "Xác nhận",
       "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"
     }
   },

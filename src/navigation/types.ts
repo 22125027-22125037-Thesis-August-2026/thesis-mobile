@@ -12,24 +12,53 @@ export type RootStackParamList = {
   // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
   TherapyOverview: undefined;
 
+  TherapistBookingLanding: { matchingSuccess?: boolean } | undefined;
+  AppointmentsHistory: undefined;
   TherapistFilter: { matchingSuccess?: boolean } | undefined;
   MatchingForm: undefined;
   TherapistList: undefined;
   TherapistDetails: { id: string };
   Booking: { therapistId: string };
   ConsultationDetail: {
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
     selectedDate: string;
     selectedTime: string;
   };
   WaitingRoom: {
-    date: string;
-    time: string;
+    appointmentId?: string;
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
     method: 'Video' | 'Chat';
     reason?: string;
+    isBooked?: boolean;
   };
-  VideoConsultation: undefined;
+  VideoConsultation: {
+    appointmentId?: string;
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
+    method: 'Video' | 'Chat';
+    reason?: string;
+    therapistName?: string;
+    therapistSpecialty?: string;
+    therapistAvatarUrl?: string | null;
+  };
   // Resolved from Therapist-Feature
-  ConsultationFeedback: undefined;
+  ConsultationFeedback: {
+    appointmentId?: string;
+    therapistId: string;
+    slotId: string;
+    slotStartDatetime: string;
+    method: 'Video' | 'Chat';
+    reason?: string;
+    therapistName?: string;
+    therapistSpecialty?: string;
+    therapistAvatarUrl?: string | null;
+    endedAt?: string;
+  };
   // Resolved from main
   SleepOverview: undefined;
   SleepEntry: undefined;

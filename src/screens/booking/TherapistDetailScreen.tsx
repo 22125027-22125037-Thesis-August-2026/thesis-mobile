@@ -1,9 +1,10 @@
-import React from 'react';
-import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { CustomButton, AppText } from '@/components';
+import { getTherapistDetails, TherapistDetail } from '@/api';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/TherapistDetailScreen.styles';
 import { COLORS } from '@/theme';
@@ -13,55 +14,75 @@ type TherapistDetailRouteProp = RouteProp<RootStackParamList, 'TherapistDetails'
 
 type StatItem = {
   id: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: string;
   value: string;
   label: string;
 };
 
-type ReviewItem = {
-  id: string;
-  name: string;
-  rating: number;
-  comment: string;
-};
-
-const STATS: StatItem[] = [
-  { id: '1', icon: 'people-outline', value: '2,000+', label: 'Bệnh nhân' },
-  { id: '2', icon: 'briefcase-outline', value: '10+', label: 'Kinh nghiệm' },
-  { id: '3', icon: 'star-outline', value: '4.8', label: 'Rating' },
-  { id: '4', icon: 'chatbubble-ellipses-outline', value: '1,872', label: 'Đánh giá' },
-];
-
-const REVIEWS: ReviewItem[] = [
-  {
-    id: '1',
-    name: 'Nguyen Thi Mai',
-    rating: 5,
-    comment: 'Bác sĩ lắng nghe rất kỹ và đưa ra hướng dẫn thực tế, dễ áp dụng.',
-  },
-  {
-    id: '2',
-    name: 'Tran Minh Quan',
-    rating: 4,
-    comment: 'Buổi trị liệu rất hiệu quả, tôi thấy thoải mái hơn sau mỗi lần gặp.',
-  },
-  {
-    id: '3',
-    name: 'Le Bao Chau',
-    rating: 5,
-    comment: 'Không gian trao đổi an toàn, tôi cảm thấy được tôn trọng và thấu hiểu.',
-  },
-];
+const FALLBACK_AVATAR = require('../../assets/booking/doctor.png');
 
 const TherapistDetailScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<TherapistDetailRouteProp>();
   const therapistId = route.params.id;
+  const [therapist, setTherapist] = useState<TherapistDetail | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  useEffect(() => {
+    const loadTherapistDetail = async () => {
+      setLoading(true);
+      setErrorMessage('');
+
+      try {
+        const response = await getTherapistDetails(therapistId);
+        setTherapist(response);
+      } catch {
+        setErrorMessage('Không thể tải thông tin chuyên gia. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTherapistDetail();
+  }, [therapistId]);
+
+  const stats: StatItem[] = useMemo(() => {
+    if (!therapist) {
+      return [];
+    }
+
+    return [
+      {
+        id: '1',
+        icon: 'people-outline',
+        value: therapist.stats.patientCount.toLocaleString(),
+        label: 'Bệnh nhân',
+      },
+      {
+        id: '2',
+        icon: 'briefcase-outline',
+        value: `${therapist.stats.yearsOfExperience.toLocaleString()}+`,
+        label: 'Kinh nghiệm',
+      },
+      {
+        id: '3',
+        icon: 'star-outline',
+        value: therapist.stats.averageRating.toFixed(1),
+        label: 'Rating',
+      },
+      {
+        id: '4',
+        icon: 'chatbubble-ellipses-outline',
+        value: therapist.stats.reviewCount.toLocaleString(),
+        label: 'Đánh giá',
+      },
+    ];
+  }, [therapist]);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => {
-      const iconName: keyof typeof Ionicons.glyphMap =
-        index < rating ? 'star' : 'star-outline';
+      const iconName = index < rating ? 'star' : 'star-outline';
 
       return (
         <Ionicons
@@ -90,24 +111,40 @@ const TherapistDetailScreen: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+        {loading ? (
+          <View style={styles.sectionCard}>
+            <ActivityIndicator color={COLORS.primary} size="small" />
+            <AppText style={styles.sectionBody}>Đang tải thông tin chuyên gia...</AppText>
+          </View>
+        ) : null}
+
+        {!loading && errorMessage ? (
+          <View style={styles.sectionCard}>
+            <AppText style={styles.sectionTitle}>Có lỗi xảy ra</AppText>
+            <AppText style={styles.sectionBody}>{errorMessage}</AppText>
+          </View>
+        ) : null}
+
+        {!loading && therapist ? (
+          <>
         <View style={styles.therapistCard}>
           <Image
-            source={require('../../assets/booking/doctor.png')}
+            source={therapist.avatarUrl ? { uri: therapist.avatarUrl } : FALLBACK_AVATAR}
             style={styles.therapistImage}
             resizeMode="cover"
           />
           <View style={styles.therapistInfo}>
-            <AppText style={styles.therapistName}>Dr. David Patel</AppText>
-            <AppText style={styles.therapistSpecialty}>Tâm lý học lâm sàng</AppText>
+            <AppText style={styles.therapistName}>{therapist.fullName}</AppText>
+            <AppText style={styles.therapistSpecialty}>{therapist.specialty}</AppText>
             <View style={styles.locationRow}>
               <Ionicons name="location-outline" size={16} color={COLORS.textSecondary} />
-              <AppText style={styles.locationText}>TP. Ho Chi Minh</AppText>
+              <AppText style={styles.locationText}>{therapist.location}</AppText>
             </View>
           </View>
         </View>
 
         <View style={styles.statsRow}>
-          {STATS.map((stat) => (
+          {stats.map((stat) => (
             <View key={stat.id} style={styles.statItem}>
               <View style={styles.statIconWrap}>
                 <Ionicons name={stat.icon} size={18} color={COLORS.primary} />
@@ -120,44 +157,53 @@ const TherapistDetailScreen: React.FC = () => {
 
         <View style={styles.sectionCard}>
           <AppText style={styles.sectionTitle}>Giới thiệu bản thân</AppText>
-          <AppText style={styles.sectionBody}>
-            Tôi là chuyên gia tâm lý với hơn 10 năm kinh nghiệm trong lĩnh vực trị liệu
-            lo âu, trầm cảm và quản lý stress. Mục tiêu của tôi là giúp bạn tìm lại
-            sự cân bằng cảm xúc và nâng cao chất lượng cuộc sống.
-          </AppText>
+          <AppText style={styles.sectionBody}>{therapist.bio}</AppText>
         </View>
 
         <View style={styles.sectionCard}>
           <AppText style={styles.sectionTitle}>Giờ làm việc</AppText>
-          <View style={styles.workingHourRow}>
-            <Ionicons name="time-outline" size={18} color={COLORS.primary} />
-            <AppText style={styles.workingHourText}>Thứ 2 - Thứ 6: 08:00 - 18:00</AppText>
-          </View>
-          <View style={styles.workingHourRow}>
-            <Ionicons name="time-outline" size={18} color={COLORS.primary} />
-            <AppText style={styles.workingHourText}>Thứ 7: 08:00 - 12:00</AppText>
-          </View>
+          {therapist.workingHours.length > 0 ? (
+            therapist.workingHours.map((workingHour) => (
+              <View
+                key={`${workingHour.dayLabel}-${workingHour.startTime}-${workingHour.endTime}`}
+                style={styles.workingHourRow}
+              >
+                <Ionicons name="time-outline" size={18} color={COLORS.primary} />
+                <AppText style={styles.workingHourText}>
+                  {`${workingHour.dayLabel}: ${workingHour.startTime} - ${workingHour.endTime}`}
+                </AppText>
+              </View>
+            ))
+          ) : (
+            <AppText style={styles.workingHourText}>Chưa có lịch làm việc</AppText>
+          )}
         </View>
 
         <View style={styles.sectionCard}>
           <AppText style={styles.sectionTitle}>Đánh giá</AppText>
-          {REVIEWS.map((review) => (
+          {therapist.reviews.length > 0 ? (
+            therapist.reviews.map((review) => (
             <View key={review.id} style={styles.reviewItem}>
               <Image
-                source={require('../../assets/booking/doctor.png')}
+                source={review.reviewerAvatarUrl ? { uri: review.reviewerAvatarUrl } : FALLBACK_AVATAR}
                 style={styles.reviewAvatar}
                 resizeMode="cover"
               />
               <View style={styles.reviewContent}>
                 <View style={styles.reviewHeaderRow}>
-                  <AppText style={styles.reviewName}>{review.name}</AppText>
+                  <AppText style={styles.reviewName}>{review.reviewerName}</AppText>
                   <View style={styles.starRow}>{renderStars(review.rating)}</View>
                 </View>
                 <AppText style={styles.reviewComment}>{review.comment}</AppText>
               </View>
             </View>
-          ))}
+            ))
+          ) : (
+            <AppText style={styles.sectionBody}>Chưa có đánh giá nào</AppText>
+          )}
         </View>
+          </>
+        ) : null}
       </ScrollView>
 
       <View style={styles.footer}>
