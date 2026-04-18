@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Home: undefined;
   ParentExperience: undefined;
   AdminExperience: undefined;
+  MainTabs: undefined;
 
   // Nâng cấp: Màn hình Chat giờ đây có thể nhận sessionId (phiên cũ) hoặc không có (phiên mới)
   Chat: { sessionId?: string | null } | undefined;

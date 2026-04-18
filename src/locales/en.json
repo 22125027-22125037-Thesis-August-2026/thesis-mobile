@@ -281,6 +281,19 @@
     "expiredTitle": "Session expired",
     "expiredMessage": "Please sign in again."
   },
+  "profile": {
+    "headerTitle": "Profile",
+    "personalInfoTitle": "Personal Information",
+    "fullNameLabel": "Full Name",
+    "emailLabel": "Email",
+    "roleLabel": "Role",
+    "logoutButton": "Logout",
+    "logoutConfirmTitle": "Confirm Logout",
+    "logoutConfirmMessage": "Are you sure you want to logout?",
+    "logoutConfirmCancel": "Cancel",
+    "logoutConfirmAction": "Logout",
+    "errorLoadingProfile": "Error loading profile"
+  },
   "matching": {
     "submitError": "Unable to submit data. Please try again.",
     "priorCounseling": {

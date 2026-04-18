@@ -281,6 +281,19 @@
     "expiredTitle": "Phiên đăng nhập đã hết hạn",
     "expiredMessage": "Vui lòng đăng nhập lại."
   },
+  "profile": {
+    "headerTitle": "Hồ sơ cá nhân",
+    "personalInfoTitle": "Thông tin cá nhân",
+    "fullNameLabel": "Tên đầy đủ",
+    "emailLabel": "Email",
+    "roleLabel": "Vai trò",
+    "logoutButton": "Đăng xuất",
+    "logoutConfirmTitle": "Xác nhận đăng xuất",
+    "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất?",
+    "logoutConfirmCancel": "Hủy",
+    "logoutConfirmAction": "Đăng xuất",
+    "errorLoadingProfile": "Lỗi tải hồ sơ"
+  },
   "matching": {
     "submitError": "Không thể gửi dữ liệu. Vui lòng thử lại.",
     "priorCounseling": {
