@@ -25,9 +25,11 @@ import {
   HomeScreen,
   LoginScreen,
   MatchingFormScreen,
+  MessageListScreen,
   RegisterScreen,
   SleepEntryScreen,
   SleepOverviewScreen,
+  SocialChatScreen,
   TherapistBookingLandingScreen,
   TherapistDetailScreen,
   TherapyOverviewScreen,
@@ -114,6 +116,8 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="MessageList" component={MessageListScreen} />
+      <Stack.Screen name="SocialChat" component={SocialChatScreen} />
       <Stack.Screen name="TherapistBookingLanding" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="AppointmentsHistory" component={AppointmentsHistoryScreen} />
       <Stack.Screen name="TherapistFilter" component={TherapistBookingLandingScreen} />
@@ -141,6 +145,8 @@ const renderTherapistExperienceRoutes = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="MessageList" component={MessageListScreen} />
+      <Stack.Screen name="SocialChat" component={SocialChatScreen} />
       <Stack.Screen name="ConsultationDetail" component={ConsultationDetailScreen} />
       <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
       <Stack.Screen name="ConsultationFeedback" component={ConsultationFeedbackScreen} />

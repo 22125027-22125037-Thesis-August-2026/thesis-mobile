@@ -79,6 +79,10 @@ const HomeScreen: React.FC = () => {
     navigation.navigate('TherapyOverview');
   };
 
+  const handleNavigateSocialChat = (): void => {
+    navigation.navigate('MessageList');
+  };
+
   const handleNavigateTherapistFilter = (): void => {
     navigation.navigate('TherapistBookingLanding');
   };
@@ -191,7 +195,7 @@ const HomeScreen: React.FC = () => {
             {/* Message Card */}
             <Pressable
               style={[styles.healthCard, styles.healthCardNeutral]}
-              onPress={handleNavigateChatbot}>
+              onPress={handleNavigateSocialChat}>
               <View style={styles.cardLabelRow}>
                 <AppText style={styles.cardLabel}>Nhắn tin</AppText>
                 <MaterialCommunityIcons
