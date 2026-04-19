@@ -73,6 +73,22 @@
     "legendPositive": "Tích cực"
   },
   "sleep": {
+    "main": {
+      "headerTitle": "Chất lượng giấc ngủ",
+      "selectedDateLabel": "Ngày đã chọn",
+      "overviewTitle": "Xu hướng 7 ngày",
+      "overviewSubtitle": "Thời lượng và chất lượng trong tuần",
+      "quickEntryTitle": "Ghi nhanh",
+      "quickEntrySubtitle": "Cập nhật giấc ngủ cho ngày đã chọn",
+      "historyTitle": "Mục gần đây",
+      "historyEmpty": "Chưa có mục giấc ngủ nào.",
+      "averageLabel": "Trung bình",
+      "totalLabel": "Tổng",
+      "averageQualityLabel": "Chất lượng trung bình",
+      "noData": "Chưa có dữ liệu giấc ngủ trong tuần này.",
+      "saveButtonCreate": "Lưu giấc ngủ",
+      "saveButtonUpdate": "Cập nhật giấc ngủ"
+    },
     "entry": {
       "headerTitle": "Chất lượng giấc ngủ",
       "mainQuestion": "Bạn đã ngủ ngon chứ?",
@@ -125,6 +141,25 @@
     }
   },
   "food": {
+    "main": {
+      "headerTitle": "Nhật ký dinh dưỡng",
+      "selectedDateLabel": "Ngày đã chọn",
+      "overviewTitle": "Xu hướng 7 ngày",
+      "overviewSubtitle": "Điểm ăn uống chánh niệm trong tuần",
+      "quickEntryTitle": "Ghi nhanh",
+      "quickEntrySubtitle": "Theo dõi nước uống và bữa ăn cho ngày đã chọn",
+      "historyTitle": "Mục gần đây",
+      "historyEmpty": "Chưa có mục dinh dưỡng nào.",
+      "averageLabel": "Trung bình",
+      "totalLabel": "Tổng",
+      "hydrationLabel": "Nước uống",
+      "hydrationUnit": "cốc",
+      "mealTagsLabel": "Loại bữa",
+      "mindfulLabel": "Ăn chánh niệm",
+      "noData": "Chưa có dữ liệu dinh dưỡng trong tuần này.",
+      "saveButtonCreate": "Lưu dinh dưỡng",
+      "saveButtonUpdate": "Cập nhật dinh dưỡng"
+    },
     "meal": {
       "breakfast": "Sáng",
       "lunch": "Trưa",

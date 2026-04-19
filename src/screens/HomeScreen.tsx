@@ -78,7 +78,7 @@ const HomeScreen: React.FC = () => {
   );
 
   const handleNavigateSleep = (): void => {
-    navigation.navigate('SleepOverview');
+    navigation.navigate('SleepMain');
   };
 
   const handleNavigateDiary = (): void => {
@@ -86,7 +86,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleNavigateFood = (): void => {
-    navigation.navigate('FoodOverview');
+    navigation.navigate('FoodMain');
   };
 
   const handleNavigateChatbot = (): void => {

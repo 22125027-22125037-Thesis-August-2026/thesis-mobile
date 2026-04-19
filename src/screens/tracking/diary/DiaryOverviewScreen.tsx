@@ -287,18 +287,24 @@ const DiaryOverviewScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header with Back Button */}
-        <View style={styles.headerSection}>
-          <Pressable
-            style={styles.headerBackButton}
-            onPress={() => navigation?.navigate('MainTabs' as any)}
-          >
-            <Feather name="chevron-left" size={24} color={COLORS.textPrimary} />
-          </Pressable>
-          <AppText style={styles.headerTitle}>
-            {t('overview.headerTitle')}
-          </AppText>
-          <View style={{ width: 24 }} />
+        {/* Header */}
+        <View style={styles.headerCard}>
+          <View style={styles.headerTopRow}>
+            <Pressable
+              style={styles.headerBackButton}
+              onPress={() => navigation?.goBack()}
+            >
+              <Feather name="chevron-left" size={22} color={COLORS.white} />
+            </Pressable>
+            <View style={styles.headerTitleBlock}>
+              <AppText style={styles.headerTitle}>
+                {t('overview.headerTitle')}
+              </AppText>
+              <AppText style={styles.headerSubtitle}>
+                {t('overview.subtitleLine1')} {t('overview.subtitleLine2')}
+              </AppText>
+            </View>
+          </View>
         </View>
 
         {/* Search Bar & Streak Widget */}

@@ -73,6 +73,22 @@
     "legendPositive": "Positive"
   },
   "sleep": {
+    "main": {
+      "headerTitle": "Sleep Quality",
+      "selectedDateLabel": "Selected day",
+      "overviewTitle": "7-day trend",
+      "overviewSubtitle": "Duration and quality across the week",
+      "quickEntryTitle": "Quick entry",
+      "quickEntrySubtitle": "Update the selected day's sleep log",
+      "historyTitle": "Recent entries",
+      "historyEmpty": "No sleep entries yet.",
+      "averageLabel": "Average",
+      "totalLabel": "Total",
+      "averageQualityLabel": "Average quality",
+      "noData": "No sleep logs for this week yet.",
+      "saveButtonCreate": "Save sleep",
+      "saveButtonUpdate": "Update sleep"
+    },
     "entry": {
       "headerTitle": "Sleep Quality",
       "mainQuestion": "Did you have a good sleep?",
@@ -125,6 +141,25 @@
     }
   },
   "food": {
+    "main": {
+      "headerTitle": "Nutrition Journal",
+      "selectedDateLabel": "Selected day",
+      "overviewTitle": "7-day trend",
+      "overviewSubtitle": "Mindful eating score across the week",
+      "quickEntryTitle": "Quick entry",
+      "quickEntrySubtitle": "Track hydration and meals for the selected day",
+      "historyTitle": "Recent entries",
+      "historyEmpty": "No nutrition entries yet.",
+      "averageLabel": "Average",
+      "totalLabel": "Total",
+      "hydrationLabel": "Hydration",
+      "hydrationUnit": "cups",
+      "mealTagsLabel": "Meal tag",
+      "mindfulLabel": "Mindful eating",
+      "noData": "No nutrition logs for this week yet.",
+      "saveButtonCreate": "Save nutrition",
+      "saveButtonUpdate": "Update nutrition"
+    },
     "meal": {
       "breakfast": "Breakfast",
       "lunch": "Lunch",

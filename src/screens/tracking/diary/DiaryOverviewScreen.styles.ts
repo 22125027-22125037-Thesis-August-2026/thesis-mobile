@@ -22,6 +22,53 @@ export const styles = StyleSheet.create({
   },
 
   /* ===== HEADER SECTION ===== */
+  headerCard: {
+    marginHorizontal: SPACING.screenHorizontal,
+    marginTop: SPACING.md,
+    borderRadius: 32,
+    backgroundColor: COLORS.foodHeaderOrange,
+    padding: SPACING.md,
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: SPACING.sm,
+  },
+  headerBackButton: {
+    width: 44,
+    height: 44,
+    borderRadius: BORDER_RADIUS.full,
+    borderWidth: SPACING.borderWidth,
+    borderColor: COLORS.whiteAlpha30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitleBlock: {
+    flex: 1,
+    rowGap: SPACING.xxs,
+  },
+  headerTitle: {
+    color: COLORS.white,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '800',
+  },
+  headerSubtitle: {
+    color: COLORS.white,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+  },
+
+  /* ===== SEARCH & STREAK SECTION ===== */
+  searchStreakSection: {
+    paddingHorizontal: SPACING.screenHorizontal,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+    marginTop: SPACING.md,
+  },
+
+  /* ===== OLD HEADER FALLBACK (kept for compatibility) ===== */
   headerSection: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -32,31 +79,13 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.borderSubtle,
     backgroundColor: COLORS.foodHeaderOrange,
   },
-  headerBackButton: {
-    width: 46,
-    height: 46,
-    borderRadius: BORDER_RADIUS.full,
-    borderWidth: SPACING.borderWidth,
-    borderColor: COLORS.journalIconStroke,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.foodHeaderOrange,
-  },
-  headerTitle: {
+  headerTitleLegacy: {
     fontSize: FONT_SIZES.xxl,
     fontWeight: '700',
     fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
     flex: 1,
     textAlign: 'center',
-  },
-
-  /* ===== SEARCH & STREAK SECTION ===== */
-  searchStreakSection: {
-    paddingHorizontal: SPACING.screenHorizontal,
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderSubtle,
   },
   searchInputWrap: {
     flexDirection: 'row',

@@ -19,14 +19,12 @@ import {
   ConsultationFeedbackScreen,
   DiaryEntryScreen,
   DiaryOverviewScreen,
-  FoodEntryScreen,
-  FoodOverviewScreen,
+  FoodMainScreen,
   HomeScreen,
   LoginScreen,
   MatchingFormScreen,
   RegisterScreen,
-  SleepEntryScreen,
-  SleepOverviewScreen,
+  SleepMainScreen,
   TherapistBookingLandingScreen,
   TherapistDetailScreen,
   TherapyOverviewScreen,
@@ -131,12 +129,10 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
       <Stack.Screen name="ConsultationFeedback" component={ConsultationFeedbackScreen} />
       <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
-      <Stack.Screen name="SleepOverview" component={SleepOverviewScreen} />
-      <Stack.Screen name="SleepEntry" component={SleepEntryScreen} />
       <Stack.Screen name="DiaryOverview" component={DiaryOverviewScreen} />
       <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
-      <Stack.Screen name="FoodOverview" component={FoodOverviewScreen} />
-      <Stack.Screen name="FoodEntry" component={FoodEntryScreen} />
+      <Stack.Screen name="SleepMain" component={SleepMainScreen} />
+      <Stack.Screen name="FoodMain" component={FoodMainScreen} />
     </>
   );
 };

@@ -60,12 +60,10 @@ export type RootStackParamList = {
     endedAt?: string;
   };
   // Resolved from main
-  SleepOverview: undefined;
-  SleepEntry: undefined;
+  SleepMain: undefined;
   DiaryOverview: undefined;
   DiaryEntry: { entryId?: string } | undefined;
-  FoodOverview: undefined;
-  FoodEntry: undefined;
+  FoodMain: undefined;
 };
 
 export type TrackingStackParamList = {
@@ -77,10 +75,8 @@ export type TrackingStackParamList = {
 
   DiaryOverview: undefined;
   DiaryEntry: { entryId?: string } | undefined;
-  SleepOverview: undefined;
-  SleepEntry: undefined;
-  FoodOverview: undefined;
-  FoodEntry: undefined;
+  SleepMain: undefined;
+  FoodMain: undefined;
 };
 
 declare global {
