@@ -207,7 +207,6 @@ const HomeScreen: React.FC = () => {
               <AppText style={styles.moodText}>{moodDisplay.text}</AppText>
             </View>
 
-            {/* Message Card */}
             <Pressable
               style={[styles.healthCard, styles.healthCardNeutral]}
               onPress={handleNavigateSocialChat}>
