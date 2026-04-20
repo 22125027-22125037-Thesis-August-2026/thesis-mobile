@@ -8,6 +8,12 @@ export type RootStackParamList = {
 
   // Nâng cấp: Màn hình Chat giờ đây có thể nhận sessionId (phiên cũ) hoặc không có (phiên mới)
   Chat: { sessionId?: string | null } | undefined;
+  MessageList: undefined;
+  SocialChat: {
+    channelId: string;
+    recipientName: string;
+    channelType: 'DIRECT_FRIEND' | 'THERAPIST_CONSULT';
+  };
 
   // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
   TherapyOverview: undefined;
@@ -71,6 +77,12 @@ export type TrackingStackParamList = {
 
   // Nâng cấp tương tự cho Stack Tracking (nếu bạn dùng nested navigation)
   Chat: { sessionId?: string | null } | undefined;
+  MessageList: undefined;
+  SocialChat: {
+    channelId: string;
+    recipientName: string;
+    channelType: 'DIRECT_FRIEND' | 'THERAPIST_CONSULT';
+  };
   TherapyOverview: undefined;
 
   DiaryOverview: undefined;
