@@ -9,14 +9,17 @@
   "entry": {
     "screenTitle": "How are you feeling today?",
     "editTitle": "Edit journal",
+    "dateLabel": "Entry date",
+    "dateFormat": "{{day}}/{{month}}/{{year}}",
+    "selectDate": "Select date",
     "titleLabel": "Title",
-    "titlePlaceholder": "Feeling down again",
+    "titlePlaceholder": "A beautiful day",
     "moodLabel": "Choose your mood",
     "contentLabel": "What are you thinking? Write it down...",
-    "contentPlaceholder": "I'm feeling sad but I don't want to make a big deal out of it. I don't know where to start.",
+    "contentPlaceholder": "Share your thoughts, feelings, or the beautiful things you noticed today. There's no right or wrong! 💫",
     "addPhoto": "Add Photo",
     "submitButton": "Save emotion",
-    "counter": "{{count}}/300",
+    "counter": "{{count}}/500",
     "selectionLimitTitle": "Selection limit",
     "selectionLimitMessage": "You can attach up to 5 images.",
     "selectionLimitTruncatedMessage": "Only the first 5 images were added.",
@@ -49,6 +52,15 @@
     "yearCount": "{{count}}/365",
     "sectionTitle": "Mood stream",
     "monthTitle": "Month {{month}}/{{year}}",
+    "searchPlaceholder": "Search journal...",
+    "streakLabel": "day streak",
+    "dateRangeFromLabel": "From date",
+    "dateRangeToLabel": "To date",
+    "dateRangeClearButton": "Clear filter",
+    "emptyState": "No journal entries yet. Create your first one.",
+    "emptyStateSearchResult": "No journal entries found with that search term",
+    "emptyStateNoEntries": "No journal entries for this day",
+    "newEntryButton": "Write journal now",
     "weekdayMon": "Mon",
     "weekdayTue": "Tue",
     "weekdayWed": "Wed",
@@ -61,9 +73,25 @@
     "legendPositive": "Positive"
   },
   "sleep": {
+    "main": {
+      "headerTitle": "Sleep Quality",
+      "selectedDateLabel": "Selected day",
+      "overviewTitle": "7-day trend",
+      "overviewSubtitle": "Duration and quality across the week",
+      "quickEntryTitle": "Quick entry",
+      "quickEntrySubtitle": "Update the selected day's sleep log",
+      "historyTitle": "Recent entries",
+      "historyEmpty": "No sleep entries yet.",
+      "averageLabel": "Average",
+      "totalLabel": "Total",
+      "averageQualityLabel": "Average quality",
+      "noData": "No sleep logs for this week yet.",
+      "saveButtonCreate": "Save sleep",
+      "saveButtonUpdate": "Update sleep"
+    },
     "entry": {
       "headerTitle": "Sleep Quality",
-      "mainQuestion": "Did you sleep well last night?",
+      "mainQuestion": "Did you have a good sleep?",
       "bedTimeLabel": "Bedtime",
       "wakeTimeLabel": "Wake time",
       "noteLabel": "Add a note",
@@ -113,6 +141,25 @@
     }
   },
   "food": {
+    "main": {
+      "headerTitle": "Nutrition Journal",
+      "selectedDateLabel": "Selected day",
+      "overviewTitle": "7-day trend",
+      "overviewSubtitle": "Mindful eating score across the week",
+      "quickEntryTitle": "Quick entry",
+      "quickEntrySubtitle": "Track hydration and meals for the selected day",
+      "historyTitle": "Recent entries",
+      "historyEmpty": "No nutrition entries yet.",
+      "averageLabel": "Average",
+      "totalLabel": "Total",
+      "hydrationLabel": "Hydration",
+      "hydrationUnit": "cups",
+      "mealTagsLabel": "Meal tag",
+      "mindfulLabel": "Mindful eating",
+      "noData": "No nutrition logs for this week yet.",
+      "saveButtonCreate": "Save nutrition",
+      "saveButtonUpdate": "Update nutrition"
+    },
     "meal": {
       "breakfast": "Breakfast",
       "lunch": "Lunch",
@@ -135,7 +182,7 @@
     },
     "entry": {
       "screenTitle": "Nutrition Journal",
-      "mainQuestion": "Did you eat well today?",
+      "mainQuestion": "Did you eat well?",
       "descriptionLabel": "You can describe more here...",
       "descriptionPlaceholder": "Describe your meal in detail...",
       "submitButton": "Update nutrition",
@@ -299,6 +346,9 @@
   "home": {
     "overview": {
       "dailyLogsTitle": "Daily Logs",
+      "sleepCardTitle": "Sleep Quality",
+      "diaryCardTitle": "Mind Corner",
+      "foodCardTitle": "Nutrition Journal",
       "sleepQualityTitle": "Dream Quality",
       "sleepQualityNoData": "No data yet",
       "diaryTitle": "Mind Corner",
@@ -319,6 +369,19 @@
   "session": {
     "expiredTitle": "Session expired",
     "expiredMessage": "Please sign in again."
+  },
+  "profile": {
+    "headerTitle": "Profile",
+    "personalInfoTitle": "Personal Information",
+    "fullNameLabel": "Full Name",
+    "emailLabel": "Email",
+    "roleLabel": "Role",
+    "logoutButton": "Logout",
+    "logoutConfirmTitle": "Confirm Logout",
+    "logoutConfirmMessage": "Are you sure you want to logout?",
+    "logoutConfirmCancel": "Cancel",
+    "logoutConfirmAction": "Logout",
+    "errorLoadingProfile": "Error loading profile"
   },
   "matching": {
     "submitError": "Unable to submit data. Please try again.",

@@ -1,213 +1,387 @@
 import { StyleSheet } from 'react-native';
-
-import { COLORS } from '@/theme';
-import { BORDER_RADIUS, FONT_SIZES, SPACING } from '@/theme';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
 
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  container: {
+    flex: 1,
+  },
   loadingWrap: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    rowGap: SPACING.sm,
+    alignItems: 'center',
+    gap: SPACING.md,
   },
   loadingText: {
-    color: COLORS.textSecondary,
     fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
+    color: COLORS.textSecondary,
+    fontFamily: FONTS.regular,
   },
-  scrollContent: {
-    paddingBottom: SPACING.xl,
-  },
-  headerWrap: {
-    position: 'relative',
-    overflow: 'hidden',
-    backgroundColor: COLORS.background,
-    height: 420,
-  },
-  headerBackground: {
-    backgroundColor: COLORS.accentNeutral,
-    paddingHorizontal: 22,
-    paddingTop: SPACING.screenTop,
-    height: 390,
-    borderBottomLeftRadius: 240,
-    borderBottomRightRadius: 240,
-    transform: [{ scaleX: 1.35 }],
-  },
-  headerInner: {
-    transform: [{ scaleX: 0.74 }],
-    flex: 1,
+
+  /* ===== HEADER SECTION ===== */
+  headerCard: {
+    marginHorizontal: SPACING.screenHorizontal,
+    marginTop: SPACING.md,
+    borderRadius: 32,
+    backgroundColor: COLORS.foodHeaderOrange,
+    padding: SPACING.md,
   },
   headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     columnGap: SPACING.sm,
   },
-  backButton: {
-    width: 48,
-    height: 48,
+  headerBackButton: {
+    width: 44,
+    height: 44,
     borderRadius: BORDER_RADIUS.full,
     borderWidth: SPACING.borderWidth,
-    borderColor: COLORS.white,
+    borderColor: COLORS.whiteAlpha30,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  headerTitleBlock: {
+    flex: 1,
+    rowGap: SPACING.xxs,
   },
   headerTitle: {
     color: COLORS.white,
-    fontSize: 40,
-    fontWeight: '700',
-  },
-  centerWrap: {
-    marginTop: 42,
-    alignItems: 'center',
-  },
-  scoreText: {
-    color: COLORS.white,
-    fontSize: 70,
-    lineHeight: 78,
+    fontSize: 22,
+    lineHeight: 28,
     fontWeight: '800',
   },
-  subtitle: {
+  headerSubtitle: {
     color: COLORS.white,
-    textAlign: 'center',
-    fontSize: 38,
-    lineHeight: 44,
-    marginTop: SPACING.xs,
-    maxWidth: 320,
-    fontWeight: '500',
-  },
-  headerRing: {
-    position: 'absolute',
-    borderWidth: SPACING.borderWidth,
-    borderColor: 'rgba(255,255,255,0.2)',
-    borderRadius: BORDER_RADIUS.full,
-  },
-  headerRingTopLeft: {
-    width: 110,
-    height: 110,
-    top: -26,
-    left: 12,
-  },
-  headerRingTopRight: {
-    width: 260,
-    height: 260,
-    top: -92,
-    right: -32,
-  },
-  headerRingMidRight: {
-    width: 120,
-    height: 120,
-    top: 210,
-    right: 18,
-  },
-  headerRingBottomLeft: {
-    width: 240,
-    height: 240,
-    top: 126,
-    left: -84,
-  },
-  headerRingSmall: {
-    width: 56,
-    height: 56,
-    top: 120,
-    left: '49%',
-  },
-  fabButton: {
-    position: 'absolute',
-    bottom: 0,
-    alignSelf: 'center',
-    width: 82,
-    height: 82,
-    borderRadius: BORDER_RADIUS.full,
-    backgroundColor: COLORS.buttonPrimary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 4,
-    shadowColor: COLORS.textPrimary,
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  contentWrap: {
-    paddingTop: 56,
-    paddingHorizontal: SPACING.screenHorizontal,
-    rowGap: SPACING.lg,
-  },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sectionTitle: {
-    color: COLORS.textPrimary,
-    fontSize: 36,
-    fontWeight: '700',
-  },
-  monthHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  monthNavButton: {
-    width: 32,
-    height: 32,
-    borderRadius: BORDER_RADIUS.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.surface,
-    borderWidth: SPACING.borderWidth,
-    borderColor: COLORS.borderSubtle,
-  },
-  monthTitle: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '600',
-    marginTop: -2,
-  },
-  weekdayRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.xs,
-  },
-  weekdayText: {
-    width: 40,
-    textAlign: 'center',
-    color: COLORS.textSecondary,
     fontSize: FONT_SIZES.sm,
     fontWeight: '600',
   },
-  gridWrap: {
+
+  /* ===== SEARCH & STREAK SECTION ===== */
+  searchStreakSection: {
+    paddingHorizontal: SPACING.screenHorizontal,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+    marginTop: SPACING.md,
+  },
+
+  /* ===== OLD HEADER FALLBACK (kept for compatibility) ===== */
+  headerSection: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    rowGap: SPACING.xs,
-    columnGap: SPACING.xs,
-    justifyContent: 'flex-start',
-  },
-  moodDot: {
-    width: 40,
-    height: 40,
-    borderRadius: BORDER_RADIUS.full,
-    borderWidth: SPACING.borderWidth,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.screenHorizontal,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+    backgroundColor: COLORS.foodHeaderOrange,
   },
-  moodDotInactive: {
-    borderColor: COLORS.borderSubtle,
-    backgroundColor: COLORS.background,
+  headerTitleLegacy: {
+    fontSize: FONT_SIZES.xxl,
+    fontWeight: '700',
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    flex: 1,
+    textAlign: 'center',
   },
-  dayText: {
+  searchInputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.chip,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: SPACING.md,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textPrimary,
+  },
+
+  /* ===== STREAK WIDGET ===== */
+  streakWidget: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: SPACING.md,
+  },
+  streakFire: {
+    fontSize: FONT_SIZES.xl,
+  },
+  streakContent: {
+    flexDirection: 'column',
+    gap: SPACING.xs,
+  },
+  streakNumber: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '700',
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+  },
+  streakLabel: {
+    fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
+  },
+
+  /* ===== DATE RANGE FILTER ===== */
+  dateRangeFilterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.screenHorizontal,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+    gap: SPACING.sm,
+  },
+  dateRangeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.chip,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: SPACING.sm,
+  },
+  dateRangeButtonText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
+    color: COLORS.textPrimary,
+  },
+  dateRangeClearButton: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+  },
+  dateRangeClearText: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
+    color: COLORS.primary,
+  },
+
+  /* ===== DATE PICKER MODAL ===== */
+  datePickerModal: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  datePickerContainer: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: BORDER_RADIUS.card,
+    borderTopRightRadius: BORDER_RADIUS.card,
+    paddingBottom: SPACING.lg,
+  },
+  datePickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  datePickerHeaderText: {
+    fontSize: FONT_SIZES.md,
+    fontWeight: '700',
+    fontFamily: FONTS.bold,
+    color: COLORS.primary,
+  },
+
+  /* ===== TIMELINE FEED ===== */
+  timelineContent: {
+    paddingHorizontal: SPACING.screenHorizontal,
+    paddingVertical: SPACING.md,
+    paddingBottom: 100,
+  },
+  timelineItem: {
+    flexDirection: 'row',
+    marginBottom: SPACING.lg,
+  },
+  timelineLine: {
+    position: 'absolute',
+    left: SPACING.screenHorizontal + 28,
+    top: 56,
+    width: 2,
+    bottom: -SPACING.lg,
+    backgroundColor: COLORS.borderSubtle,
+  },
+  timelineLineHidden: {
+    display: 'none',
+  },
+  timelineDot: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    flexShrink: 0,
+    marginRight: SPACING.md,
+  },
+  timelineDotInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  entryCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.card,
+    padding: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+    flex: 1,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: SPACING.md,
+  },
+  cardHeaderLeft: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    flex: 1,
+    gap: SPACING.xxs,
+  },
+  cardMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  separator: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.border,
+  },
+  moodIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: BORDER_RADIUS.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerInfo: {
+    flex: 1,
+    gap: SPACING.xs,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  entryDate: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+  },
+  entryTime: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.textSecondary,
+  },
+  entryTitle: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+  },
+  editButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: 'rgba(151, 175, 97, 0.1)',
+  },
+  moodTag: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.chip,
+    marginBottom: SPACING.md,
+  },
+  moodTagText: {
     fontSize: FONT_SIZES.xs,
     fontWeight: '600',
   },
-  dayTextInactive: {
-    color: COLORS.placeholder,
+  entryContent: {
+    fontSize: FONT_SIZES.sm,
+    lineHeight: 20,
+    color: COLORS.textPrimary,
+    fontFamily: FONTS.regular,
   },
-  dayTextFilled: {
-    color: COLORS.white,
+
+  /* ===== EMPTY STATE ===== */
+  emptyStateWrap: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.screenHorizontal,
+    gap: SPACING.md,
+  },
+  emptyStateTitle: {
+    fontSize: FONT_SIZES.md,
+    fontWeight: '700',
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+  },
+  emptyStateSubtitle: {
+    fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.regular,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  emptyStateButton: {
+    flexDirection: 'row',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.chip,
+    marginTop: SPACING.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyStateButtonText: {
+    fontSize: FONT_SIZES.sm,
     fontWeight: '600',
+    fontFamily: FONTS.semiBold,
+    color: COLORS.white,
+  },
+
+  /* ===== FAB ===== */
+  fab: {
+    position: 'absolute',
+    bottom: SPACING.lg,
+    right: SPACING.lg,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });

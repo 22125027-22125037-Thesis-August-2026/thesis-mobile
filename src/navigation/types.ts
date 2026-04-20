@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Home: undefined;
   ParentExperience: undefined;
   AdminExperience: undefined;
+  MainTabs: undefined;
 
   // Nâng cấp: Màn hình Chat giờ đây có thể nhận sessionId (phiên cũ) hoặc không có (phiên mới)
   Chat: { sessionId?: string | null } | undefined;
@@ -65,13 +66,10 @@ export type RootStackParamList = {
     endedAt?: string;
   };
   // Resolved from main
-  SleepOverview: undefined;
-  SleepEntry: undefined;
+  SleepMain: undefined;
   DiaryOverview: undefined;
-  DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;
-  FoodOverview: undefined;
-  FoodEntry: undefined;
+  FoodMain: undefined;
 };
 
 export type TrackingStackParamList = {
@@ -88,12 +86,9 @@ export type TrackingStackParamList = {
   TherapyOverview: undefined;
 
   DiaryOverview: undefined;
-  DiaryDashboard: undefined;
   DiaryEntry: { entryId?: string } | undefined;
-  SleepOverview: undefined;
-  SleepEntry: undefined;
-  FoodOverview: undefined;
-  FoodEntry: undefined;
+  SleepMain: undefined;
+  FoodMain: undefined;
 };
 
 declare global {

@@ -17,19 +17,16 @@ import {
   ChatScreen,
   ConsultationDetailScreen,
   ConsultationFeedbackScreen,
-  DiaryDashboardScreen,
   DiaryEntryScreen,
   DiaryOverviewScreen,
-  FoodEntryScreen,
-  FoodOverviewScreen,
+  FoodMainScreen,
   HomeScreen,
   LoginScreen,
   MatchingFormScreen,
   MessageListScreen,
   RegisterScreen,
-  SleepEntryScreen,
-  SleepOverviewScreen,
   SocialChatScreen,
+  SleepMainScreen,
   TherapistBookingLandingScreen,
   TherapistDetailScreen,
   TherapyOverviewScreen,
@@ -37,7 +34,7 @@ import {
   WaitingRoomScreen,
 } from '@/screens';
 
-import { RootStackParamList } from '@/navigation';
+import { RootStackParamList, MainTabNavigator } from '@/navigation';
 import { UserRole } from '@/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,7 +50,8 @@ const ParentExperiencePlaceholderScreen: React.FC = () => {
         alignItems: 'center',
         paddingHorizontal: 24,
         backgroundColor: COLORS.background,
-      }}>
+      }}
+    >
       <AppText
         style={{
           fontSize: 22,
@@ -61,7 +59,8 @@ const ParentExperiencePlaceholderScreen: React.FC = () => {
           marginBottom: 12,
           textAlign: 'center',
         }}
-        weight="bold">
+        weight="bold"
+      >
         Parent Experience
       </AppText>
       <AppText
@@ -70,7 +69,8 @@ const ParentExperiencePlaceholderScreen: React.FC = () => {
           color: COLORS.textSecondary,
           textAlign: 'center',
           lineHeight: 22,
-        }}>
+        }}
+      >
         Luong trai nghiem cho phu huynh dang duoc hoan thien.
       </AppText>
     </View>
@@ -86,7 +86,8 @@ const AdminExperiencePlaceholderScreen: React.FC = () => {
         alignItems: 'center',
         paddingHorizontal: 24,
         backgroundColor: COLORS.background,
-      }}>
+      }}
+    >
       <AppText
         style={{
           fontSize: 22,
@@ -94,7 +95,8 @@ const AdminExperiencePlaceholderScreen: React.FC = () => {
           marginBottom: 12,
           textAlign: 'center',
         }}
-        weight="bold">
+        weight="bold"
+      >
         Admin Experience
       </AppText>
       <AppText
@@ -103,7 +105,8 @@ const AdminExperiencePlaceholderScreen: React.FC = () => {
           color: COLORS.textSecondary,
           textAlign: 'center',
           lineHeight: 22,
-        }}>
+        }}
+      >
         Khu vuc quan tri hien dang trong giai doan xay dung.
       </AppText>
     </View>
@@ -113,8 +116,10 @@ const AdminExperiencePlaceholderScreen: React.FC = () => {
 const renderTeenExperienceRoutes = () => {
   return (
     <>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="TherapyOverview" component={TherapyOverviewScreen} />
+      {/* Main Tab Navigator for Teen Experience */}
+      <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+
+      {/* Nested Screens (Deep Linking Stacks) */}
       <Stack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="MessageList" component={MessageListScreen} />
       <Stack.Screen name="SocialChat" component={SocialChatScreen} />
@@ -128,13 +133,10 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="VideoConsultation" component={VideoConsultationScreen} />
       <Stack.Screen name="ConsultationFeedback" component={ConsultationFeedbackScreen} />
       <Stack.Screen name="WaitingRoom" component={WaitingRoomScreen} />
-      <Stack.Screen name="SleepOverview" component={SleepOverviewScreen} />
-      <Stack.Screen name="SleepEntry" component={SleepEntryScreen} />
       <Stack.Screen name="DiaryOverview" component={DiaryOverviewScreen} />
-      <Stack.Screen name="DiaryDashboard" component={DiaryDashboardScreen} />
       <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
-      <Stack.Screen name="FoodOverview" component={FoodOverviewScreen} />
-      <Stack.Screen name="FoodEntry" component={FoodEntryScreen} />
+      <Stack.Screen name="SleepMain" component={SleepMainScreen} />
+      <Stack.Screen name="FoodMain" component={FoodMainScreen} />
     </>
   );
 };
@@ -161,11 +163,21 @@ const renderRoleBasedRoutes = (role?: UserRole) => {
   }
 
   if (role === 'PARENT') {
-    return <Stack.Screen name="ParentExperience" component={ParentExperiencePlaceholderScreen} />;
+    return (
+      <Stack.Screen
+        name="ParentExperience"
+        component={ParentExperiencePlaceholderScreen}
+      />
+    );
   }
 
   if (role === 'ADMIN') {
-    return <Stack.Screen name="AdminExperience" component={AdminExperiencePlaceholderScreen} />;
+    return (
+      <Stack.Screen
+        name="AdminExperience"
+        component={AdminExperiencePlaceholderScreen}
+      />
+    );
   }
 
   return renderTeenExperienceRoutes();
@@ -203,7 +215,8 @@ const AppNav: React.FC = () => {
         }
 
         routeNameRef.current = currentRouteName;
-      }}>
+      }}
+    >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken ? (
           renderRoleBasedRoutes(userInfo?.role)

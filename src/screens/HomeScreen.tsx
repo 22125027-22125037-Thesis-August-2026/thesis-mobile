@@ -1,9 +1,19 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  RefreshControl, ScrollView, View, Image, Pressable, StyleSheet } from 'react-native';
+  RefreshControl,
+  ScrollView,
+  View,
+  Image,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
 import { AppText } from '@/components';
-import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
@@ -23,20 +33,24 @@ const HomeScreen: React.FC = () => {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const getMoodDisplay = useMemo(() => (dominantMood: string): { emoji: string; text: string } => {
-    switch (dominantMood?.toUpperCase()) {
-      case 'SAD':
-        return { emoji: '😢', text: t('home.moods.sad') };
-      case 'HAPPY':
-        return { emoji: '😊', text: t('home.moods.happy') };
-      case 'ANXIOUS':
-        return { emoji: '😟', text: t('home.moods.anxious') };
-      case 'ANGRY':
-        return { emoji: '😠', text: t('home.moods.angry') };
-      default:
-        return { emoji: '🙂', text: t('home.moods.neutral') };
-    }
-  }, [t]);
+  const getMoodDisplay = useMemo(
+    () =>
+      (dominantMood: string): { emoji: string; text: string } => {
+        switch (dominantMood?.toUpperCase()) {
+          case 'SAD':
+            return { emoji: '😢', text: t('home.moods.sad') };
+          case 'HAPPY':
+            return { emoji: '😊', text: t('home.moods.happy') };
+          case 'ANXIOUS':
+            return { emoji: '😟', text: t('home.moods.anxious') };
+          case 'ANGRY':
+            return { emoji: '😠', text: t('home.moods.angry') };
+          default:
+            return { emoji: '🙂', text: t('home.moods.neutral') };
+        }
+      },
+    [t],
+  );
 
   const fetchSummary = useCallback(async (): Promise<void> => {
     setIsLoading(true);
@@ -64,7 +78,7 @@ const HomeScreen: React.FC = () => {
   );
 
   const handleNavigateSleep = (): void => {
-    navigation.navigate('SleepOverview');
+    navigation.navigate('SleepMain');
   };
 
   const handleNavigateDiary = (): void => {
@@ -72,7 +86,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleNavigateFood = (): void => {
-    navigation.navigate('FoodOverview');
+    navigation.navigate('FoodMain');
   };
 
   const handleNavigateChatbot = (): void => {
@@ -106,7 +120,8 @@ const HomeScreen: React.FC = () => {
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={fetchSummary} />
         }
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* ===== HEADER SECTION ===== */}
         <View style={styles.headerContainer}>
           {/* Top Bar: Date & Notification */}
@@ -133,7 +148,9 @@ const HomeScreen: React.FC = () => {
               defaultSource={require('../assets/booking/placeholder.png')}
             />
             <View style={styles.profileInfo}>
-              <AppText style={styles.greetingText}>Hi, {userName.split(' ').pop()}!</AppText>
+              <AppText style={styles.greetingText}>
+                Hi, {userName.split(' ').pop()}!
+              </AppText>
               <View style={styles.badgeContainer}>
                 <View style={styles.badge}>
                   <AppText style={styles.badgeText}>Thành viên</AppText>
@@ -152,7 +169,7 @@ const HomeScreen: React.FC = () => {
         </View>
 
         {/* ===== HEALTH STATS CAROUSEL ===== */}
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <AppText style={styles.sectionTitle}>Thống kê sức khỏe cảm xúc</AppText>
             <Pressable>
@@ -165,7 +182,6 @@ const HomeScreen: React.FC = () => {
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
             contentContainerStyle={styles.carouselContainer}>
-            {/* Emotion Score Card */}
             <View style={[styles.healthCard, styles.healthCardGreen]}>
               <View style={styles.cardLabelRow}>
                 <AppText style={styles.cardLabel}>Điểm cảm xúc</AppText>
@@ -183,7 +199,6 @@ const HomeScreen: React.FC = () => {
               </View>
             </View>
 
-            {/* Mood Card */}
             <View style={[styles.healthCard, styles.healthCardOrange]}>
               <AppText style={styles.moodLabel}>Mood</AppText>
               <View style={styles.moodFace}>
@@ -210,14 +225,20 @@ const HomeScreen: React.FC = () => {
               </View>
             </Pressable>
           </ScrollView>
-        </View>
+        </View> */}
 
         {/* ===== DAILY LOGS SECTION (CRITICAL NAVIGATION HUB) ===== */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <AppText style={styles.sectionTitle}>{t('home.overview.dailyLogsTitle')}</AppText>
+            <AppText style={styles.sectionTitle}>
+              {t('home.overview.dailyLogsTitle')}
+            </AppText>
             <Pressable>
-              <Feather name="more-vertical" size={20} color={COLORS.textPrimary} />
+              <Feather
+                name="more-vertical"
+                size={20}
+                color={COLORS.textPrimary}
+              />
             </Pressable>
           </View>
 
@@ -225,62 +246,53 @@ const HomeScreen: React.FC = () => {
           <Pressable
             style={styles.logCard}
             onPress={handleNavigateSleep}
-            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}>
+            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}
+          >
             <View style={styles.logCardContent}>
               <View style={[styles.iconContainer, styles.iconPurple]}>
                 <MaterialCommunityIcons
-                  name="star-outline"
+                  name="moon-waning-crescent"
                   size={24}
                   color={COLORS.sleepHeaderPurple}
                 />
               </View>
               <View style={styles.logCardText}>
-                <AppText style={styles.logCardTitle}>Chất lượng giấc mơ</AppText>
-                <AppText style={styles.logCardSubtitle}>
-                  {summary?.sleepQuality || t('home.overview.sleepQualityNoData')}
+                <AppText style={styles.logCardTitle}>
+                  {t('home.overview.sleepCardTitle')}
                 </AppText>
+                {/* <AppText style={styles.logCardSubtitle}>
+                  {summary?.sleepQuality || t('home.overview.sleepQualityNoData')}
+                </AppText> */}
               </View>
             </View>
-            <View style={styles.logCardRight}>
+            {/* <View style={styles.logCardRight}>
               <View style={styles.progressCircle}>
                 <AppText style={styles.progressValue}>{summary?.sleepScore || '--'}</AppText>
               </View>
-            </View>
+            </View> */}
           </Pressable>
 
           {/* Diary Card */}
           <Pressable
             style={styles.logCard}
             onPress={handleNavigateDiary}
-            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}>
+            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}
+          >
             <View style={styles.logCardContent}>
               <View style={[styles.iconContainer, styles.iconOrange]}>
-                <Feather name="file-text" size={24} color={COLORS.accentNegative} />
+                <Feather
+                  name="file-text"
+                  size={24}
+                  color={COLORS.accentNegative}
+                />
               </View>
               <View style={styles.logCardText}>
-                <AppText style={styles.logCardTitle}>Góc tâm tư</AppText>
-                <AppText style={styles.logCardSubtitle}>
-                  {summary?.diaryStreak ? t('home.overview.diaryStreakFormat', {count: summary.diaryStreak}) : t('home.overview.diaryNoStreak')}
+                <AppText style={styles.logCardTitle}>
+                  {t('home.overview.diaryCardTitle')}
                 </AppText>
-              </View>
-            </View>
-            <View style={styles.logCardRight}>
-              <View style={styles.gridIndicator}>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                </View>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                </View>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                  <View style={styles.gridCell} />
-                </View>
+                {/* <AppText style={styles.logCardSubtitle}>
+                  {summary?.diaryStreak ? t('home.overview.diaryStreakFormat', {count: summary.diaryStreak}) : t('home.overview.diaryNoStreak')}
+                </AppText> */}
               </View>
             </View>
           </Pressable>
@@ -289,42 +301,44 @@ const HomeScreen: React.FC = () => {
           <Pressable
             style={styles.logCard}
             onPress={handleNavigateFood}
-            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}>
+            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}
+          >
             <View style={styles.logCardContent}>
               <View style={[styles.iconContainer, styles.iconYellow]}>
                 <MaterialCommunityIcons
-                  name="lightbulb-outline"
+                  name="apple"
                   size={24}
                   color="#FFC107"
                 />
               </View>
               <View style={styles.logCardText}>
-                <AppText style={styles.logCardTitle}>Nhật ký dinh dưỡng</AppText>
-                <AppText style={styles.logCardSubtitle}>
-                  {summary?.foodStatus || t('home.overview.foodDiaryNoData')}
+                <AppText style={styles.logCardTitle}>
+                  {t('home.overview.foodCardTitle')}
                 </AppText>
+                {/* <AppText style={styles.logCardSubtitle}>
+                  {summary?.foodStatus || t('home.overview.foodDiaryNoData')}
+                </AppText> */}
               </View>
             </View>
-            <View style={styles.logCardRight}>
+            {/* <View style={styles.logCardRight}>
               <View style={styles.segmentedBar}>
                 <View style={[styles.segment, styles.segmentFilled]} />
                 <View style={[styles.segment, styles.segmentFilled]} />
                 <View style={[styles.segment, styles.segmentFilled]} />
                 <View style={[styles.segment, styles.segmentEmpty]} />
               </View>
-            </View>
+            </View> */}
           </Pressable>
         </View>
 
         {/* ===== AI CHATBOT SECTION ===== */}
         <View style={styles.section}>
-          <AppText style={styles.sectionTitle}>{t('home.overview.aiChatbotTitle')}</AppText>
-          
+          <AppText style={styles.sectionTitle}>
+            {t('home.overview.aiChatbotTitle')}
+          </AppText>
+
           {/* ĐỔI VIEW THÀNH PRESSABLE VÀ GẮN ONPRESS */}
-          <Pressable 
-            style={styles.chatbotCard}
-            onPress={handleNavigateChatbot} 
-          >
+          <Pressable style={styles.chatbotCard} onPress={handleNavigateChatbot}>
             <View style={styles.chatbotContent}>
               <View style={styles.robotIllustration}>
                 <MaterialCommunityIcons
@@ -334,7 +348,9 @@ const HomeScreen: React.FC = () => {
                 />
               </View>
               <View style={styles.chatbotText}>
-                <AppText style={styles.chatbotNumber}>{summary?.totalAiSessions ?? 0}</AppText>
+                <AppText style={styles.chatbotNumber}>
+                  {summary?.totalAiSessions ?? 0}
+                </AppText>
                 <AppText style={styles.chatbotLabel}>lần tâm sự</AppText>
                 <View style={styles.chatbotMetaRow}>
                   <MaterialCommunityIcons
@@ -348,17 +364,20 @@ const HomeScreen: React.FC = () => {
                 </View>
               </View>
             </View>
-            
+
             <View style={styles.chatbotActions}>
               {/* GẮN ONPRESS VÀO NÚT CỘNG LUÔN */}
-              <Pressable style={styles.actionButton} onPress={handleNavigateChatbot}>
+              <Pressable
+                style={styles.actionButton}
+                onPress={handleNavigateChatbot}
+              >
                 <MaterialCommunityIcons
                   name="plus"
                   size={24}
                   color={COLORS.accentPositive}
                 />
               </Pressable>
-              
+
               <Pressable style={styles.actionButton}>
                 <MaterialCommunityIcons
                   name="cog-outline"
@@ -372,14 +391,20 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== GROUP SESSIONS SECTION ===== */}
         <View style={styles.section}>
-          <AppText style={styles.sectionTitle}>Available Group Sessions this week</AppText>
+          <AppText style={styles.sectionTitle}>
+            Available Group Sessions this week
+          </AppText>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
-            contentContainerStyle={styles.sessionsCarousel}>
+            contentContainerStyle={styles.sessionsCarousel}
+          >
             {/* Mental Health Session */}
-            <Pressable style={styles.sessionCard} onPress={handleNavigateTherapistFilter}>
+            <Pressable
+              style={styles.sessionCard}
+              onPress={handleNavigateTherapistFilter}
+            >
               <Image
                 source={{
                   uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=200&fit=crop',
@@ -394,7 +419,10 @@ const HomeScreen: React.FC = () => {
             </Pressable>
 
             {/* Trauma Session */}
-            <Pressable style={styles.sessionCard} onPress={handleNavigateTherapistFilter}>
+            <Pressable
+              style={styles.sessionCard}
+              onPress={handleNavigateTherapistFilter}
+            >
               <Image
                 source={{
                   uri: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop',
@@ -412,12 +440,15 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== RELATIONSHIP SESSIONS SECTION ===== */}
         <View style={styles.section}>
-          <AppText style={styles.sectionTitle}>Relationship & Social Support</AppText>
+          <AppText style={styles.sectionTitle}>
+            Relationship & Social Support
+          </AppText>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
-            contentContainerStyle={styles.sessionsCarousel}>
+            contentContainerStyle={styles.sessionsCarousel}
+          >
             {/* Family Dynamics */}
             <Pressable style={styles.sessionCard}>
               <Image
@@ -444,7 +475,9 @@ const HomeScreen: React.FC = () => {
               <View style={styles.sessionOverlay} />
               <View style={styles.sessionContent}>
                 <AppText style={styles.sessionTitle}>Social Anxiety &</AppText>
-                <AppText style={styles.sessionSubtitle}>Building Confidence</AppText>
+                <AppText style={styles.sessionSubtitle}>
+                  Building Confidence
+                </AppText>
               </View>
             </Pressable>
           </ScrollView>

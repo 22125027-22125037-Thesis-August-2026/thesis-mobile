@@ -61,7 +61,7 @@ export const COLORS = {
   sleepHeaderPurple: '#7E5BEF',
   sleepQualityExcellent: '#84CC16',
   sleepQualityGood: '#FACC15',
-  sleepQualityNeutral: '#E5E5E5',
+  sleepQualityNeutral: '#797979',
   sleepQualityBad: '#FB923C',
   sleepQualityTerrible: '#A855F7',
   sleepChartEmpty: '#F1F1F1',
