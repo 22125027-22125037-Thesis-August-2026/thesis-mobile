@@ -93,6 +93,10 @@ const HomeScreen: React.FC = () => {
     navigation.navigate('TherapyOverview');
   };
 
+  const handleNavigateSocialChat = (): void => {
+    navigation.navigate('MessageList');
+  };
+
   const handleNavigateTherapistFilter = (): void => {
     navigation.navigate('TherapistBookingLanding');
   };
@@ -202,6 +206,23 @@ const HomeScreen: React.FC = () => {
               </View>
               <AppText style={styles.moodText}>{moodDisplay.text}</AppText>
             </View>
+
+            <Pressable
+              style={[styles.healthCard, styles.healthCardNeutral]}
+              onPress={handleNavigateSocialChat}>
+              <View style={styles.cardLabelRow}>
+                <AppText style={styles.cardLabel}>Nhắn tin</AppText>
+                <MaterialCommunityIcons
+                  name="chat-processing-outline"
+                  size={20}
+                  color={COLORS.white}
+                />
+              </View>
+              <View style={styles.scoreDisplay}>
+                <AppText style={styles.scoreValue}>{summary?.totalAiSessions ?? 0}</AppText>
+                <AppText style={styles.scoreLabel}>Bắt đầu trò chuyện</AppText>
+              </View>
+            </Pressable>
           </ScrollView>
         </View> */}
 
@@ -587,6 +608,9 @@ const styles = StyleSheet.create({
   },
   healthCardOrange: {
     backgroundColor: COLORS.accentNegative,
+  },
+  healthCardNeutral: {
+    backgroundColor: COLORS.accentNeutral,
   },
   cardLabelRow: {
     flexDirection: 'row',
