@@ -4,7 +4,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { CustomButton, AppText } from '@/components';
-import { getTherapistDetails, TherapistDetail } from '@/api';
+import { therapistApi } from '@/api';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/TherapistDetailScreen.styles';
 import { COLORS } from '@/theme';
@@ -25,7 +25,7 @@ const TherapistDetailScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<TherapistDetailRouteProp>();
   const therapistId = route.params.id;
-  const [therapist, setTherapist] = useState<TherapistDetail | null>(null);
+  const [therapist, setTherapist] = useState<therapistApi.TherapistDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -35,7 +35,7 @@ const TherapistDetailScreen: React.FC = () => {
       setErrorMessage('');
 
       try {
-        const response = await getTherapistDetails(therapistId);
+        const response = await therapistApi.getTherapistDetails(therapistId);
         setTherapist(response);
       } catch {
         setErrorMessage('Không thể tải thông tin chuyên gia. Vui lòng thử lại.');

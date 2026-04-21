@@ -90,7 +90,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleNavigateChatbot = (): void => {
-    navigation.navigate('TherapyOverview');
+    navigation.navigate('Chat');
   };
 
   const handleNavigateSocialChat = (): void => {

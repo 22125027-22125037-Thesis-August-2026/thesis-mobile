@@ -488,7 +488,7 @@ const SleepMainScreen: React.FC = () => {
               <View style={styles.headerTopRow}>
                 <Pressable
                   style={styles.backButton}
-                  onPress={navigation.goBack}
+                  onPress={() => navigation.navigate('Home')}
                 >
                   <Feather name="chevron-left" size={22} color={COLORS.white} />
                 </Pressable>

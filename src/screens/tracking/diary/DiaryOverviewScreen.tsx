@@ -14,6 +14,7 @@ import {
   useFocusEffect,
   NavigationContext,
   NavigationProp,
+  useNavigation,
 } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
@@ -97,9 +98,7 @@ const calculateStreak = (entries: DiaryEntryResponse[]): number => {
 
 const DiaryOverviewScreen: React.FC = () => {
   const { t } = useTranslation();
-  const navigation = useContext(NavigationContext) as
-    | NavigationProp<TrackingStackParamList>
-    | undefined;
+  const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
   const [entries, setEntries] = useState<DiaryEntryResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -156,11 +155,11 @@ const DiaryOverviewScreen: React.FC = () => {
   }, [entries, searchQuery, fromDate, toDate]);
 
   const handleEntryPress = (entryId: string) => {
-    navigation?.navigate('DiaryEntry', { entryId });
+    navigation.navigate('DiaryEntry', { entryId });
   };
 
   const handleNewEntry = () => {
-    navigation?.navigate('DiaryEntry');
+    navigation.navigate('DiaryEntry');
   };
 
   const handleFromDateChange = (event: any, selectedDate?: Date): void => {
@@ -292,7 +291,7 @@ const DiaryOverviewScreen: React.FC = () => {
           <View style={styles.headerTopRow}>
             <Pressable
               style={styles.headerBackButton}
-              onPress={() => navigation?.goBack()}
+              onPress={() => navigation.navigate('Home')}
             >
               <Feather name="chevron-left" size={22} color={COLORS.white} />
             </Pressable>

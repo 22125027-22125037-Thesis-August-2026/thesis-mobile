@@ -407,17 +407,13 @@ const FoodMainScreen: React.FC = () => {
 
       Alert.alert(
         t('food.entry.successTitle', { defaultValue: 'Thanh cong' }),
-        t('food.entry.successMessage', {
-          defaultValue: 'Da luu nhat ky an uong.',
-        }),
+        t('food.entry.successMessage'),
       );
     } catch (error) {
       console.error('[FoodMainScreen] Failed to save food log:', error);
       Alert.alert(
-        t('food.entry.errorTitle', { defaultValue: 'Loi' }),
-        t('food.entry.errorMessage', {
-          defaultValue: 'Khong the luu du lieu. Vui long thu lai.',
-        }),
+        t('food.entry.errorTitle'),
+        t('food.entry.errorMessage'),
       );
     } finally {
       setIsSaving(false);
@@ -448,7 +444,7 @@ const FoodMainScreen: React.FC = () => {
               <View style={styles.headerTopRow}>
                 <Pressable
                   style={styles.backButton}
-                  onPress={navigation.goBack}
+                  onPress={() => navigation.navigate('Home')}
                 >
                   <Feather name="chevron-left" size={22} color={COLORS.white} />
                 </Pressable>
