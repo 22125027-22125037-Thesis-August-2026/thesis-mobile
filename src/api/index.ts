@@ -7,8 +7,3 @@ import * as therapistApi from '@/api/therapistApi';
 import * as trackingApi from '@/api/trackingApi';
 
 export { diaryApi, foodApi, sleepApi, therapistApi, trackingApi };
-export * from '@/api/diaryApi';
-export * from '@/api/foodApi';
-export * from '@/api/sleepApi';
-export * from '@/api/therapistApi';
-export * from '@/api/trackingApi';

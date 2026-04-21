@@ -18,7 +18,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 
-import { DashboardSummary, getDashboardSummary } from '@/api';
+import { trackingApi } from '@/api';
 import { AuthContext } from '@/context/AuthContext';
 import { BORDER_RADIUS, FONT_SIZES, SPACING } from '@/theme';
 import { COLORS } from '@/theme';
@@ -30,7 +30,7 @@ const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
   const { userInfo } = useContext(AuthContext)!;
   const { t } = useTranslation();
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [summary, setSummary] = useState<trackingApi.DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getMoodDisplay = useMemo(
@@ -56,7 +56,7 @@ const HomeScreen: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const data = await getDashboardSummary();
+      const data = await trackingApi.getDashboardSummary();
       setSummary(data);
     } catch (error) {
       console.error('[HomeScreen] Failed to load dashboard summary:', error);

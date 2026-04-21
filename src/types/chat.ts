@@ -10,13 +10,11 @@ export interface Message {
 }
 
 export interface AiChatRequest {
-  sessionId: string | null;
+  sessionId?: string;
   content: string;
 }
 
-export interface AIChatResponse {
-  sessionId?: string;
-  content: string;
+export interface AIChatResponse extends AiChatRequest {
   sentimentDetected: string;
   crisisDetected: boolean;
 }

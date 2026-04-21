@@ -1,19 +1,14 @@
 export interface SleepLogRequest {
   bedTime: string;
   wakeTime: string;
-  sleepQuality?: number | null;
-  note?: string | null;
+  sleepQuality?: number;
+  note?: string;
   entryDate?: string; // ISO format: YYYY-MM-DD
 }
 
-export interface SleepLogResponse {
+export interface SleepLogResponse extends SleepLogRequest {
   id: string;
-  bedTime: string;
-  wakeTime: string;
   durationMinutes: number;
-  sleepQuality: number | null;
-  note: string | null;
-  entryDate?: string; // ISO format: YYYY-MM-DD
   createdAt: string;
   updatedAt: string;
 }

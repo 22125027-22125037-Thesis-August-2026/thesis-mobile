@@ -148,6 +148,8 @@
       "overviewSubtitle": "Điểm ăn uống chánh niệm trong tuần",
       "quickEntryTitle": "Ghi nhanh",
       "quickEntrySubtitle": "Theo dõi nước uống và bữa ăn cho ngày đã chọn",
+      "waterChartTitle": "Lượng nước uống trong 7 ngày qua",
+      "waterChartSubtitle": "Số cốc nước mỗi ngày",
       "historyTitle": "Mục gần đây",
       "historyEmpty": "Chưa có mục dinh dưỡng nào.",
       "averageLabel": "Trung bình",

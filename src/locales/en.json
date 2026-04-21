@@ -148,6 +148,8 @@
       "overviewSubtitle": "Mindful eating score across the week",
       "quickEntryTitle": "Quick entry",
       "quickEntrySubtitle": "Track hydration and meals for the selected day",
+      "waterChartTitle": "Water intake in the last 7 days",
+      "waterChartSubtitle": "Number of cups each day",
       "historyTitle": "Recent entries",
       "historyEmpty": "No nutrition entries yet.",
       "averageLabel": "Average",

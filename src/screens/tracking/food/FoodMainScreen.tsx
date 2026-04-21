@@ -1,4 +1,9 @@
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -11,30 +16,18 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from '@react-native-community/datetimepicker';
-import { LineChart } from 'react-native-chart-kit';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import Feather from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { BarChart, LineChart } from 'react-native-chart-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
+import Feather from 'react-native-vector-icons/Feather';
 
 import { foodApi } from '@/api';
 import { AppText } from '@/components';
 import { TrackingStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { FoodLogRequest, FoodLogResponse } from '@/types';
-import { endOfWeekSunday, isSameDate, startOfWeekMonday } from '@/utils';
+import { isSameDate, startOfWeekMonday } from '@/utils';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './FoodMainScreen.styles';
-
-type FoodPickerTarget = 'date' | null;
-
-type MealTypeOption = {
-  labelKey: string;
-  value: string;
-};
 
 type SatietyOption = {
   value: number;
@@ -58,13 +51,6 @@ const WEEKDAY_LABEL_KEYS: string[] = [
   'food.overview.weekdayFri',
   'food.overview.weekdaySat',
   'food.overview.weekdaySun',
-];
-
-const MEAL_TYPE_OPTIONS: MealTypeOption[] = [
-  { labelKey: 'food.meal.breakfast', value: 'BREAKFAST' },
-  { labelKey: 'food.meal.lunch', value: 'LUNCH' },
-  { labelKey: 'food.meal.dinner', value: 'DINNER' },
-  { labelKey: 'food.meal.snack', value: 'SNACK' },
 ];
 
 const SATIETY_OPTIONS: SatietyOption[] = [
@@ -111,18 +97,8 @@ const SATIETY_OPTIONS: SatietyOption[] = [
 ];
 
 const RECENT_HISTORY_LIMIT = 5;
-const DEFAULT_MEAL_TYPE = 'LUNCH';
 const DEFAULT_SATIETY_VALUE = 4;
 const MAX_DESCRIPTION_LENGTH = 300;
-
-const hexToRgba = (hexColor: string, opacity: number): string => {
-  const normalizedHex = hexColor.replace('#', '');
-  const parsedHex = Number.parseInt(normalizedHex, 16);
-  const red = (parsedHex >> 16) & 255;
-  const green = (parsedHex >> 8) & 255;
-  const blue = parsedHex & 255;
-  return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
-};
 
 const formatDateKey = (date: Date): string => {
   const year = date.getFullYear();
@@ -133,29 +109,64 @@ const formatDateKey = (date: Date): string => {
 
 const parseDateKey = (dateKey: string): Date => {
   const [year, month, day] = dateKey.split('-').map(part => Number(part));
-  return new Date(year, month - 1, day);
+  return new Date(year, month - 1, day, 0, 0, 0, 0);
 };
 
 const formatSelectedDate = (date: Date, locale: string): string => {
   const weekday = date.toLocaleDateString(locale, { weekday: 'long' });
-  const day = date.toLocaleDateString(locale, {
+  const fullDate = date.toLocaleDateString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   });
-  return `${weekday}, ${day}`;
+
+  return `${weekday}, ${fullDate}`;
 };
 
-const foodLogDateKey = (log: FoodLogResponse): string => {
-  return log.entryDate ?? formatDateKey(new Date(log.createdAt));
+const sortByUpdatedAtDesc = (
+  left: FoodLogResponse,
+  right: FoodLogResponse,
+): number => {
+  return (
+    new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()
+  );
 };
 
-const foodLogDate = (log: FoodLogResponse): Date => {
-  return parseDateKey(foodLogDateKey(log));
+const clampToToday = (date: Date): Date => {
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  return next > now ? now : next;
+};
+
+const getWeekDateKeys = (selectedDate: Date): string[] => {
+  const dates: string[] = [];
+
+  for (let index = 6; index >= 0; index -= 1) {
+    const date = new Date(selectedDate);
+    date.setDate(selectedDate.getDate() - index);
+    date.setHours(0, 0, 0, 0);
+    dates.push(formatDateKey(date));
+  }
+
+  return dates;
 };
 
 const foodLogSortValue = (log: FoodLogResponse): number => {
   return new Date(log.createdAt).getTime();
+};
+
+const toRgba = (hexColor: string, opacity: number): string => {
+  const normalizedHex = hexColor.replace('#', '');
+  const parsedHex = Number.parseInt(normalizedHex, 16);
+  const red = (parsedHex >> 16) & 255;
+  const green = (parsedHex >> 8) & 255;
+  const blue = parsedHex & 255;
+
+  return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
 };
 
 const satietyValueForLevel = (satietyLevel: string): number => {
@@ -176,91 +187,117 @@ const FoodMainScreen: React.FC = () => {
   const { i18n, t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
 
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(() =>
+    clampToToday(new Date()),
+  );
   const [allLogs, setAllLogs] = useState<FoodLogResponse[]>([]);
-  const [isLoadingLogs, setIsLoadingLogs] = useState<boolean>(true);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
-  const [mealType, setMealType] = useState<string>(DEFAULT_MEAL_TYPE);
+  const [currentLogId, setCurrentLogId] = useState<string | null>(null);
+  const [waterGlasses, setWaterGlasses] = useState<number>(0);
+  const [foodDescription, setFoodDescription] = useState<string>('');
   const [satietyLevel, setSatietyLevel] = useState<number>(
     DEFAULT_SATIETY_VALUE,
   );
-  const [foodDescription, setFoodDescription] = useState<string>('');
-  const [hydrationByDate, setHydrationByDate] = useState<
-    Record<string, number>
-  >({});
+  const [weeklyLogs, setWeeklyLogs] = useState<FoodLogResponse[]>([]);
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const selectedDateKey = useMemo(
     () => formatDateKey(selectedDate),
     [selectedDate],
   );
+  const weekDateKeys = useMemo(
+    () => getWeekDateKeys(selectedDate),
+    [selectedDate],
+  );
 
-  const refreshLogs = useCallback(async (): Promise<void> => {
-    setIsLoadingLogs(true);
+  const loadLogs = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+
+    const requestStart = new Date(selectedDate);
+    requestStart.setDate(selectedDate.getDate() - 7);
+    requestStart.setHours(0, 0, 0, 0);
+
+    const startDate = formatDateKey(requestStart);
+    const endDate = weekDateKeys[weekDateKeys.length - 1];
 
     try {
-      const logs = await foodApi.getAllFoodLogs();
-      setAllLogs(logs);
+      const logs = await foodApi.getFoodLogs(startDate, endDate);
+      const sortedLogs = logs.slice().sort(sortByUpdatedAtDesc);
+      setWeeklyLogs(sortedLogs);
+
+      const foundLog =
+        sortedLogs.find(log => log.entryDate === selectedDateKey) ?? null;
+
+      if (foundLog) {
+        setCurrentLogId(foundLog.id);
+        setWaterGlasses(foundLog.waterGlasses);
+        setFoodDescription(foundLog.foodDescription);
+        setSatietyLevel(satietyValueForLevel(foundLog.satietyLevel));
+      } else {
+        setCurrentLogId(null);
+        setWaterGlasses(0);
+        setFoodDescription('');
+        setSatietyLevel(DEFAULT_SATIETY_VALUE);
+      }
     } catch (error) {
-      console.error('[FoodMainScreen] Failed to load food logs:', error);
-      setAllLogs([]);
+      console.error('[FoodMainScreen] Failed to fetch food logs:', error);
+      setWeeklyLogs([]);
+      setCurrentLogId(null);
+      setWaterGlasses(0);
+      setFoodDescription('');
+      setSatietyLevel(DEFAULT_SATIETY_VALUE);
+      Alert.alert(t('food.entry.errorTitle'), t('food.entry.errorMessage'));
     } finally {
-      setIsLoadingLogs(false);
+      setIsLoading(false);
     }
-  }, []);
+  }, [selectedDateKey, t, weekDateKeys]);
 
   useEffect(() => {
-    void refreshLogs();
-  }, [refreshLogs]);
+    void loadLogs();
+  }, [loadLogs]);
 
-  const selectedLog = useMemo(() => {
-    return (
-      allLogs
-        .filter(log => foodLogDateKey(log) === selectedDateKey)
-        .sort(
-          (left, right) => foodLogSortValue(right) - foodLogSortValue(left),
-        )[0] ?? null
-    );
-  }, [allLogs, selectedDateKey]);
+  const chartData = useMemo(() => {
+    const labels = weekDateKeys.map(dateKey => {
+      const date = parseDateKey(dateKey);
+      return `${date.getDate()}/${date.getMonth() + 1}`;
+    });
 
-  useEffect(() => {
-    if (selectedLog) {
-      setMealType(selectedLog.mealType);
-      setSatietyLevel(satietyValueForLevel(selectedLog.satietyLevel));
-      setFoodDescription(selectedLog.foodDescription);
-      return;
-    }
+    const values = weekDateKeys.map(dateKey => {
+      const latestDayLog = weeklyLogs
+        .filter(log => log.entryDate === dateKey)
+        .sort(sortByUpdatedAtDesc)[0];
 
-    setMealType(DEFAULT_MEAL_TYPE);
-    setSatietyLevel(DEFAULT_SATIETY_VALUE);
-    setFoodDescription('');
-  }, [selectedDateKey, selectedLog]);
+      return latestDayLog?.waterGlasses ?? 0;
+    });
 
-  const selectedHydration = hydrationByDate[selectedDateKey] ?? 0;
+    return {
+      labels,
+      datasets: [{ data: values }],
+    };
+  }, [weekDateKeys, weeklyLogs]);
+
+  const foodLogDateKey = (log: FoodLogResponse): string => {
+    return log.entryDate ?? formatDateKey(new Date(log.createdAt));
+  };
+
+  const foodLogDate = (log: FoodLogResponse): Date => {
+    return parseDateKey(foodLogDateKey(log));
+  };
 
   const selectedWeekStart = useMemo(
     () => startOfWeekMonday(selectedDate),
     [selectedDate],
   );
-  const selectedWeekEnd = useMemo(
-    () => endOfWeekSunday(selectedWeekStart),
-    [selectedWeekStart],
-  );
-
-  const weekEntries = useMemo<FoodLogResponse[]>(() => {
-    return allLogs.filter(log => {
-      const logDate = foodLogDate(log);
-      return logDate >= selectedWeekStart && logDate <= selectedWeekEnd;
-    });
-  }, [allLogs, selectedWeekEnd, selectedWeekStart]);
 
   const weekTrend = useMemo<FoodDayTrend[]>(() => {
     return Array.from({ length: 7 }, (_, index) => {
       const date = new Date(selectedWeekStart);
       date.setDate(selectedWeekStart.getDate() + index);
 
-      const dayLogs = weekEntries.filter(log =>
+      const dayLogs = weeklyLogs.filter(log =>
         isSameDate(foodLogDate(log), date),
       );
       const latestLog =
@@ -275,14 +312,14 @@ const FoodMainScreen: React.FC = () => {
         rating: latestLog ? satietyValueForLevel(latestLog.satietyLevel) : 0,
       };
     });
-  }, [selectedWeekStart, t, weekEntries]);
+  }, [selectedWeekStart, t, weeklyLogs]);
 
   const chartValues = useMemo(
     () => weekTrend.map(day => day.rating),
     [weekTrend],
   );
   const averageMindfulScore = useMemo(() => {
-    const meaningfulScores = weekEntries
+    const meaningfulScores = weeklyLogs
       .map(log => satietyValueForLevel(log.satietyLevel))
       .filter(score => score > 0);
 
@@ -294,17 +331,7 @@ const FoodMainScreen: React.FC = () => {
       meaningfulScores.reduce((sum, score) => sum + score, 0) /
       meaningfulScores.length
     );
-  }, [weekEntries]);
-
-  const totalMeals = useMemo(() => weekEntries.length, [weekEntries]);
-
-  const recentEntries = useMemo(() => {
-    return allLogs
-      .slice()
-      .sort((left, right) => foodLogSortValue(right) - foodLogSortValue(left))
-      .slice(0, RECENT_HISTORY_LIMIT);
-  }, [allLogs]);
-
+  }, [weeklyLogs]);
   const chartWidth = Math.max(
     screenWidth - SPACING.screenHorizontal * 2 - 16,
     280,
@@ -316,18 +343,11 @@ const FoodMainScreen: React.FC = () => {
       backgroundGradientFrom: COLORS.surface,
       backgroundGradientTo: COLORS.surface,
       decimalPlaces: 0,
-      color: (opacity = 1): string =>
-        hexToRgba(COLORS.foodHeaderOrange, opacity),
+      color: (opacity = 1): string => toRgba(COLORS.foodHeaderOrange, opacity),
       labelColor: (opacity = 1): string =>
-        hexToRgba(COLORS.textSecondary, opacity),
+        toRgba(COLORS.textSecondary, opacity),
       propsForBackgroundLines: {
         stroke: COLORS.borderSubtle,
-        strokeDasharray: '4 6',
-      },
-      propsForDots: {
-        r: '4',
-        strokeWidth: '2',
-        stroke: COLORS.foodHeaderOrange,
       },
       propsForLabels: {
         fontSize: 10,
@@ -346,12 +366,20 @@ const FoodMainScreen: React.FC = () => {
     }
 
     if (nextDate) {
-      setSelectedDate(nextDate);
+      setSelectedDate(clampToToday(nextDate));
     }
 
     if (Platform.OS !== 'ios') {
       setShowDatePicker(false);
     }
+  };
+
+  const handleDecreaseWater = (): void => {
+    setWaterGlasses(previous => Math.max(0, previous - 1));
+  };
+
+  const handleIncreaseWater = (): void => {
+    setWaterGlasses(previous => previous + 1);
   };
 
   const handleSave = async (): Promise<void> => {
@@ -362,44 +390,47 @@ const FoodMainScreen: React.FC = () => {
     setIsSaving(true);
 
     const payload: FoodLogRequest = {
-      mealType,
+      waterGlasses,
       foodDescription: foodDescription.trim(),
       satietyLevel: satietyOptionForValue(satietyLevel).level,
       entryDate: selectedDateKey,
     };
 
     try {
-      if (selectedLog) {
-        await foodApi.updateFoodLog(selectedLog.id, payload);
+      if (currentLogId) {
+        await foodApi.updateFoodLog(currentLogId, payload);
       } else {
         await foodApi.createFoodLog(payload);
       }
 
-      await refreshLogs();
+      await loadLogs();
 
-      Alert.alert(t('food.entry.successTitle'), t('food.entry.successMessage'));
+      Alert.alert(
+        t('food.entry.successTitle', { defaultValue: 'Thanh cong' }),
+        t('food.entry.successMessage', {
+          defaultValue: 'Da luu nhat ky an uong.',
+        }),
+      );
     } catch (error) {
       console.error('[FoodMainScreen] Failed to save food log:', error);
-      Alert.alert(t('food.entry.errorTitle'), t('food.entry.errorMessage'));
+      Alert.alert(
+        t('food.entry.errorTitle', { defaultValue: 'Loi' }),
+        t('food.entry.errorMessage', {
+          defaultValue: 'Khong the luu du lieu. Vui long thu lai.',
+        }),
+      );
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleIncreaseHydration = (): void => {
-    setHydrationByDate(previous => ({
-      ...previous,
-      [selectedDateKey]: (previous[selectedDateKey] ?? 0) + 1,
-    }));
-  };
+  const isSaveDisabled = isSaving || foodDescription.trim().length === 0;
 
-  const handleSelectHistoryEntry = (log: FoodLogResponse): void => {
-    setSelectedDate(foodLogDate(log));
-  };
-
-  const saveButtonLabel = selectedLog
-    ? t('food.main.saveButtonUpdate')
-    : t('food.main.saveButtonCreate');
+  const today = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return now;
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -463,14 +494,14 @@ const FoodMainScreen: React.FC = () => {
                 </View>
               </View>
 
-              {isLoadingLogs ? (
+              {isLoading ? (
                 <View style={styles.loadingWrap}>
                   <ActivityIndicator color={COLORS.foodHeaderOrange} />
                   <AppText style={styles.loadingText}>
                     {t('food.overview.loading')}
                   </AppText>
                 </View>
-              ) : weekEntries.length === 0 ? (
+              ) : weeklyLogs.length === 0 ? (
                 <View style={styles.emptyChartState}>
                   <MaterialCommunityIcons
                     name="food-apple-outline"
@@ -524,13 +555,42 @@ const FoodMainScreen: React.FC = () => {
                     {t('food.main.averageLabel')}
                   </AppText>
                 </View>
-                <View style={styles.summaryCard}>
-                  <AppText style={styles.summaryValue}>{totalMeals}</AppText>
-                  <AppText style={styles.summaryLabel}>
-                    {t('food.main.totalLabel')}
+              </View>
+            </View>
+
+            <View style={styles.sectionCard}>
+              <View style={styles.sectionHeaderRow}>
+                <View>
+                  <AppText style={styles.sectionTitle}>
+                    {t('food.main.waterChartTitle')}
+                  </AppText>
+                  <AppText style={styles.sectionSubtitle}>
+                    {t('food.main.waterChartSubtitle')}
                   </AppText>
                 </View>
               </View>
+
+              {isLoading ? (
+                <View style={styles.loadingWrap}>
+                  <ActivityIndicator color={COLORS.foodHeaderOrange} />
+                  <AppText style={styles.loadingText}>
+                    {t('food.overview.loading')}
+                  </AppText>
+                </View>
+              ) : (
+                <BarChart
+                  data={chartData}
+                  width={chartWidth}
+                  height={230}
+                  fromZero
+                  yAxisLabel=""
+                  yAxisSuffix=""
+                  showValuesOnTopOfBars
+                  withInnerLines={false}
+                  chartConfig={chartConfig}
+                  style={styles.chart}
+                />
+              )}
             </View>
 
             <View style={styles.sectionCard}>
@@ -545,51 +605,34 @@ const FoodMainScreen: React.FC = () => {
                 </View>
               </View>
 
-              <View style={styles.hydrationCard}>
-                <View style={styles.hydrationTextWrap}>
-                  <AppText style={styles.inputLabel}>
-                    {t('food.main.hydrationLabel')}
-                  </AppText>
-                  <AppText style={styles.hydrationValue}>
-                    {selectedHydration} {t('food.main.hydrationUnit')}
-                  </AppText>
-                </View>
-                <Pressable
-                  style={styles.hydrationButton}
-                  onPress={handleIncreaseHydration}
-                >
-                  <Feather name="plus" size={20} color={COLORS.white} />
-                </Pressable>
-              </View>
-
-              <View style={styles.tagSection}>
+              <View style={styles.waterTrackerCard}>
                 <AppText style={styles.inputLabel}>
-                  {t('food.main.mealTagsLabel')}
+                  {t('food.main.hydrationLabel')}
                 </AppText>
-                <View style={styles.tagRow}>
-                  {MEAL_TYPE_OPTIONS.map(option => {
-                    const isSelected = mealType === option.value;
 
-                    return (
-                      <Pressable
-                        key={option.value}
-                        style={[
-                          styles.tagChip,
-                          isSelected && styles.tagChipSelected,
-                        ]}
-                        onPress={() => setMealType(option.value)}
-                      >
-                        <AppText
-                          style={[
-                            styles.tagText,
-                            isSelected && styles.tagTextSelected,
-                          ]}
-                        >
-                          {t(option.labelKey)}
-                        </AppText>
-                      </Pressable>
-                    );
-                  })}
+                <View style={styles.waterStepperRow}>
+                  <Pressable
+                    style={styles.waterCircleButton}
+                    onPress={handleDecreaseWater}
+                  >
+                    <Feather name="minus" size={20} color={COLORS.white} />
+                  </Pressable>
+
+                  <View style={styles.waterValueWrap}>
+                    <AppText style={styles.waterValueText}>
+                      {waterGlasses}
+                    </AppText>
+                    <AppText style={styles.waterValueUnit}>
+                      {t('food.main.hydrationUnit')}
+                    </AppText>
+                  </View>
+
+                  <Pressable
+                    style={styles.waterCircleButton}
+                    onPress={handleIncreaseWater}
+                  >
+                    <Feather name="plus" size={20} color={COLORS.white} />
+                  </Pressable>
                 </View>
               </View>
 
@@ -655,18 +698,17 @@ const FoodMainScreen: React.FC = () => {
               <Pressable
                 style={[
                   styles.submitButton,
-                  (isSaving || foodDescription.trim().length === 0) &&
-                    styles.submitButtonDisabled,
+                  isSaveDisabled && styles.submitButtonDisabled,
                 ]}
                 onPress={handleSave}
-                disabled={isSaving || foodDescription.trim().length === 0}
+                disabled={isSaveDisabled}
               >
                 {isSaving ? (
                   <ActivityIndicator color={COLORS.buttonPrimaryText} />
                 ) : (
                   <View style={styles.submitContent}>
                     <AppText style={styles.submitText}>
-                      {saveButtonLabel}
+                      {t('food.main.saveButtonCreate')}
                     </AppText>
                     <Feather
                       name="check"
@@ -676,71 +718,6 @@ const FoodMainScreen: React.FC = () => {
                   </View>
                 )}
               </Pressable>
-            </View>
-
-            <View style={styles.sectionCard}>
-              <View style={styles.sectionHeaderRow}>
-                <View>
-                  <AppText style={styles.sectionTitle}>
-                    {t('food.main.historyTitle')}
-                  </AppText>
-                  <AppText style={styles.sectionSubtitle}>
-                    {t('food.main.historyEmpty')}
-                  </AppText>
-                </View>
-              </View>
-
-              {recentEntries.length === 0 ? (
-                <View style={styles.emptyHistoryState}>
-                  <AppText style={styles.emptyStateText}>
-                    {t('food.main.historyEmpty')}
-                  </AppText>
-                </View>
-              ) : (
-                <View style={styles.historyList}>
-                  {recentEntries.map(log => {
-                    const satietyOption = satietyOptionForValue(
-                      satietyValueForLevel(log.satietyLevel),
-                    );
-
-                    return (
-                      <Pressable
-                        key={log.id}
-                        style={styles.historyItem}
-                        onPress={() => handleSelectHistoryEntry(log)}
-                      >
-                        <View style={styles.historyIconWrap}>
-                          <MaterialCommunityIcons
-                            name={satietyOption.icon}
-                            size={22}
-                            color={satietyOption.color}
-                          />
-                        </View>
-                        <View style={styles.historyContent}>
-                          <View style={styles.historyTopRow}>
-                            <AppText style={styles.historyTitleText}>
-                              {formatSelectedDate(foodLogDate(log), locale)}
-                            </AppText>
-                            <AppText style={styles.historyMetaText}>
-                              {t(
-                                MEAL_TYPE_OPTIONS.find(
-                                  option => option.value === log.mealType,
-                                )?.labelKey ?? 'food.meal.lunch',
-                              )}
-                            </AppText>
-                          </View>
-                          <AppText
-                            style={styles.historySubtitleText}
-                            numberOfLines={2}
-                          >
-                            {log.foodDescription}
-                          </AppText>
-                        </View>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              )}
             </View>
           </ScrollView>
 
@@ -754,7 +731,7 @@ const FoodMainScreen: React.FC = () => {
                 <View style={styles.pickerHeader}>
                   <Pressable onPress={() => setShowDatePicker(false)}>
                     <AppText style={styles.pickerDoneText}>
-                      {t('sleep.entry.iosDone')}
+                      {t('sleep.entry.iosDone', { defaultValue: 'Xong' })}
                     </AppText>
                   </Pressable>
                 </View>
@@ -763,7 +740,7 @@ const FoodMainScreen: React.FC = () => {
                   mode="date"
                   display="spinner"
                   onChange={handleDateChange}
-                  maximumDate={new Date()}
+                  maximumDate={today}
                 />
               </View>
             </Modal>
@@ -775,7 +752,7 @@ const FoodMainScreen: React.FC = () => {
               mode="date"
               display="default"
               onChange={handleDateChange}
-              maximumDate={new Date()}
+              maximumDate={today}
             />
           ) : null}
         </View>
