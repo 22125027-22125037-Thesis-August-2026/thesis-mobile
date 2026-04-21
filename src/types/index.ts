@@ -6,6 +6,7 @@ export * from './food';
 export * from './matching';
 export * from './media';
 export * from './sleep';
+export * from './social';
 export type {
   MoodLogRequest,
   MoodLogResponse,

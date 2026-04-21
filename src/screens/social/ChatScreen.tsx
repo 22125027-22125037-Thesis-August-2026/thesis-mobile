@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useTranslation } from 'react-i18next';
 
+import { socialApi } from '@/api';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { useChatWebSocket, ChatSocketMessage } from '@/hooks';
@@ -27,7 +29,7 @@ interface MessageBubbleProps {
   isMine: boolean;
 }
 
-const CHAT_BROKER_URL = 'ws://localhost:8080/ws';
+const CHAT_BROKER_URL = 'ws://localhost:8083/ws';
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMine }) => {
   const formattedTime = useMemo(() => {
@@ -60,6 +62,7 @@ const ChatScreen: React.FC = () => {
   const navigation = useNavigation<RootNavigation>();
   const route = useRoute<SocialChatRoute>();
   const auth = useContext(AuthContext);
+  const { t } = useTranslation();
 
   const { channelId, recipientName, channelType } = route.params;
   const currentUserId = auth?.userInfo?.profileId ?? '';
@@ -71,11 +74,77 @@ const ChatScreen: React.FC = () => {
   });
 
   const [inputText, setInputText] = useState<string>('');
+  const [historyMessages, setHistoryMessages] = useState<ChatSocketMessage[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
 
-  const channelMessages = useMemo(
-    () => messages.filter(message => message.channelId === channelId),
-    [channelId, messages],
-  );
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadHistory = async () => {
+      setIsHistoryLoading(true);
+
+      try {
+        const serverMessages = await socialApi.getChannelMessages(channelId, {
+          page: 0,
+          size: 50,
+        });
+
+        if (!isMounted) {
+          return;
+        }
+
+        const normalized = serverMessages
+          .map<ChatSocketMessage>(message => ({
+            id: message.messageId,
+            channelId: message.channelId,
+            content: message.content,
+            sender: message.senderProfileId ?? undefined,
+            sentAt: message.createdAt,
+          }))
+          .sort((left, right) => {
+            const leftTs = new Date(left.sentAt).getTime();
+            const rightTs = new Date(right.sentAt).getTime();
+            return leftTs - rightTs;
+          });
+
+        setHistoryMessages(normalized);
+      } catch (error) {
+        console.error('Failed to load channel messages:', error);
+        if (isMounted) {
+          setHistoryMessages([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadHistory();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [channelId]);
+
+  const channelMessages = useMemo(() => {
+    const liveMessages = messages.filter(message => message.channelId === channelId);
+    const deduplicated = new Map<string, ChatSocketMessage>();
+
+    historyMessages.forEach(message => {
+      deduplicated.set(message.id, message);
+    });
+
+    liveMessages.forEach(message => {
+      deduplicated.set(message.id, message);
+    });
+
+    return Array.from(deduplicated.values()).sort((left, right) => {
+      const leftTs = new Date(left.sentAt).getTime();
+      const rightTs = new Date(right.sentAt).getTime();
+      return leftTs - rightTs;
+    });
+  }, [channelId, historyMessages, messages]);
 
   // For an inverted list, provide newest-first data so latest appears at the visual bottom.
   const invertedMessages = useMemo(
@@ -152,6 +221,11 @@ const ChatScreen: React.FC = () => {
                 </View>
               }
             />
+            {isHistoryLoading && (
+              <View style={styles.historyLoadingWrap}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+              </View>
+            )}
           </View>
 
           <View style={styles.inputBar}>
@@ -177,7 +251,9 @@ const ChatScreen: React.FC = () => {
           {!isConnected && (
             <View style={styles.loadingOverlay}>
               <ActivityIndicator size="small" color={COLORS.primary} />
-              <AppText style={styles.loadingText}>Connecting to chat...</AppText>
+              <AppText style={styles.loadingText}>
+                {t('social.chat.connecting', { defaultValue: 'Connecting to chat...' })}
+              </AppText>
             </View>
           )}
         </View>
@@ -301,6 +377,9 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: FONT_SIZES.sm,
     color: COLORS.textSecondary,
+  },
+  historyLoadingWrap: {
+    paddingBottom: SPACING.sm,
   },
   inputBar: {
     flexDirection: 'row',
