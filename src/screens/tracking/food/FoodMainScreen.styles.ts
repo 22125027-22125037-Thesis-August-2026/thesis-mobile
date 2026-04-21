@@ -171,32 +171,41 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.textSecondary,
   },
-  hydrationCard: {
+  waterTrackerCard: {
+    borderRadius: BORDER_RADIUS.card,
+    backgroundColor: COLORS.journalPillBackground,
+    padding: SPACING.md,
+    rowGap: SPACING.md,
+  },
+  waterStepperRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     columnGap: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.journalPillBackground,
-    padding: SPACING.md,
   },
-  hydrationTextWrap: {
-    flex: 1,
-    rowGap: SPACING.xxs,
-  },
-  hydrationValue: {
-    color: COLORS.textPrimary,
-    fontSize: 22,
-    lineHeight: 28,
-    fontWeight: '800',
-  },
-  hydrationButton: {
-    width: 48,
-    height: 48,
+  waterCircleButton: {
+    width: 52,
+    height: 52,
     borderRadius: BORDER_RADIUS.full,
-    backgroundColor: COLORS.foodHeaderOrange,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: COLORS.foodHeaderOrange,
+  },
+  waterValueWrap: {
+    alignItems: 'center',
+    rowGap: SPACING.xxs,
+  },
+  waterValueText: {
+    color: COLORS.textPrimary,
+    fontSize: 36,
+    lineHeight: 44,
+    fontWeight: '800',
+  },
+  waterValueUnit: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   tagSection: {
     rowGap: SPACING.sm,
@@ -273,6 +282,7 @@ export const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontSize: FONT_SIZES.md,
     fontWeight: '800',
+    marginBottom: SPACING.sm,
   },
   descriptionCard: {
     minHeight: 120,
@@ -308,50 +318,6 @@ export const styles = StyleSheet.create({
     color: COLORS.buttonPrimaryText,
     fontSize: FONT_SIZES.lg,
     fontWeight: '800',
-  },
-  historyList: {
-    rowGap: SPACING.sm,
-  },
-  historyItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    columnGap: SPACING.sm,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.journalPillBackground,
-    padding: SPACING.md,
-  },
-  historyIconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: BORDER_RADIUS.full,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  historyContent: {
-    flex: 1,
-    rowGap: SPACING.xxs,
-  },
-  historyTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    columnGap: SPACING.sm,
-  },
-  historyTitleText: {
-    flex: 1,
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '800',
-  },
-  historyMetaText: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
-  },
-  historySubtitleText: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
   },
   pickerBackdrop: {
     ...StyleSheet.absoluteFillObject,

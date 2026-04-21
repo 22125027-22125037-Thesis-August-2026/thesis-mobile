@@ -12,12 +12,8 @@ export interface MediaAttachmentResponse {
   fileUrl: string;
 }
 
-export interface DiaryEntryResponse {
+export interface DiaryEntryResponse extends DiaryEntryRequest {
   id: string;
-  title?: string | null;
-  content: string;
-  moodTag: string | null;
-  positivityScore: number | null;
   attachments: MediaAttachmentResponse[];
   entryDate: string; // ISO format: YYYY-MM-DD
   createdAt: string;

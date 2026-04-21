@@ -17,6 +17,23 @@ export const createFoodLog = async (
   return response.data;
 };
 
+export const getFoodLogs = async (
+  startDate: string,
+  endDate: string,
+): Promise<FoodLogResponse[]> => {
+  const response = await axiosClient.get<FoodLogResponse[]>(
+    FOOD_COLLECTION_PATH,
+    {
+      params: {
+        startDate,
+        endDate,
+      },
+    },
+  );
+
+  return response.data;
+};
+
 export const getAllFoodLogs = async (): Promise<FoodLogResponse[]> => {
   const response = await axiosClient.get<FoodLogResponse[]>(
     FOOD_COLLECTION_PATH,

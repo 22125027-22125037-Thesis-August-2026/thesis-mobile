@@ -1,15 +1,12 @@
 export interface FoodLogRequest {
-  mealType: string;
+  waterGlasses: number;
   foodDescription: string;
   satietyLevel: string;
-  entryDate?: string; // ISO format: YYYY-MM-DD
+  entryDate: string; // YYYY-MM-DD
 }
 
-export interface FoodLogResponse {
+export interface FoodLogResponse extends FoodLogRequest {
   id: string;
-  mealType: string;
-  foodDescription: string;
-  satietyLevel: string;
-  entryDate?: string; // ISO format: YYYY-MM-DD
   createdAt: string;
+  updatedAt: string;
 }
