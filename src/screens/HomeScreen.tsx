@@ -169,7 +169,7 @@ const HomeScreen: React.FC = () => {
         </View>
 
         {/* ===== HEALTH STATS CAROUSEL ===== */}
-        {/* <View style={styles.section}>
+        { <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <AppText style={styles.sectionTitle}>Thống kê sức khỏe cảm xúc</AppText>
             <Pressable>
@@ -224,7 +224,7 @@ const HomeScreen: React.FC = () => {
               </View>
             </Pressable>
           </ScrollView>
-        </View> */}
+        </View> }
 
         {/* ===== DAILY LOGS SECTION (CRITICAL NAVIGATION HUB) ===== */}
         <View style={styles.section}>
