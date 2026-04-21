@@ -16,10 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import {
-  ActiveAssignedTherapist,
-  getActiveAssignedTherapist,
-  getUpcomingAppointment,
-  UpcomingAppointment,
+  therapistApi,
 } from '@/api';
 import { RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
@@ -91,8 +88,8 @@ const TherapistBookingLanding: React.FC = () => {
   const auth = useContext(AuthContext);
   const profileId = auth?.userInfo?.profileId;
 
-  const [activeTherapist, setActiveTherapist] = useState<ActiveAssignedTherapist | null>(null);
-  const [upcomingAppointment, setUpcomingAppointment] = useState<UpcomingAppointment | null>(null);
+  const [activeTherapist, setActiveTherapist] = useState<therapistApi.ActiveAssignedTherapist | null>(null);
+  const [upcomingAppointment, setUpcomingAppointment] = useState<therapistApi.UpcomingAppointment | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [now, setNow] = useState<Date>(new Date());
 
@@ -120,8 +117,8 @@ const TherapistBookingLanding: React.FC = () => {
       setIsLoading(true);
 
       const [therapistResult, upcomingResult] = await Promise.allSettled([
-        getActiveAssignedTherapist(profileId),
-        getUpcomingAppointment(profileId),
+        therapistApi.getActiveAssignedTherapist(profileId),
+        therapistApi.getUpcomingAppointment(profileId),
       ]);
 
       if (!isMounted) {

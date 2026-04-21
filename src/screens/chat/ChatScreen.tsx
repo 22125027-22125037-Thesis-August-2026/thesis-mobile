@@ -115,7 +115,7 @@ const ChatScreen: React.FC = () => {
     try {
       // Call backend API with session_id (ping-pong logic)
       const response = await aiApi.sendMessage({
-        sessionId: currentSessionId,
+        sessionId: currentSessionId ?? undefined,
         content: userMessage.text,
       });
 
