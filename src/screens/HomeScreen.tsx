@@ -169,7 +169,7 @@ const HomeScreen: React.FC = () => {
         </View>
 
         {/* ===== HEALTH STATS CAROUSEL ===== */}
-        {/* <View style={styles.section}>
+        { <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <AppText style={styles.sectionTitle}>Thống kê sức khỏe cảm xúc</AppText>
             <Pressable>
@@ -224,7 +224,7 @@ const HomeScreen: React.FC = () => {
               </View>
             </Pressable>
           </ScrollView>
-        </View> */}
+        </View> }
 
         {/* ===== DAILY LOGS SECTION (CRITICAL NAVIGATION HUB) ===== */}
         <View style={styles.section}>
@@ -434,20 +434,7 @@ const HomeScreen: React.FC = () => {
                 <AppText style={styles.sessionSubtitle}>Recovery</AppText>
               </View>
             </Pressable>
-          </ScrollView>
-        </View>
 
-        {/* ===== RELATIONSHIP SESSIONS SECTION ===== */}
-        <View style={styles.section}>
-          <AppText style={styles.sectionTitle}>
-            Relationship & Social Support
-          </AppText>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={16}
-            contentContainerStyle={styles.sessionsCarousel}
-          >
             {/* Family Dynamics */}
             <Pressable style={styles.sessionCard}>
               <Image
@@ -479,8 +466,11 @@ const HomeScreen: React.FC = () => {
                 </AppText>
               </View>
             </Pressable>
+
           </ScrollView>
         </View>
+
+        
 
         {/* Bottom padding for tab bar */}
         <View style={styles.bottomSpacer} />

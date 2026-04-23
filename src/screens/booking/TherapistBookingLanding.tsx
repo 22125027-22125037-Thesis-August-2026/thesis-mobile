@@ -150,10 +150,23 @@ const TherapistBookingLanding: React.FC = () => {
   }, [profileId]);
 
   const handleNavigateHome = React.useCallback(() => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{ name: 'Home' }],
+        routes: [
+          {
+            name: 'MainTabs',
+            state: {
+              index: 0,
+              routes: [{ name: 'HomeTab' }],
+            },
+          },
+        ],
       }),
     );
   }, [navigation]);
