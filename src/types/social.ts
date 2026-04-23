@@ -4,6 +4,7 @@ export interface SocialChannelSummary {
   channelId: string;
   type: SocialChannelType;
   counterpartProfileId?: string | null;
+  counterpartUsername?: string | null;
   counterpartDisplayName?: string | null;
   counterpartAvatarUrl?: string | null;
   lastMessagePreview?: string | null;
@@ -18,9 +19,11 @@ export type FriendRequestDirection = 'INCOMING' | 'OUTGOING';
 export interface SocialFriendRequestSummary {
   requestId: string;
   senderId?: string | null;
+  senderProfileName?: string | null;
   senderDisplayName?: string | null;
   senderAvatarUrl?: string | null;
   receiverId?: string | null;
+  receiverProfileName?: string | null;
   receiverDisplayName?: string | null;
   receiverAvatarUrl?: string | null;
   createdAt?: string | null;

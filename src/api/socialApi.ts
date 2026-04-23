@@ -81,6 +81,7 @@ const toSocialChannelSummary = (item: unknown): SocialChannelSummary | null => {
     channelId,
     type: normalizeChannelType(item.type),
     counterpartProfileId: asString(item.counterpartProfileId),
+    counterpartUsername: asString(item.counterpartUsername),
     counterpartDisplayName: asString(item.counterpartDisplayName),
     counterpartAvatarUrl: asString(item.counterpartAvatarUrl),
     lastMessagePreview: asString(item.lastMessagePreview),
@@ -104,9 +105,11 @@ const toFriendRequestSummary = (item: unknown): SocialFriendRequestSummary | nul
   return {
     requestId,
     senderId: asString(item.senderId),
+    senderProfileName: asString(item.senderProfileName),
     senderDisplayName: asString(item.senderDisplayName),
     senderAvatarUrl: asString(item.senderAvatarUrl),
     receiverId: asString(item.receiverId),
+    receiverProfileName: asString(item.receiverProfileName),
     receiverDisplayName: asString(item.receiverDisplayName),
     receiverAvatarUrl: asString(item.receiverAvatarUrl),
     createdAt: asString(item.createdAt),
@@ -130,7 +133,10 @@ const toChannelMessage = (item: unknown): SocialChannelMessage | null => {
     messageId,
     channelId,
     content,
-    senderProfileId: asString(item.senderProfileId) ?? asString(item.sender),
+    senderProfileId:
+      asString(item.senderProfileId) ??
+      asString(item.senderId) ??
+      asString(item.sender),
     createdAt: asString(item.createdAt) ?? asString(item.sentAt) ?? new Date().toISOString(),
   };
 };

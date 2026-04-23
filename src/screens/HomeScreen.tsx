@@ -434,20 +434,7 @@ const HomeScreen: React.FC = () => {
                 <AppText style={styles.sessionSubtitle}>Recovery</AppText>
               </View>
             </Pressable>
-          </ScrollView>
-        </View>
 
-        {/* ===== RELATIONSHIP SESSIONS SECTION ===== */}
-        <View style={styles.section}>
-          <AppText style={styles.sectionTitle}>
-            Relationship & Social Support
-          </AppText>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={16}
-            contentContainerStyle={styles.sessionsCarousel}
-          >
             {/* Family Dynamics */}
             <Pressable style={styles.sessionCard}>
               <Image
@@ -479,8 +466,11 @@ const HomeScreen: React.FC = () => {
                 </AppText>
               </View>
             </Pressable>
+
           </ScrollView>
         </View>
+
+        
 
         {/* Bottom padding for tab bar */}
         <View style={styles.bottomSpacer} />

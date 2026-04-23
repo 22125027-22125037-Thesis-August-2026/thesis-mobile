@@ -86,7 +86,7 @@ const MessageListScreen: React.FC = () => {
       return incomingRequests.map(request => {
         const displayName =
           request.senderDisplayName ??
-          request.senderId ??
+          request.senderProfileName ??
           t('social.messageList.unknownUser', { defaultValue: 'Unknown user' });
 
         return {
@@ -104,7 +104,7 @@ const MessageListScreen: React.FC = () => {
     return channels.map(channel => {
       const recipientName =
         channel.counterpartDisplayName ??
-        channel.counterpartProfileId ??
+        channel.counterpartUsername ??
         t('social.messageList.unknownUser', { defaultValue: 'Unknown user' });
 
       const previewText =
