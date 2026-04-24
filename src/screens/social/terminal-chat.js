@@ -8,7 +8,7 @@ Object.assign(global, { WebSocket });
 // --- CONFIGURATION ---
 // Pass these as environment variables or hardcode them here for testing
 const JWT = process.env.JWT || "PASTE_JWT_HERE";
-const CHANNEL_ID = process.env.CHANNEL_ID || "CHANNEL_ID_HERE";
+const CHANNEL_ID = process.env.CHANNEL_ID || "44444444-4444-4444-4444-444444444441";
 const USER_NAME = process.env.USER_NAME || "Terminal User";
 const BACKEND_URL = 'ws://localhost:8083/ws'; // Ensure this matches your SOCIAL API port
 
