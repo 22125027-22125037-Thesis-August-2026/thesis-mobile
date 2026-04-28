@@ -12,7 +12,12 @@ export type RootStackParamList = {
   SocialChat: {
     channelId: string;
     recipientName: string;
+    recipientProfileId: string;
     channelType: 'DIRECT_FRIEND' | 'THERAPIST_CONSULT';
+  };
+  FriendTracking: {
+    friendProfileId: string;
+    friendName: string;
   };
 
   // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
@@ -81,7 +86,12 @@ export type TrackingStackParamList = {
   SocialChat: {
     channelId: string;
     recipientName: string;
+    recipientProfileId: string;
     channelType: 'DIRECT_FRIEND' | 'THERAPIST_CONSULT';
+  };
+  FriendTracking: {
+    friendProfileId: string;
+    friendName: string;
   };
   TherapyOverview: undefined;
 
