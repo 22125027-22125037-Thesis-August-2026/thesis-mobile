@@ -20,6 +20,7 @@ import {
   DiaryEntryScreen,
   DiaryOverviewScreen,
   FoodMainScreen,
+  FriendTrackingScreen,
   HomeScreen,
   LoginScreen,
   MatchingFormScreen,
@@ -137,6 +138,7 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
       <Stack.Screen name="SleepMain" component={SleepMainScreen} />
       <Stack.Screen name="FoodMain" component={FoodMainScreen} />
+      <Stack.Screen name="FriendTracking" component={FriendTrackingScreen} />
     </>
   );
 };
