@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 
 import { sleepApi } from '@/api';
 import { AppText } from '@/components';
+import { AuthContext } from '@/context/AuthContext';
 import { SLEEP_QUALITY_UI_MAP } from '@/constants';
 import { TrackingStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
@@ -193,6 +194,7 @@ const formatDurationLabel = (minutes: number): string => {
 
 const SleepMainScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
+  const { userInfo } = useContext(AuthContext)!;
   const { i18n, t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
 
@@ -223,7 +225,7 @@ const SleepMainScreen: React.FC = () => {
     setIsLoadingLogs(true);
 
     try {
-      const logs = await sleepApi.getAllSleepLogs();
+      const logs = await sleepApi.getAllSleepLogs(userInfo?.profileId ?? '');
       setAllLogs(logs);
     } catch (error) {
       console.error('[SleepMainScreen] Failed to load sleep logs:', error);

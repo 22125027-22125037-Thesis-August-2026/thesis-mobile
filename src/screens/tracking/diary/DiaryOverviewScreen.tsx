@@ -23,6 +23,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { diaryApi } from '@/api';
 import { getMoodCardUi } from '@/constants';
 import { AppText } from '@/components';
+import { AuthContext } from '@/context/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
 import { TrackingStackParamList } from '@/navigation';
 import { DiaryEntryResponse } from '@/types';
@@ -98,6 +99,7 @@ const calculateStreak = (entries: DiaryEntryResponse[]): number => {
 
 const DiaryOverviewScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { userInfo } = useContext(AuthContext)!;
   const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
   const [entries, setEntries] = useState<DiaryEntryResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -110,7 +112,7 @@ const DiaryOverviewScreen: React.FC = () => {
   const fetchEntries = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const data = await diaryApi.getDiaryEntries();
+      const data = await diaryApi.getDiaryEntries(userInfo?.profileId ?? '');
       setEntries(data);
     } catch (error) {
       console.error('[DiaryOverview] Failed to fetch entries:', error);

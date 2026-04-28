@@ -2,7 +2,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -22,6 +22,7 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import { foodApi } from '@/api';
 import { AppText } from '@/components';
+import { AuthContext } from '@/context/AuthContext';
 import { TrackingStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { FoodLogRequest, FoodLogResponse } from '@/types';
@@ -184,6 +185,7 @@ const satietyOptionForValue = (value: number): SatietyOption => {
 
 const FoodMainScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
+  const { userInfo } = useContext(AuthContext)!;
   const { i18n, t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
 
@@ -224,7 +226,7 @@ const FoodMainScreen: React.FC = () => {
     const endDate = weekDateKeys[weekDateKeys.length - 1];
 
     try {
-      const logs = await foodApi.getFoodLogs(startDate, endDate);
+      const logs = await foodApi.getFoodLogs(userInfo?.profileId ?? '', startDate, endDate);
       const sortedLogs = logs.slice().sort(sortByUpdatedAtDesc);
       setWeeklyLogs(sortedLogs);
 

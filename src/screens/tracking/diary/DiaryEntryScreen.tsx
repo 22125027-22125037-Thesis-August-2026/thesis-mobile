@@ -27,6 +27,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { launchImageLibrary } from 'react-native-image-picker';
 
 import { diaryApi } from '@/api';
+import { AuthContext } from '@/context/AuthContext';
 import {
   MOOD_SELECTOR_OPTIONS,
   MoodTag,
@@ -43,6 +44,7 @@ const MAX_ATTACHMENTS = 5;
 
 const DiaryEntryScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { userInfo } = useContext(AuthContext)!;
   type PickerAsset = {
     uri?: string;
     fileName?: string;
@@ -80,7 +82,7 @@ const DiaryEntryScreen: React.FC = () => {
       setIsLoadingEntry(true);
 
       try {
-        const entry = await diaryApi.getDiaryEntryById(entryId);
+        const entry = await diaryApi.getDiaryEntryById(userInfo?.profileId ?? '', entryId);
 
         if (!isMounted) {
           return;
