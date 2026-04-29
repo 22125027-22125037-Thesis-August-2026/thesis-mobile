@@ -10,6 +10,9 @@ const getSleepReadCollectionPath = (profileId: string): string =>
 const getSleepLogItemPath = (profileId: string, id: string): string =>
   `${SLEEP_BASE_PATH}/${profileId}/${id}`;
 
+const getSleepWriteItemPath = (id: string): string =>
+  `${SLEEP_BASE_PATH}/${id}`;
+
 export const createSleepLog = async (
   data: SleepLogRequest,
 ): Promise<SleepLogResponse> => {
@@ -45,7 +48,7 @@ export const updateSleepLog = async (
   data: SleepLogRequest,
 ): Promise<SleepLogResponse> => {
   const response = await axiosClient.put<SleepLogResponse>(
-    getSleepLogItemPath(id),
+    getSleepWriteItemPath(id),
     data,
   );
 
@@ -53,5 +56,5 @@ export const updateSleepLog = async (
 };
 
 export const deleteSleepLog = async (id: string): Promise<void> => {
-  await axiosClient.delete(getSleepLogItemPath(id));
+  await axiosClient.delete(getSleepWriteItemPath(id));
 };

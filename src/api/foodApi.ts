@@ -10,6 +10,9 @@ const getFoodReadCollectionPath = (profileId: string): string =>
 const getFoodLogItemPath = (profileId: string, id: string): string =>
   `${FOOD_BASE_PATH}/${profileId}/${id}`;
 
+const getFoodWriteItemPath = (id: string): string =>
+  `${FOOD_BASE_PATH}/${id}`;
+
 export const createFoodLog = async (
   data: FoodLogRequest,
 ): Promise<FoodLogResponse> => {
@@ -63,7 +66,7 @@ export const updateFoodLog = async (
   data: FoodLogRequest,
 ): Promise<FoodLogResponse> => {
   const response = await axiosClient.put<FoodLogResponse>(
-    getFoodLogItemPath(id),
+    getFoodWriteItemPath(id),
     data,
   );
 
@@ -71,5 +74,5 @@ export const updateFoodLog = async (
 };
 
 export const deleteFoodLog = async (id: string): Promise<void> => {
-  await axiosClient.delete(getFoodLogItemPath(id));
+  await axiosClient.delete(getFoodWriteItemPath(id));
 };
