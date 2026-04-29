@@ -17,29 +17,23 @@ interface DailyLogsSectionProps {
 type NavProp = NavigationProp<RootStackParamList>;
 
 const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
-  targetProfileId: _targetProfileId,
+  targetProfileId,
   isOwnProfile,
 }) => {
   const navigation = useNavigation<NavProp>();
   const { t } = useTranslation();
 
   const handleSleepPress = useCallback(() => {
-    if (isOwnProfile) {
-      navigation.navigate('SleepMain');
-    }
-  }, [isOwnProfile, navigation]);
+    navigation.navigate('SleepMain', isOwnProfile ? undefined : { viewProfileId: targetProfileId });
+  }, [isOwnProfile, navigation, targetProfileId]);
 
   const handleDiaryPress = useCallback(() => {
-    if (isOwnProfile) {
-      navigation.navigate('DiaryOverview');
-    }
-  }, [isOwnProfile, navigation]);
+    navigation.navigate('DiaryOverview', isOwnProfile ? undefined : { viewProfileId: targetProfileId });
+  }, [isOwnProfile, navigation, targetProfileId]);
 
   const handleFoodPress = useCallback(() => {
-    if (isOwnProfile) {
-      navigation.navigate('FoodMain');
-    }
-  }, [isOwnProfile, navigation]);
+    navigation.navigate('FoodMain', isOwnProfile ? undefined : { viewProfileId: targetProfileId });
+  }, [isOwnProfile, navigation, targetProfileId]);
 
   return (
     <View style={styles.section}>
@@ -56,9 +50,9 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
 
       {/* Sleep Card */}
       <Pressable
-        style={[styles.logCard, !isOwnProfile && styles.logCardReadOnly]}
+        style={styles.logCard}
         onPress={handleSleepPress}
-        android_ripple={isOwnProfile ? { color: COLORS.rippleDarkSoft } : null}>
+        android_ripple={{ color: COLORS.rippleDarkSoft }}>
         <View style={styles.logCardContent}>
           <View style={[styles.iconContainer, styles.iconPurple]}>
             <MaterialCommunityIcons
@@ -73,20 +67,18 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
             </AppText>
           </View>
         </View>
-        {isOwnProfile && (
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={20}
-            color={COLORS.textSecondary}
-          />
-        )}
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={20}
+          color={COLORS.textSecondary}
+        />
       </Pressable>
 
       {/* Diary Card */}
       <Pressable
-        style={[styles.logCard, !isOwnProfile && styles.logCardReadOnly]}
+        style={styles.logCard}
         onPress={handleDiaryPress}
-        android_ripple={isOwnProfile ? { color: COLORS.rippleDarkSoft } : null}>
+        android_ripple={{ color: COLORS.rippleDarkSoft }}>
         <View style={styles.logCardContent}>
           <View style={[styles.iconContainer, styles.iconOrange]}>
             <Feather name="file-text" size={24} color={COLORS.accentNegative} />
@@ -97,20 +89,18 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
             </AppText>
           </View>
         </View>
-        {isOwnProfile && (
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={20}
-            color={COLORS.textSecondary}
-          />
-        )}
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={20}
+          color={COLORS.textSecondary}
+        />
       </Pressable>
 
       {/* Food Card */}
       <Pressable
-        style={[styles.logCard, !isOwnProfile && styles.logCardReadOnly]}
+        style={styles.logCard}
         onPress={handleFoodPress}
-        android_ripple={isOwnProfile ? { color: COLORS.rippleDarkSoft } : null}>
+        android_ripple={{ color: COLORS.rippleDarkSoft }}>
         <View style={styles.logCardContent}>
           <View style={[styles.iconContainer, styles.iconYellow]}>
             <MaterialCommunityIcons name="apple" size={24} color="#FFC107" />
@@ -121,13 +111,11 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
             </AppText>
           </View>
         </View>
-        {isOwnProfile && (
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={20}
-            color={COLORS.textSecondary}
-          />
-        )}
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={20}
+          color={COLORS.textSecondary}
+        />
       </Pressable>
     </View>
   );
@@ -173,9 +161,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
-  },
-  logCardReadOnly: {
-    opacity: 0.85,
   },
   logCardContent: {
     flexDirection: 'row',
