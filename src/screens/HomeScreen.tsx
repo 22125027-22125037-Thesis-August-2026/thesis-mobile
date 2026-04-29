@@ -19,6 +19,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 
 import { trackingApi } from '@/api';
+import { DailyLogsSection } from '@/components/tracking';
 import { AuthContext } from '@/context/AuthContext';
 import { BORDER_RADIUS, FONT_SIZES, SPACING } from '@/theme';
 import { COLORS } from '@/theme';
@@ -76,18 +77,6 @@ const HomeScreen: React.FC = () => {
     () => getMoodDisplay(summary?.dominantMood ?? ''),
     [summary?.dominantMood],
   );
-
-  const handleNavigateSleep = (): void => {
-    navigation.navigate('SleepMain');
-  };
-
-  const handleNavigateDiary = (): void => {
-    navigation.navigate('DiaryOverview');
-  };
-
-  const handleNavigateFood = (): void => {
-    navigation.navigate('FoodMain');
-  };
 
   const handleNavigateChatbot = (): void => {
     navigation.navigate('Chat');
@@ -227,108 +216,10 @@ const HomeScreen: React.FC = () => {
         </View> }
 
         {/* ===== DAILY LOGS SECTION (CRITICAL NAVIGATION HUB) ===== */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <AppText style={styles.sectionTitle}>
-              {t('home.overview.dailyLogsTitle')}
-            </AppText>
-            <Pressable>
-              <Feather
-                name="more-vertical"
-                size={20}
-                color={COLORS.textPrimary}
-              />
-            </Pressable>
-          </View>
-
-          {/* Sleep Card */}
-          <Pressable
-            style={styles.logCard}
-            onPress={handleNavigateSleep}
-            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}
-          >
-            <View style={styles.logCardContent}>
-              <View style={[styles.iconContainer, styles.iconPurple]}>
-                <MaterialCommunityIcons
-                  name="moon-waning-crescent"
-                  size={24}
-                  color={COLORS.sleepHeaderPurple}
-                />
-              </View>
-              <View style={styles.logCardText}>
-                <AppText style={styles.logCardTitle}>
-                  {t('home.overview.sleepCardTitle')}
-                </AppText>
-                {/* <AppText style={styles.logCardSubtitle}>
-                  {summary?.sleepQuality || t('home.overview.sleepQualityNoData')}
-                </AppText> */}
-              </View>
-            </View>
-            {/* <View style={styles.logCardRight}>
-              <View style={styles.progressCircle}>
-                <AppText style={styles.progressValue}>{summary?.sleepScore || '--'}</AppText>
-              </View>
-            </View> */}
-          </Pressable>
-
-          {/* Diary Card */}
-          <Pressable
-            style={styles.logCard}
-            onPress={handleNavigateDiary}
-            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}
-          >
-            <View style={styles.logCardContent}>
-              <View style={[styles.iconContainer, styles.iconOrange]}>
-                <Feather
-                  name="file-text"
-                  size={24}
-                  color={COLORS.accentNegative}
-                />
-              </View>
-              <View style={styles.logCardText}>
-                <AppText style={styles.logCardTitle}>
-                  {t('home.overview.diaryCardTitle')}
-                </AppText>
-                {/* <AppText style={styles.logCardSubtitle}>
-                  {summary?.diaryStreak ? t('home.overview.diaryStreakFormat', {count: summary.diaryStreak}) : t('home.overview.diaryNoStreak')}
-                </AppText> */}
-              </View>
-            </View>
-          </Pressable>
-
-          {/* Food Card */}
-          <Pressable
-            style={styles.logCard}
-            onPress={handleNavigateFood}
-            android_ripple={{ color: 'rgba(0, 0, 0, 0.05)' }}
-          >
-            <View style={styles.logCardContent}>
-              <View style={[styles.iconContainer, styles.iconYellow]}>
-                <MaterialCommunityIcons
-                  name="apple"
-                  size={24}
-                  color="#FFC107"
-                />
-              </View>
-              <View style={styles.logCardText}>
-                <AppText style={styles.logCardTitle}>
-                  {t('home.overview.foodCardTitle')}
-                </AppText>
-                {/* <AppText style={styles.logCardSubtitle}>
-                  {summary?.foodStatus || t('home.overview.foodDiaryNoData')}
-                </AppText> */}
-              </View>
-            </View>
-            {/* <View style={styles.logCardRight}>
-              <View style={styles.segmentedBar}>
-                <View style={[styles.segment, styles.segmentFilled]} />
-                <View style={[styles.segment, styles.segmentFilled]} />
-                <View style={[styles.segment, styles.segmentFilled]} />
-                <View style={[styles.segment, styles.segmentEmpty]} />
-              </View>
-            </View> */}
-          </Pressable>
-        </View>
+        <DailyLogsSection
+          targetProfileId={userInfo?.profileId ?? ''}
+          isOwnProfile={true}
+        />
 
         {/* ===== AI CHATBOT SECTION ===== */}
         <View style={styles.section}>
@@ -645,109 +536,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.white,
     textAlign: 'center',
-  },
-
-  /* ==== LOG CARDS ==== */
-  logCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    marginBottom: SPACING.md,
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.card,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  logCardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: SPACING.md,
-  },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconPurple: {
-    backgroundColor: '#EDD5FF',
-  },
-  iconOrange: {
-    backgroundColor: '#FFE5CC',
-  },
-  iconYellow: {
-    backgroundColor: '#FFF8DC',
-  },
-  logCardText: {
-    flex: 1,
-  },
-  logCardTitle: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-  },
-  logCardSubtitle: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.textSecondary,
-  },
-  logCardRight: {
-    alignItems: 'center',
-  },
-
-  /* Progress Circle */
-  progressCircle: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    borderWidth: 3,
-    borderColor: COLORS.sleepHeaderPurple,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  progressValue: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: '700',
-    color: COLORS.sleepHeaderPurple,
-  },
-
-  /* Grid Indicator */
-  gridIndicator: {
-    gap: 4,
-  },
-  gridRow: {
-    flexDirection: 'row',
-    gap: 4,
-  },
-  gridCell: {
-    width: 8,
-    height: 8,
-    borderRadius: 2,
-    backgroundColor: COLORS.accentNegative,
-  },
-
-  /* Segmented Bar */
-  segmentedBar: {
-    flexDirection: 'row',
-    gap: 3,
-  },
-  segment: {
-    width: 6,
-    height: 20,
-    borderRadius: 2,
-  },
-  segmentFilled: {
-    backgroundColor: '#FFC107',
-  },
-  segmentEmpty: {
-    backgroundColor: COLORS.border,
   },
 
   /* ==== CHATBOT CARD ==== */

@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  StyleSheet,
   TextInput,
   View,
 } from 'react-native';
@@ -19,7 +18,7 @@ import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { useChatWebSocket, ChatSocketMessage } from '@/hooks';
 import { RootStackParamList } from '@/navigation';
-import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
+import { COLORS } from '@/theme';
 import { styles } from './ChatScreen.style';
 
 type SocialChatRoute = RouteProp<RootStackParamList, 'SocialChat'>;
@@ -33,10 +32,9 @@ interface MessageBubbleProps {
 const CHAT_BROKER_URL = 'ws://localhost:8083/ws';
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMine }) => {
-  // Extract and format the time (e.g., "10:30 AM")
-  const formattedTime = new Date(message.sentAt).toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit' 
+  const formattedTime = new Date(message.sentAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   return (
@@ -59,7 +57,7 @@ const ChatScreen: React.FC = () => {
   const auth = useContext(AuthContext);
   const { t } = useTranslation();
 
-  const { channelId, recipientName, channelType } = route.params;
+  const { channelId, recipientName, recipientProfileId, channelType } = route.params;
   const currentUserId = auth?.userInfo?.profileId ?? '';
   const token = auth?.userToken ?? null;
 
@@ -71,7 +69,6 @@ const ChatScreen: React.FC = () => {
   const [inputText, setInputText] = useState<string>('');
   const [historyMessages, setHistoryMessages] = useState<ChatSocketMessage[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
-
   const [localMessages, setLocalMessages] = useState<ChatSocketMessage[]>([]);
 
   useEffect(() => {
@@ -125,23 +122,19 @@ const ChatScreen: React.FC = () => {
   }, [channelId]);
 
   const channelMessages = useMemo(() => {
-    // 1. Get the raw live messages from the STOMP hook
     const rawLiveMessages = messages.filter(message => message.channelId === channelId);
-    
+
     const deduplicated = new Map<string, ChatSocketMessage>();
 
-    // 2. Add perfectly formatted history messages
     historyMessages.forEach(message => {
       deduplicated.set(message.id, message);
     });
 
-    // 3. Combine STOMP messages AND our Optimistic local messages
     const allLiveMessages = [...rawLiveMessages, ...localMessages];
 
-    // 4. Normalize and add them
     allLiveMessages.forEach((rawMsg: any) => {
       const normalizedId = rawMsg.id || rawMsg.messageId;
-      
+
       const normalizedMsg: ChatSocketMessage = {
         id: normalizedId,
         channelId: rawMsg.channelId,
@@ -155,15 +148,13 @@ const ChatScreen: React.FC = () => {
       }
     });
 
-    // 5. Sort everything chronologically
     return Array.from(deduplicated.values()).sort((left, right) => {
       const leftTs = new Date(left.sentAt).getTime();
       const rightTs = new Date(right.sentAt).getTime();
       return leftTs - rightTs;
     });
-  }, [channelId, historyMessages, messages, localMessages]); // <-- Added localMessages here
+  }, [channelId, historyMessages, messages, localMessages]);
 
-  // For an inverted list, provide newest-first data so latest appears at the visual bottom.
   const invertedMessages = useMemo(
     () => [...channelMessages].reverse(),
     [channelMessages],
@@ -177,9 +168,15 @@ const ChatScreen: React.FC = () => {
       navigation.goBack();
       return;
     }
-
     navigation.navigate('Home');
   }, [navigation]);
+
+  const handleOpenFriendProfile = useCallback(() => {
+    navigation.navigate('FriendProfile', {
+      friendProfileId: recipientProfileId,
+      friendName: recipientName,
+    });
+  }, [navigation, recipientProfileId, recipientName]);
 
   const handleSend = useCallback(() => {
     const messageToSend = inputText.trim();
@@ -187,18 +184,16 @@ const ChatScreen: React.FC = () => {
       return;
     }
 
-    // 1. Send the message over STOMP to the backend
     sendMessage(channelId, messageToSend);
 
-    // 2. Optimistically add it to our local UI instantly
     const optimisticMsg: ChatSocketMessage = {
-      id: `temp-${Date.now()}`, // Temporary ID until we refresh from DB
+      id: `temp-${Date.now()}`,
       channelId: channelId,
       content: messageToSend,
-      sender: currentUserId, 
+      sender: currentUserId,
       sentAt: new Date().toISOString(),
     };
-    
+
     setLocalMessages(prev => [...prev, optimisticMsg]);
     setInputText('');
   }, [channelId, inputText, isConnected, sendMessage, currentUserId]);
@@ -207,7 +202,6 @@ const ChatScreen: React.FC = () => {
     ({ item }: { item: ChatSocketMessage }) => {
       const senderId = item.sender ?? '';
       const isMine = senderId.length > 0 && senderId === currentUserId;
-
       return <MessageBubble message={item} isMine={isMine} />;
     },
     [currentUserId],
@@ -218,8 +212,9 @@ const ChatScreen: React.FC = () => {
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? SPACING.sm : 0}>
+        keyboardVerticalOffset={0}>
         <View style={styles.container}>
+          {/* Header */}
           <View style={styles.header}>
             <Pressable onPress={handleBack} style={styles.backButton}>
               <MaterialCommunityIcons
@@ -232,9 +227,16 @@ const ChatScreen: React.FC = () => {
               <AppText style={styles.headerTitle}>{recipientName}</AppText>
               <AppText style={styles.headerSubtitle}>{channelType}</AppText>
             </View>
-            <View style={styles.headerPlaceholder} />
+            <Pressable onPress={handleOpenFriendProfile} style={styles.backButton} hitSlop={8}>
+              <MaterialCommunityIcons
+                name="dots-vertical"
+                size={22}
+                color={COLORS.textPrimary}
+              />
+            </Pressable>
           </View>
 
+          {/* Message list */}
           <View style={styles.listContainer}>
             <FlatList
               data={invertedMessages}
@@ -257,6 +259,7 @@ const ChatScreen: React.FC = () => {
             )}
           </View>
 
+          {/* Input bar */}
           <View style={styles.inputBar}>
             <TextInput
               style={styles.input}

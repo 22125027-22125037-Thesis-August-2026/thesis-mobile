@@ -26,6 +26,7 @@ type TabType = 'friends' | 'requests';
 type ConversationListItem = {
   id: string;
   recipientName: string;
+  recipientProfileId?: string | null;
   preview: string;
   avatarUrl?: string | null;
   kind: 'channel' | 'request';
@@ -121,6 +122,7 @@ const MessageListScreen: React.FC = () => {
         channelId: channel.channelId,
         channelType: channel.type,
         recipientName,
+        recipientProfileId: channel.counterpartProfileId,
         preview: previewText,
         avatarUrl: channel.counterpartAvatarUrl,
         kind: 'channel',
@@ -147,6 +149,7 @@ const MessageListScreen: React.FC = () => {
       navigation.navigate('SocialChat', {
         channelId: item.channelId,
         recipientName: item.recipientName,
+        recipientProfileId: item.recipientProfileId ?? '',
         channelType: item.channelType,
       });
     },
