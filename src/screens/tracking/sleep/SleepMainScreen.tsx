@@ -15,7 +15,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { LineChart } from 'react-native-chart-kit';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,7 +25,7 @@ import { sleepApi } from '@/api';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { SLEEP_QUALITY_UI_MAP } from '@/constants';
-import { TrackingStackParamList } from '@/navigation';
+import { RootStackParamList, TrackingStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { SleepLogRequest, SleepLogResponse } from '@/types';
 import { endOfWeekSunday, isSameDate, startOfWeekMonday } from '@/utils';
@@ -194,7 +194,9 @@ const formatDurationLabel = (minutes: number): string => {
 
 const SleepMainScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'SleepMain'>>();
   const { userInfo } = useContext(AuthContext)!;
+  const viewProfileId = route.params?.viewProfileId;
   const { i18n, t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
 
@@ -225,7 +227,7 @@ const SleepMainScreen: React.FC = () => {
     setIsLoadingLogs(true);
 
     try {
-      const logs = await sleepApi.getAllSleepLogs(userInfo?.profileId ?? '');
+      const logs = await sleepApi.getAllSleepLogs(viewProfileId ?? userInfo?.profileId ?? '');
       setAllLogs(logs);
     } catch (error) {
       console.error('[SleepMainScreen] Failed to load sleep logs:', error);
@@ -616,7 +618,7 @@ const SleepMainScreen: React.FC = () => {
               </View>
             </View>
 
-            <View style={styles.sectionCard}>
+            {!viewProfileId && <View style={styles.sectionCard}>
               <View style={styles.sectionHeaderRow}>
                 <View>
                   <AppText style={styles.sectionTitle}>
@@ -738,7 +740,7 @@ const SleepMainScreen: React.FC = () => {
                   </View>
                 )}
               </Pressable>
-            </View>
+            </View>}
 
             <View style={styles.sectionCard}>
               <View style={styles.sectionHeaderRow}>
