@@ -76,11 +76,16 @@ const LoginScreen = () => {
 
             <View style={styles.socialContainer}>
               {[
-                { icon: 'facebook', color: COLORS.facebook },
-                { icon: 'google', color: COLORS.google },
-                { icon: 'instagram', color: COLORS.instagram },
+                { icon: 'facebook', color: COLORS.facebook, a11yLabel: t('auth.login.a11ySocialFacebook') },
+                { icon: 'google', color: COLORS.google, a11yLabel: t('auth.login.a11ySocialGoogle') },
+                { icon: 'instagram', color: COLORS.instagram, a11yLabel: t('auth.login.a11ySocialInstagram') },
               ].map((item, index) => (
-                <TouchableOpacity key={index} style={styles.socialButton}>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.socialButton}
+                  accessibilityLabel={item.a11yLabel}
+                  accessibilityRole="button"
+                >
                   <FontAwesome name={item.icon} size={20} color={item.color} />
                 </TouchableOpacity>
               ))}
@@ -89,7 +94,11 @@ const LoginScreen = () => {
             <View style={styles.footer}>
               <AppText style={styles.footerText}>
                 {t('auth.login.noAccountText')}{' '}
-                <AppText style={styles.linkText} onPress={() => navigation.navigate('Register')}>
+                <AppText
+                  style={styles.linkText}
+                  onPress={() => navigation.navigate('Register')}
+                  accessibilityRole="link"
+                >
                   {t('auth.login.registerLink')}
                 </AppText>
               </AppText>
@@ -99,7 +108,9 @@ const LoginScreen = () => {
                     t('auth.common.notificationTitle'),
                     t('auth.login.forgotPasswordMessage'),
                   )
-                }>
+                }
+                accessibilityRole="button"
+              >
                 <AppText style={[styles.linkText, styles.forgotPasswordLink]}>
                   {t('auth.login.forgotPassword')}
                 </AppText>

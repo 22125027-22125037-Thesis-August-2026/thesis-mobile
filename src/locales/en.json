@@ -227,7 +227,10 @@
       "forgotPasswordMessage": "Feature is under development",
       "validationError": "Please enter all information",
       "failureTitle": "Login failed",
-      "failureMessage": "Please check your email or password"
+      "failureMessage": "Please check your email or password",
+      "a11ySocialFacebook": "Sign in with Facebook",
+      "a11ySocialGoogle": "Sign in with Google",
+      "a11ySocialInstagram": "Sign in with Instagram"
     },
     "register": {
       "title": "Sign up",
@@ -449,6 +452,12 @@
       "step7Fatigue": "Fatigue",
       "step8Title": "What communication style do you prefer from a therapist?",
       "step8Subtitle": "Choose the interaction style that makes you feel most comfortable."
+    }
+  },
+  "components": {
+    "customInput": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     }
   }
 }

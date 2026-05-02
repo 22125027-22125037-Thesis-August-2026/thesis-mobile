@@ -8,14 +8,22 @@ interface Props {
   title: string;
   onPress: () => void;
   isLoading?: boolean;
+  disabled?: boolean;
+  icon?: string;
 }
 
-const CustomButton = ({ title, onPress, isLoading = false }: Props) => {
+const CustomButton = ({
+  title,
+  onPress,
+  isLoading = false,
+  disabled = false,
+  icon = 'arrow-forward',
+}: Props) => {
   return (
-    <TouchableOpacity 
-      style={styles.button} 
-      onPress={onPress} 
-      disabled={isLoading}
+    <TouchableOpacity
+      style={[styles.button, disabled && !isLoading && styles.buttonDisabled]}
+      onPress={onPress}
+      disabled={disabled || isLoading}
       activeOpacity={0.8}
     >
       {isLoading ? (
@@ -23,7 +31,7 @@ const CustomButton = ({ title, onPress, isLoading = false }: Props) => {
       ) : (
         <>
           <AppText style={styles.text} weight="bold">{title}</AppText>
-          <Ionicons name="arrow-forward" size={20} color={COLORS.white} />
+          <Ionicons name={icon} size={20} color={COLORS.white} />
         </>
       )}
     </TouchableOpacity>
@@ -32,7 +40,7 @@ const CustomButton = ({ title, onPress, isLoading = false }: Props) => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: COLORS.text, // Màu nâu đen
+    backgroundColor: COLORS.buttonPrimary,
     borderRadius: 30,
     height: 56,
     flexDirection: 'row',
@@ -40,12 +48,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
     marginBottom: 30,
-    // Shadow
-    shadowColor: COLORS.text,
+    shadowColor: COLORS.buttonPrimary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  buttonDisabled: {
+    opacity: 0.65,
   },
   text: {
     color: COLORS.white,

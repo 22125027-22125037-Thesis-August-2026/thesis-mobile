@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS } from '@/theme';
+import { COLORS, FONT_SIZES } from '@/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -64,7 +64,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    fontSize: 14,
+    fontSize: FONT_SIZES.md,
     color: COLORS.textLight,
   },
   linkText: {

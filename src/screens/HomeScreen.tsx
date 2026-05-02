@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   sectionTitle: {
     fontSize: FONT_SIZES.md,
@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
     backgroundColor: COLORS.white,
     borderRadius: BORDER_RADIUS.card,
     shadowColor: '#000',
@@ -699,7 +699,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logCardTitle: {
-    fontSize: FONT_SIZES.sm,
+    fontSize: FONT_SIZES.md,
     fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
@@ -853,7 +853,7 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
   },
   sessionTitle: {
-    fontSize: FONT_SIZES.sm,
+    fontSize: FONT_SIZES.md,
     fontWeight: '700',
     color: COLORS.white,
   },

@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS } from '@/theme';
+import { COLORS, FONT_SIZES } from '@/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -42,26 +42,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
 
-  errorBox: {
-    backgroundColor: COLORS.errorBg,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.errorBorder,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-    marginTop: -8, // Kéo sát lên input trên
-  },
-  errorText: {
-    color: COLORS.errorText,
-    fontSize: 13,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-
   // Checkbox
   checkboxContainer: {
     flexDirection: 'row',
@@ -70,12 +50,12 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   checkboxText: {
-    fontSize: 14,
+    fontSize: FONT_SIZES.md,
     color: COLORS.text,
     marginLeft: 10,
   },
   roleSectionTitle: {
-    fontSize: 15,
+    fontSize: FONT_SIZES.md,
     fontWeight: '600',
     color: COLORS.text,
     marginTop: 4,
@@ -101,7 +81,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   roleCardText: {
-    fontSize: 14,
+    fontSize: FONT_SIZES.md,
     color: COLORS.textSecondary,
     fontWeight: '500',
   },
@@ -150,7 +130,7 @@ export const styles = StyleSheet.create({
   socialBtnText: {
     marginLeft: 10,
     color: COLORS.text,
-    fontSize: 15,
+    fontSize: FONT_SIZES.md,
     fontWeight: '500',
   },
 });

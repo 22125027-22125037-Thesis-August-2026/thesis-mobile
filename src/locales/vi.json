@@ -227,7 +227,10 @@
       "forgotPasswordMessage": "Tính năng đang được phát triển",
       "validationError": "Vui lòng nhập đầy đủ thông tin",
       "failureTitle": "Đăng nhập thất bại",
-      "failureMessage": "Vui lòng kiểm tra email hoặc mật khẩu"
+      "failureMessage": "Vui lòng kiểm tra email hoặc mật khẩu",
+      "a11ySocialFacebook": "Đăng nhập với Facebook",
+      "a11ySocialGoogle": "Đăng nhập với Google",
+      "a11ySocialInstagram": "Đăng nhập với Instagram"
     },
     "register": {
       "title": "Đăng kí",
@@ -449,6 +452,12 @@
       "step7Fatigue": "Mệt mỏi",
       "step8Title": "Bạn mong đợi phòng cách giao tiếp nào từ chuyên gia?",
       "step8Subtitle": "Chọn kiểu trao đổi khiến bạn cảm thấy thoải mái nhất."
+    }
+  },
+  "components": {
+    "customInput": {
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu"
     }
   }
 }

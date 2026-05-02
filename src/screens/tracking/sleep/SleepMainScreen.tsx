@@ -22,7 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { sleepApi } from '@/api';
-import { AppText } from '@/components';
+import { AppText, CustomButton } from '@/components';
 import { SLEEP_QUALITY_UI_MAP } from '@/constants';
 import { TrackingStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
@@ -713,29 +713,12 @@ const SleepMainScreen: React.FC = () => {
                 </View>
               </View>
 
-              <Pressable
-                style={[
-                  styles.submitButton,
-                  isSaving && styles.submitButtonDisabled,
-                ]}
+              <CustomButton
+                title={saveButtonLabel}
                 onPress={handleSave}
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <ActivityIndicator color={COLORS.buttonPrimaryText} />
-                ) : (
-                  <View style={styles.submitContent}>
-                    <AppText style={styles.submitText}>
-                      {saveButtonLabel}
-                    </AppText>
-                    <Feather
-                      name="check"
-                      size={20}
-                      color={COLORS.buttonPrimaryText}
-                    />
-                  </View>
-                )}
-              </Pressable>
+                isLoading={isSaving}
+                icon="check"
+              />
             </View>
 
             <View style={styles.sectionCard}>

@@ -290,21 +290,8 @@ const RegisterScreen = ({ navigation }: any) => {
               placeholder={t('auth.register.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
-              error={emailError} // Truyền prop lỗi
+              errorMessage={emailError ? t('auth.register.invalidEmail') : undefined}
             />
-
-            {emailError && (
-              <View style={styles.errorBox}>
-                <Ionicons
-                  name="alert-circle"
-                  size={18}
-                  color={COLORS.errorText}
-                />
-                <AppText style={styles.errorText}>
-                  {t('auth.register.invalidEmail')}
-                </AppText>
-              </View>
-            )}
 
             <CustomInput
               label={t('auth.register.passwordLabel')}
