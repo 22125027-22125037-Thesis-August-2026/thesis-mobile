@@ -14,7 +14,9 @@ import {
   useFocusEffect,
   NavigationContext,
   NavigationProp,
+  RouteProp,
   useNavigation,
+  useRoute,
 } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
@@ -23,8 +25,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { diaryApi } from '@/api';
 import { getMoodCardUi } from '@/constants';
 import { AppText } from '@/components';
+import { AuthContext } from '@/context/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
-import { TrackingStackParamList } from '@/navigation';
+import { RootStackParamList, TrackingStackParamList } from '@/navigation';
 import { DiaryEntryResponse } from '@/types';
 import { styles } from './DiaryOverviewScreen.styles';
 
@@ -98,7 +101,10 @@ const calculateStreak = (entries: DiaryEntryResponse[]): number => {
 
 const DiaryOverviewScreen: React.FC = () => {
   const { t } = useTranslation();
+  const { userInfo } = useContext(AuthContext)!;
   const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'DiaryOverview'>>();
+  const viewProfileId = route.params?.viewProfileId;
   const [entries, setEntries] = useState<DiaryEntryResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -110,7 +116,7 @@ const DiaryOverviewScreen: React.FC = () => {
   const fetchEntries = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const data = await diaryApi.getDiaryEntries();
+      const data = await diaryApi.getDiaryEntries(viewProfileId ?? userInfo?.profileId ?? '');
       setEntries(data);
     } catch (error) {
       console.error('[DiaryOverview] Failed to fetch entries:', error);
@@ -155,6 +161,9 @@ const DiaryOverviewScreen: React.FC = () => {
   }, [entries, searchQuery, fromDate, toDate]);
 
   const handleEntryPress = (entryId: string) => {
+    if (viewProfileId) {
+      return;
+    }
     navigation.navigate('DiaryEntry', { entryId });
   };
 
@@ -258,17 +267,19 @@ const DiaryOverviewScreen: React.FC = () => {
           ? t('overview.emptyStateSearchResult')
           : t('overview.emptyStateNoEntries')}
       </AppText>
-      <Pressable style={styles.emptyStateButton} onPress={handleNewEntry}>
-        <Feather
-          name="plus"
-          size={18}
-          color={COLORS.white}
-          style={{ marginRight: SPACING.xs }}
-        />
-        <AppText style={styles.emptyStateButtonText}>
-          {t('overview.newEntryButton')}
-        </AppText>
-      </Pressable>
+      {!viewProfileId && (
+        <Pressable style={styles.emptyStateButton} onPress={handleNewEntry}>
+          <Feather
+            name="plus"
+            size={18}
+            color={COLORS.white}
+            style={{ marginRight: SPACING.xs }}
+          />
+          <AppText style={styles.emptyStateButtonText}>
+            {t('overview.newEntryButton')}
+          </AppText>
+        </Pressable>
+      )}
     </View>
   );
 
@@ -464,9 +475,11 @@ const DiaryOverviewScreen: React.FC = () => {
         )}
 
         {/* FAB - Create New Entry */}
-        <Pressable style={styles.fab} onPress={handleNewEntry}>
-          <Feather name="plus" size={28} color={COLORS.white} />
-        </Pressable>
+        {!viewProfileId && (
+          <Pressable style={styles.fab} onPress={handleNewEntry}>
+            <Feather name="plus" size={28} color={COLORS.white} />
+          </Pressable>
+        )}
       </View>
     </SafeAreaView>
   );

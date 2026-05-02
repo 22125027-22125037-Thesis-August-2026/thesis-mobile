@@ -12,7 +12,12 @@ export type RootStackParamList = {
   SocialChat: {
     channelId: string;
     recipientName: string;
+    recipientProfileId: string;
     channelType: 'DIRECT_FRIEND' | 'THERAPIST_CONSULT';
+  };
+  FriendProfile: {
+    friendProfileId: string;
+    friendName: string;
   };
 
   // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
@@ -66,10 +71,10 @@ export type RootStackParamList = {
     endedAt?: string;
   };
   // Resolved from main
-  SleepMain: undefined;
-  DiaryOverview: undefined;
+  SleepMain: { viewProfileId?: string } | undefined;
+  DiaryOverview: { viewProfileId?: string } | undefined;
   DiaryEntry: { entryId?: string } | undefined;
-  FoodMain: undefined;
+  FoodMain: { viewProfileId?: string } | undefined;
 };
 
 export type TrackingStackParamList = {
@@ -81,14 +86,19 @@ export type TrackingStackParamList = {
   SocialChat: {
     channelId: string;
     recipientName: string;
+    recipientProfileId: string;
     channelType: 'DIRECT_FRIEND' | 'THERAPIST_CONSULT';
+  };
+  FriendProfile: {
+    friendProfileId: string;
+    friendName: string;
   };
   TherapyOverview: undefined;
 
-  DiaryOverview: undefined;
+  DiaryOverview: { viewProfileId?: string } | undefined;
   DiaryEntry: { entryId?: string } | undefined;
-  SleepMain: undefined;
-  FoodMain: undefined;
+  SleepMain: { viewProfileId?: string } | undefined;
+  FoodMain: { viewProfileId?: string } | undefined;
 };
 
 declare global {

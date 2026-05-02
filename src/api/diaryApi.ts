@@ -4,18 +4,19 @@ import { createDiaryFormData, mapImageUrisToAttachmentFiles } from '@/utils';
 
 const DIARY_BASE_PATH = '/api/v1/tracking/diaries';
 
-export const getDiaryEntries = async (): Promise<DiaryEntryResponse[]> => {
+export const getDiaryEntries = async (profileId: string): Promise<DiaryEntryResponse[]> => {
   const response = await axiosClient.get<DiaryEntryResponse[]>(
-    `${DIARY_BASE_PATH}/`,
+    `${DIARY_BASE_PATH}/${profileId}`,
   );
   return response.data;
 };
 
 export const getDiaryEntryById = async (
+  profileId: string,
   id: string,
 ): Promise<DiaryEntryResponse> => {
   const response = await axiosClient.get<DiaryEntryResponse>(
-    `${DIARY_BASE_PATH}/${id}`,
+    `${DIARY_BASE_PATH}/${profileId}/${id}`,
   );
   return response.data;
 };

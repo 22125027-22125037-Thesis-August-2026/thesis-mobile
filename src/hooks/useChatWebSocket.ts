@@ -91,6 +91,11 @@ export const useChatWebSocket = ({
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
+      forceBinaryWSFrames: true,
+      appendMissingNULLonIncoming: true,
+      debug: (str) => {
+        console.log('[STOMP DEBUG]:', str); // <--- ADD THIS LINE
+      },
       onConnect: () => {
         setIsConnected(true);
 
