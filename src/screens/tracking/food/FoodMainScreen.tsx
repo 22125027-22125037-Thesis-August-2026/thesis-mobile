@@ -23,7 +23,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { foodApi } from '@/api';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
-import { RootStackParamList, TrackingStackParamList } from '@/navigation';
+import { RootStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { FoodLogRequest, FoodLogResponse } from '@/types';
 import { isSameDate, startOfWeekMonday } from '@/utils';
@@ -97,7 +97,6 @@ const SATIETY_OPTIONS: SatietyOption[] = [
   },
 ];
 
-const RECENT_HISTORY_LIMIT = 5;
 const DEFAULT_SATIETY_VALUE = 4;
 const MAX_DESCRIPTION_LENGTH = 300;
 
@@ -184,7 +183,7 @@ const satietyOptionForValue = (value: number): SatietyOption => {
 };
 
 const FoodMainScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'FoodMain'>>();
   const { userInfo } = useContext(AuthContext)!;
   const viewProfileId = route.params?.viewProfileId;
@@ -194,7 +193,6 @@ const FoodMainScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(() =>
     clampToToday(new Date()),
   );
-  const [allLogs, setAllLogs] = useState<FoodLogResponse[]>([]);
   const [currentLogId, setCurrentLogId] = useState<string | null>(null);
   const [waterGlasses, setWaterGlasses] = useState<number>(0);
   const [foodDescription, setFoodDescription] = useState<string>('');
@@ -410,7 +408,7 @@ const FoodMainScreen: React.FC = () => {
       await loadLogs();
 
       Alert.alert(
-        t('food.entry.successTitle', { defaultValue: 'Thanh cong' }),
+        t('food.entry.successTitle'),
         t('food.entry.successMessage'),
       );
     } catch (error) {
@@ -448,7 +446,7 @@ const FoodMainScreen: React.FC = () => {
               <View style={styles.headerTopRow}>
                 <Pressable
                   style={styles.backButton}
-                  onPress={() => navigation.navigate('Home')}
+                  onPress={() => navigation.goBack()}
                 >
                   <Feather name="chevron-left" size={22} color={COLORS.white} />
                 </Pressable>
@@ -731,7 +729,7 @@ const FoodMainScreen: React.FC = () => {
                 <View style={styles.pickerHeader}>
                   <Pressable onPress={() => setShowDatePicker(false)}>
                     <AppText style={styles.pickerDoneText}>
-                      {t('sleep.entry.iosDone', { defaultValue: 'Xong' })}
+                      {t('sleep.entry.iosDone')}
                     </AppText>
                   </Pressable>
                 </View>

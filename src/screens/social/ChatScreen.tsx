@@ -168,7 +168,7 @@ const ChatScreen: React.FC = () => {
       navigation.goBack();
       return;
     }
-    navigation.navigate('Home');
+    navigation.goBack();
   }, [navigation]);
 
   const handleOpenFriendProfile = useCallback(() => {
@@ -284,7 +284,7 @@ const ChatScreen: React.FC = () => {
             <View style={styles.loadingOverlay}>
               <ActivityIndicator size="small" color={COLORS.primary} />
               <AppText style={styles.loadingText}>
-                {t('social.chat.connecting', { defaultValue: 'Connecting to chat...' })}
+                {t('social.chat.connecting')}
               </AppText>
             </View>
           )}

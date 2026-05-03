@@ -4,16 +4,18 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.primaryDeeper,
   },
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
   },
   loadingWrap: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     gap: SPACING.md,
+    backgroundColor: COLORS.background,
   },
   loadingText: {
     fontSize: FONT_SIZES.sm,
@@ -23,11 +25,12 @@ export const styles = StyleSheet.create({
 
   /* ===== HEADER SECTION ===== */
   headerCard: {
-    marginHorizontal: SPACING.screenHorizontal,
-    marginTop: SPACING.md,
-    borderRadius: 32,
-    backgroundColor: COLORS.foodHeaderOrange,
-    padding: SPACING.md,
+    backgroundColor: COLORS.primaryDeeper,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xl,
+    paddingHorizontal: SPACING.screenHorizontal,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -77,7 +80,7 @@ export const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderSubtle,
-    backgroundColor: COLORS.foodHeaderOrange,
+    backgroundColor: COLORS.primaryDeeper,
   },
   headerTitleLegacy: {
     fontSize: FONT_SIZES.xxl,
@@ -309,7 +312,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: BORDER_RADIUS.md,
-    backgroundColor: 'rgba(151, 175, 97, 0.1)',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
   },
   moodTag: {
     alignSelf: 'flex-start',

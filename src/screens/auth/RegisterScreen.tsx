@@ -243,13 +243,16 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDeeper} />
 
-      <View style={styles.headerBackground}>
-        <View style={styles.circle} />
+      <View style={styles.headerBand}>
+        <View style={styles.headerDecorCircle} />
+        <AppText style={styles.brandLabel}>uMatter</AppText>
+        <AppText style={styles.title}>{t('auth.register.title')}</AppText>
+        <AppText style={styles.subtitle}>
+          {t('auth.register.subtitle')}
+        </AppText>
       </View>
-
-      <AppText style={styles.title}>{t('auth.register.title')}</AppText>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -290,21 +293,8 @@ const RegisterScreen = ({ navigation }: any) => {
               placeholder={t('auth.register.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
-              error={emailError} // Truyền prop lỗi
+              errorMessage={emailError ? t('auth.register.invalidEmail') : undefined}
             />
-
-            {emailError && (
-              <View style={styles.errorBox}>
-                <Ionicons
-                  name="alert-circle"
-                  size={18}
-                  color={COLORS.errorText}
-                />
-                <AppText style={styles.errorText}>
-                  {t('auth.register.invalidEmail')}
-                </AppText>
-              </View>
-            )}
 
             <CustomInput
               label={t('auth.register.passwordLabel')}

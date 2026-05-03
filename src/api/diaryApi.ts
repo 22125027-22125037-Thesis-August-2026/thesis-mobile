@@ -29,10 +29,6 @@ export const createDiaryEntry = async (
   const formData = createDiaryFormData(data, attachments);
 
   try {
-    console.log('Creating diary entry with data:', data);
-    console.log('Attachments:', attachments);
-    console.log('FormData keys:', formData);
-
     const response = await axiosClient.post<DiaryEntryResponse>(
       `${DIARY_BASE_PATH}/`,
       formData,

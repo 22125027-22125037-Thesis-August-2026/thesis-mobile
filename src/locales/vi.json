@@ -227,7 +227,12 @@
       "forgotPasswordMessage": "Tính năng đang được phát triển",
       "validationError": "Vui lòng nhập đầy đủ thông tin",
       "failureTitle": "Đăng nhập thất bại",
-      "failureMessage": "Vui lòng kiểm tra email hoặc mật khẩu"
+      "failureMessage": "Vui lòng kiểm tra email hoặc mật khẩu",
+      "a11ySocialFacebook": "Đăng nhập với Facebook",
+      "a11ySocialGoogle": "Đăng nhập với Google",
+      "a11ySocialInstagram": "Đăng nhập với Instagram",
+      "subtitleLine1": "Đăng nhập để tiếp tục hành trình",
+      "orContinueWith": "hoặc tiếp tục với"
     },
     "register": {
       "title": "Đăng kí",
@@ -262,7 +267,8 @@
       "failureMessage": "Email này có thể đã được sử dụng. Vui lòng thử lại.",
       "successNavigateMessage": "Đăng ký tài khoản thành công! Vui lòng đăng nhập.",
       "successTitle": "Thành công",
-      "successMessage": "Đăng ký tài khoản thành công!"
+      "successMessage": "Đăng ký tài khoản thành công!",
+      "subtitle": "Bắt đầu hành trình chăm sóc tâm lý của bạn"
     },
     "roles": {
       "teen": "Học sinh/Sinh viên",
@@ -358,7 +364,9 @@
       "diaryNoStreak": "Chưa có chuỗi",
       "foodDiaryTitle": "Nhật ký dinh dưỡng",
       "foodDiaryNoData": "Chưa có dữ liệu",
-      "aiChatbotTitle": "Bạn Tâm giao"
+      "aiChatbotTitle": "Người bạn tâm giao",
+      "moodPrompt": "Hôm nay bạn cảm thấy thế nào?",
+      "groupSessionsTitle": "Nhóm hỗ trợ tuần này"
     },
     "moods": {
       "sad": "Buồn",
@@ -366,6 +374,24 @@
       "anxious": "Lo âu",
       "angry": "Giận",
       "neutral": "Ổn"
+    }
+  },
+  "social": {
+    "chat": {
+      "connecting": "Đang kết nối cuộc trò chuyện..."
+    },
+    "messageList": {
+      "title": "Tin nhắn",
+      "unknownUser": "Người dùng ẩn danh",
+      "addFriends": "Thêm bạn bè",
+      "loading": "Đang tải cuộc trò chuyện...",
+      "retry": "Thử lại",
+      "empty": "Chưa có cuộc trò chuyện nào.",
+      "loadError": "Không thể tải danh sách trò chuyện. Vui lòng thử lại.",
+      "friendRequestPreview": "Đã gửi lời mời kết bạn.",
+      "noMessagePreview": "Chưa có tin nhắn.",
+      "friendsTab": "Bạn bè ({{count}})",
+      "requestsTab": "Lời mời ({{count}})"
     }
   },
   "session": {
@@ -449,6 +475,12 @@
       "step7Fatigue": "Mệt mỏi",
       "step8Title": "Bạn mong đợi phòng cách giao tiếp nào từ chuyên gia?",
       "step8Subtitle": "Chọn kiểu trao đổi khiến bạn cảm thấy thoải mái nhất."
+    }
+  },
+  "components": {
+    "customInput": {
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu"
     }
   }
 }

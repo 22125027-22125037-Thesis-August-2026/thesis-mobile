@@ -35,7 +35,7 @@ import {
   getMoodTag,
 } from '@/constants';
 import { COLORS, FONTS } from '@/theme';
-import { TrackingStackParamList } from '@/navigation';
+import { RootStackParamList } from '@/navigation';
 import { AttachmentFile } from '@/types';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
 
@@ -51,10 +51,10 @@ const DiaryEntryScreen: React.FC = () => {
     type?: string;
   };
 
-  const route = useRoute<RouteProp<TrackingStackParamList, 'DiaryEntry'>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'DiaryEntry'>>();
   const entryId = route.params?.entryId;
   const navigation = useContext(NavigationContext) as
-    | NavigationProp<TrackingStackParamList>
+    | NavigationProp<RootStackParamList>
     | undefined;
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
@@ -264,7 +264,7 @@ const DiaryEntryScreen: React.FC = () => {
       setMoodTag('TERRIBLE');
       setPositivityScore(8);
       setEntryDate(new Date());
-      navigation?.navigate('DiaryOverview');
+      navigation?.goBack();
     } catch {
       Alert.alert(t('entry.errorTitle'), t('entry.errorCreateDiary'));
     } finally {
@@ -286,7 +286,7 @@ const DiaryEntryScreen: React.FC = () => {
             <View style={styles.headerRow}>
               <Pressable
                 style={styles.headerBackButton}
-                onPress={() => navigation?.navigate('DiaryOverview')}
+                onPress={() => navigation?.goBack()}
                 disabled={isSubmitting || isLoadingEntry}
               >
                 <Feather

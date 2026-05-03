@@ -27,7 +27,6 @@ export type RootStackParamList = {
   AppointmentsHistory: undefined;
   TherapistFilter: { matchingSuccess?: boolean } | undefined;
   MatchingForm: undefined;
-  TherapistList: undefined;
   TherapistDetails: { id: string };
   Booking: { therapistId: string };
   ConsultationDetail: {
@@ -74,30 +73,6 @@ export type RootStackParamList = {
   SleepMain: { viewProfileId?: string } | undefined;
   DiaryOverview: { viewProfileId?: string } | undefined;
   DiaryEntry: { entryId?: string } | undefined;
-  FoodMain: { viewProfileId?: string } | undefined;
-};
-
-export type TrackingStackParamList = {
-  Home: undefined;
-
-  // Nâng cấp tương tự cho Stack Tracking (nếu bạn dùng nested navigation)
-  Chat: { sessionId?: string | null } | undefined;
-  MessageList: undefined;
-  SocialChat: {
-    channelId: string;
-    recipientName: string;
-    recipientProfileId: string;
-    channelType: 'DIRECT_FRIEND' | 'THERAPIST_CONSULT';
-  };
-  FriendProfile: {
-    friendProfileId: string;
-    friendName: string;
-  };
-  TherapyOverview: undefined;
-
-  DiaryOverview: { viewProfileId?: string } | undefined;
-  DiaryEntry: { entryId?: string } | undefined;
-  SleepMain: { viewProfileId?: string } | undefined;
   FoodMain: { viewProfileId?: string } | undefined;
 };
 

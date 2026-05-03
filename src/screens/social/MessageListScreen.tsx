@@ -67,9 +67,7 @@ const MessageListScreen: React.FC = () => {
       } catch (error) {
         console.error('Failed to load social conversations:', error);
         setErrorMessage(
-          t('social.messageList.loadError', {
-            defaultValue: 'Unable to load social conversations. Please try again.',
-          }),
+          t('social.messageList.loadError'),
         );
       } finally {
         setIsLoading(false);
@@ -89,14 +87,12 @@ const MessageListScreen: React.FC = () => {
         const displayName =
           request.senderDisplayName ??
           request.senderProfileName ??
-          t('social.messageList.unknownUser', { defaultValue: 'Unknown user' });
+          t('social.messageList.unknownUser');
 
         return {
           id: request.requestId,
           recipientName: displayName,
-          preview: t('social.messageList.friendRequestPreview', {
-            defaultValue: 'Sent you a friend request.',
-          }),
+          preview: t('social.messageList.friendRequestPreview'),
           avatarUrl: request.senderAvatarUrl,
           kind: 'request',
         };
@@ -107,15 +103,13 @@ const MessageListScreen: React.FC = () => {
       const recipientName =
         channel.counterpartDisplayName ??
         channel.counterpartUsername ??
-        t('social.messageList.unknownUser', { defaultValue: 'Unknown user' });
+        t('social.messageList.unknownUser');
 
       const previewText =
         channel.lastMessagePreview ??
         channel.checkInPrompt ??
         channel.moodAlert ??
-        t('social.messageList.noMessagePreview', {
-          defaultValue: 'No messages yet.',
-        });
+        t('social.messageList.noMessagePreview');
 
       return {
         id: channel.channelId,
@@ -137,7 +131,7 @@ const MessageListScreen: React.FC = () => {
       return;
     }
 
-    navigation.navigate('Home');
+    navigation.goBack();
   }, [navigation]);
 
   const handleOpenConversation = useCallback(
@@ -217,7 +211,7 @@ const MessageListScreen: React.FC = () => {
           </TouchableOpacity>
 
           <AppText style={styles.headerTitle}>
-            {t('social.messageList.title', { defaultValue: 'Messages' })}
+            {t('social.messageList.title')}
           </AppText>
 
           <View style={styles.segmentedControl}>
@@ -226,10 +220,7 @@ const MessageListScreen: React.FC = () => {
               onPress={() => setActiveTab('friends')}
               activeOpacity={0.85}>
               <AppText style={[styles.segmentText, activeTab === 'friends' && styles.segmentTextActive]}>
-                {t('social.messageList.friendsTab', {
-                  count: channels.length,
-                  defaultValue: `Friends (${channels.length})`,
-                })}
+                {t('social.messageList.friendsTab', { count: channels.length })}
               </AppText>
             </TouchableOpacity>
 
@@ -238,17 +229,14 @@ const MessageListScreen: React.FC = () => {
               onPress={() => setActiveTab('requests')}
               activeOpacity={0.85}>
               <AppText style={[styles.segmentText, activeTab === 'requests' && styles.segmentTextActive]}>
-                {t('social.messageList.requestsTab', {
-                  count: incomingRequests.length,
-                  defaultValue: `Friend requests (${incomingRequests.length})`,
-                })}
+                {t('social.messageList.requestsTab', { count: incomingRequests.length })}
               </AppText>
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={styles.addFriendsButton} activeOpacity={0.85}>
             <AppText style={styles.addFriendsText}>
-              {t('social.messageList.addFriends', { defaultValue: 'Add Friends' })}
+              {t('social.messageList.addFriends')}
             </AppText>
             <View style={styles.addIconWrap}>
               <MaterialCommunityIcons name="plus" size={16} color={COLORS.accentPositive} />
@@ -261,7 +249,7 @@ const MessageListScreen: React.FC = () => {
             <View style={styles.centerContent}>
               <ActivityIndicator size="small" color={COLORS.primary} />
               <AppText style={styles.statusText}>
-                {t('social.messageList.loading', { defaultValue: 'Loading conversations...' })}
+                {t('social.messageList.loading')}
               </AppText>
             </View>
           ) : errorMessage ? (
@@ -274,7 +262,7 @@ const MessageListScreen: React.FC = () => {
                   void loadSocialData();
                 }}>
                 <AppText style={styles.retryButtonText}>
-                  {t('social.messageList.retry', { defaultValue: 'Retry' })}
+                  {t('social.messageList.retry')}
                 </AppText>
               </TouchableOpacity>
             </View>
@@ -297,9 +285,7 @@ const MessageListScreen: React.FC = () => {
               ListEmptyComponent={
                 <View style={styles.centerContent}>
                   <AppText style={styles.statusText}>
-                    {t('social.messageList.empty', {
-                      defaultValue: 'No conversations to display.',
-                    })}
+                    {t('social.messageList.empty')}
                   </AppText>
                 </View>
               }

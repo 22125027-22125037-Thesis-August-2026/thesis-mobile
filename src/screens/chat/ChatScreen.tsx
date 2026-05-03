@@ -19,9 +19,9 @@ import {
 } from '@/constants';
 import { COLORS, SPACING, BORDER_RADIUS, FONTS } from '@/theme';
 import { Message, BackendChatMessage } from '@/types';
-import { TrackingStackParamList } from '@/navigation';
+import { RootStackParamList } from '@/navigation';
 
-type NavigationPropType = NavigationProp<TrackingStackParamList>;
+type NavigationPropType = NavigationProp<RootStackParamList>;
 
 const INITIAL_MESSAGE: Message = {
   id: '1',
@@ -32,7 +32,7 @@ const INITIAL_MESSAGE: Message = {
 
 const ChatScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
-  const route = useRoute<RouteProp<TrackingStackParamList, 'Chat'>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
   const incomingSessionId = route.params?.sessionId || null;
   
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(incomingSessionId);

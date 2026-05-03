@@ -11,11 +11,11 @@ import { aiApi } from '@/api';
 import { TherapySessionCard, AppText } from '@/components';
 import { EMPTY_CHAT_TEXT } from '@/constants';
 import { COLORS } from '@/theme';
-import { TrackingStackParamList } from '@/navigation';
+import { RootStackParamList } from '@/navigation';
 import { ChatSessionOverview } from '@/types';
 import { styles } from '@/screens/chat/TherapyOverviewScreen.styles';
 
-type NavigationPropType = NavigationProp<TrackingStackParamList>;
+type NavigationPropType = NavigationProp<RootStackParamList>;
 
 const TherapyOverviewScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
@@ -52,7 +52,7 @@ const TherapyOverviewScreen: React.FC = () => {
   };
 
   const handleGoBack = () => {
-    navigation.navigate('Home');
+    navigation.goBack();
   };
 
   const renderSessionCard = ({ item }: { item: ChatSessionOverview }) => (

@@ -32,23 +32,27 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
 
       <View style={styles.headerBackground}>
         <View style={styles.circle} />
+        <View style={styles.circleSmall} />
       </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardContainer}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}>
           <View style={styles.headerContainer}>
+            <AppText style={styles.brandLabel}>uMatter</AppText>
             <AppText style={styles.title}>{t('auth.login.title')}</AppText>
+            <AppText style={styles.subtitle}>
+              {t('auth.login.subtitleLine1')}
+            </AppText>
           </View>
 
           <View style={styles.formContainer}>
+            <View style={styles.handleBar} />
+
             <CustomInput
               label={t('auth.login.emailLabel')}
               iconName="mail-outline"
@@ -68,19 +72,45 @@ const LoginScreen = () => {
               onTogglePassword={() => setIsPasswordVisible(!isPasswordVisible)}
             />
 
+            <TouchableOpacity
+              style={styles.forgotRow}
+              onPress={() =>
+                Alert.alert(
+                  t('auth.common.notificationTitle'),
+                  t('auth.login.forgotPasswordMessage'),
+                )
+              }
+              accessibilityRole="button"
+            >
+              <AppText style={styles.forgotText}>
+                {t('auth.login.forgotPassword')}
+              </AppText>
+            </TouchableOpacity>
+
             <CustomButton
               title={t('auth.login.submitButton')}
               onPress={handleLogin}
               isLoading={auth?.isLoading}
             />
 
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <AppText style={styles.dividerText}>{t('auth.login.orContinueWith')}</AppText>
+              <View style={styles.dividerLine} />
+            </View>
+
             <View style={styles.socialContainer}>
               {[
-                { icon: 'facebook', color: COLORS.facebook },
-                { icon: 'google', color: COLORS.google },
-                { icon: 'instagram', color: COLORS.instagram },
+                { icon: 'facebook', color: COLORS.facebook, a11yLabel: t('auth.login.a11ySocialFacebook') },
+                { icon: 'google', color: COLORS.google, a11yLabel: t('auth.login.a11ySocialGoogle') },
+                { icon: 'instagram', color: COLORS.instagram, a11yLabel: t('auth.login.a11ySocialInstagram') },
               ].map((item, index) => (
-                <TouchableOpacity key={index} style={styles.socialButton}>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.socialButton}
+                  accessibilityLabel={item.a11yLabel}
+                  accessibilityRole="button"
+                >
                   <FontAwesome name={item.icon} size={20} color={item.color} />
                 </TouchableOpacity>
               ))}
@@ -89,24 +119,16 @@ const LoginScreen = () => {
             <View style={styles.footer}>
               <AppText style={styles.footerText}>
                 {t('auth.login.noAccountText')}{' '}
-                <AppText style={styles.linkText} onPress={() => navigation.navigate('Register')}>
+                <AppText
+                  style={styles.linkText}
+                  onPress={() => navigation.navigate('Register')}
+                  accessibilityRole="link"
+                >
                   {t('auth.login.registerLink')}
                 </AppText>
               </AppText>
-              <TouchableOpacity
-                onPress={() =>
-                  Alert.alert(
-                    t('auth.common.notificationTitle'),
-                    t('auth.login.forgotPasswordMessage'),
-                  )
-                }>
-                <AppText style={[styles.linkText, styles.forgotPasswordLink]}>
-                  {t('auth.login.forgotPassword')}
-                </AppText>
-              </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

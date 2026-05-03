@@ -27,7 +27,7 @@ import { getMoodCardUi } from '@/constants';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
-import { RootStackParamList, TrackingStackParamList } from '@/navigation';
+import { RootStackParamList } from '@/navigation';
 import { DiaryEntryResponse } from '@/types';
 import { styles } from './DiaryOverviewScreen.styles';
 
@@ -102,7 +102,7 @@ const calculateStreak = (entries: DiaryEntryResponse[]): number => {
 const DiaryOverviewScreen: React.FC = () => {
   const { t } = useTranslation();
   const { userInfo } = useContext(AuthContext)!;
-  const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'DiaryOverview'>>();
   const viewProfileId = route.params?.viewProfileId;
   const [entries, setEntries] = useState<DiaryEntryResponse[]>([]);
@@ -302,7 +302,7 @@ const DiaryOverviewScreen: React.FC = () => {
           <View style={styles.headerTopRow}>
             <Pressable
               style={styles.headerBackButton}
-              onPress={() => navigation.navigate('Home')}
+              onPress={() => navigation.goBack()}
             >
               <Feather name="chevron-left" size={22} color={COLORS.white} />
             </Pressable>

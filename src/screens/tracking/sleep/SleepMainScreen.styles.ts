@@ -5,7 +5,7 @@ import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.sleepHeaderPurple,
   },
   flex: {
     flex: 1,
@@ -275,26 +275,6 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZES.md,
     color: COLORS.textPrimary,
     textAlignVertical: 'top',
-  },
-  submitButton: {
-    minHeight: 56,
-    borderRadius: BORDER_RADIUS.button,
-    backgroundColor: COLORS.buttonPrimary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  submitButtonDisabled: {
-    opacity: 0.65,
-  },
-  submitContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: SPACING.sm,
-  },
-  submitText: {
-    color: COLORS.buttonPrimaryText,
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '800',
   },
   historyList: {
     rowGap: SPACING.sm,

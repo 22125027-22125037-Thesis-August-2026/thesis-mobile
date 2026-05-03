@@ -22,10 +22,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { sleepApi } from '@/api';
-import { AppText } from '@/components';
+import { AppText, CustomButton } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { SLEEP_QUALITY_UI_MAP } from '@/constants';
-import { RootStackParamList, TrackingStackParamList } from '@/navigation';
+import { RootStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { SleepLogRequest, SleepLogResponse } from '@/types';
 import { endOfWeekSunday, isSameDate, startOfWeekMonday } from '@/utils';
@@ -193,7 +193,7 @@ const formatDurationLabel = (minutes: number): string => {
 };
 
 const SleepMainScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp<TrackingStackParamList>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'SleepMain'>>();
   const { userInfo } = useContext(AuthContext)!;
   const viewProfileId = route.params?.viewProfileId;
@@ -492,7 +492,7 @@ const SleepMainScreen: React.FC = () => {
               <View style={styles.headerTopRow}>
                 <Pressable
                   style={styles.backButton}
-                  onPress={() => navigation.navigate('Home')}
+                  onPress={() => navigation.goBack()}
                 >
                   <Feather name="chevron-left" size={22} color={COLORS.white} />
                 </Pressable>
@@ -618,7 +618,7 @@ const SleepMainScreen: React.FC = () => {
               </View>
             </View>
 
-            {!viewProfileId && <View style={styles.sectionCard}>
+            <View style={styles.sectionCard}>
               <View style={styles.sectionHeaderRow}>
                 <View>
                   <AppText style={styles.sectionTitle}>
@@ -717,30 +717,13 @@ const SleepMainScreen: React.FC = () => {
                 </View>
               </View>
 
-              <Pressable
-                style={[
-                  styles.submitButton,
-                  isSaving && styles.submitButtonDisabled,
-                ]}
+              <CustomButton
+                title={saveButtonLabel}
                 onPress={handleSave}
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <ActivityIndicator color={COLORS.buttonPrimaryText} />
-                ) : (
-                  <View style={styles.submitContent}>
-                    <AppText style={styles.submitText}>
-                      {saveButtonLabel}
-                    </AppText>
-                    <Feather
-                      name="check"
-                      size={20}
-                      color={COLORS.buttonPrimaryText}
-                    />
-                  </View>
-                )}
-              </Pressable>
-            </View>}
+                isLoading={isSaving}
+                icon="check"
+              />
+            </View>
 
             <View style={styles.sectionCard}>
               <View style={styles.sectionHeaderRow}>
