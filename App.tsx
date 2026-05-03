@@ -126,7 +126,6 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="SocialChat" component={SocialChatScreen} />
       <Stack.Screen name="TherapistBookingLanding" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="AppointmentsHistory" component={AppointmentsHistoryScreen} />
-      <Stack.Screen name="TherapistFilter" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
       <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />
       <Stack.Screen name="Booking" component={BookingScreen} />

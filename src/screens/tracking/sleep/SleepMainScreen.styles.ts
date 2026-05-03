@@ -5,7 +5,7 @@ import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.sleepHeaderPurple,
   },
   flex: {
     flex: 1,

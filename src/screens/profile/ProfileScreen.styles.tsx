@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(151, 175, 97, 0.1)',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: SPACING.md,

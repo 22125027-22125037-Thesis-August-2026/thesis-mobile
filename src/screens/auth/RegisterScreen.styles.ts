@@ -1,7 +1,5 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { COLORS, FONT_SIZES } from '@/theme';
-
-const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -12,119 +10,138 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 40,
   },
-  headerBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 200,
+  // Green header band
+  headerBand: {
+    backgroundColor: COLORS.primaryDeeper,
+    paddingTop: 20,
+    paddingBottom: 32,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    marginBottom: 0,
     overflow: 'hidden',
-    zIndex: -1,
   },
-  circle: {
-    width: width * 1.2,
-    height: 400,
-    borderRadius: 1000,
-    backgroundColor: COLORS.primary,
+  headerDecorCircle: {
     position: 'absolute',
-    top: -220,
-    left: -(width * 1.2 - width) / 2,
+    top: -20,
+    right: -20,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  brandLabel: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.7)',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 10,
   },
   title: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    textAlign: 'center',
-    marginTop: 60,
-    marginBottom: 70,
+    fontSize: 30,
+    fontWeight: '700',
+    color: COLORS.white,
+    lineHeight: 36,
+  },
+  subtitle: {
+    fontSize: FONT_SIZES.sm,
+    color: 'rgba(255,255,255,0.75)',
+    marginTop: 6,
   },
   formContainer: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
+    paddingTop: 24,
   },
 
   // Checkbox
   checkboxContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 20,
     marginTop: 10,
+    gap: 10,
   },
   checkboxText: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.text,
-    marginLeft: 10,
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
+    marginLeft: 0,
+    flex: 1,
+    lineHeight: 20,
   },
   roleSectionTitle: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: '600',
-    color: COLORS.text,
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
     marginTop: 4,
     marginBottom: 10,
   },
   roleSelectorContainer: {
     marginBottom: 16,
-    gap: 10,
+    flexDirection: 'row',
+    gap: 8,
   },
   roleCard: {
-    flexDirection: 'row',
+    flex: 1,
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: 10,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    gap: 6,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    backgroundColor: COLORS.backgroundDeep,
   },
   roleCardSelected: {
     borderColor: COLORS.primary,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.primaryMuted,
   },
   roleCardText: {
-    fontSize: FONT_SIZES.md,
+    fontSize: FONT_SIZES.xs,
     color: COLORS.textSecondary,
-    fontWeight: '500',
+    fontWeight: '700',
+    textAlign: 'center',
   },
   roleCardTextSelected: {
-    color: COLORS.primary,
+    color: COLORS.primaryDark,
     fontWeight: '700',
   },
   linkText: {
-    color: COLORS.primary, // Hoặc màu xanh lá mạ của link điều khoản
-    textDecorationLine: 'underline',
+    color: COLORS.primary,
+    fontWeight: '700',
   },
-
-  // Nút Đăng ký (Ghi đè màu nền)
   registerButton: {
-    backgroundColor: COLORS.buttonRegister, // Màu nâu nhạt
+    backgroundColor: COLORS.buttonRegister,
   },
-
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 10,
   },
   loginLink: {
-    color: COLORS.link,
-    fontWeight: 'bold',
+    color: COLORS.primary,
+    fontWeight: '700',
     marginLeft: 5,
   },
-
-  // Social Buttons Dài (Khác LoginScreen)
   orText: {
     textAlign: 'center',
-    color: '#999',
+    color: COLORS.textTertiary,
     marginVertical: 20,
+    fontSize: FONT_SIZES.sm,
   },
   socialBtnLong: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.surfaceRaised,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    height: 50,
+    borderColor: COLORS.borderSubtle,
+    borderRadius: 16,
+    height: 52,
     marginBottom: 12,
   },
   socialBtnText: {

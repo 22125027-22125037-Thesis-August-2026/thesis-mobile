@@ -46,7 +46,7 @@ const CustomInput = ({
         <TextInput
           style={[styles.input, { fontFamily: FONTS.regular }]}
           placeholder={placeholder}
-          placeholderTextColor="#999"
+          placeholderTextColor={COLORS.placeholderMuted}
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={isPassword && !isPasswordVisible}
@@ -66,7 +66,7 @@ const CustomInput = ({
             <Ionicons
               name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'}
               size={20}
-              color="#888"
+              color={COLORS.textTertiary}
             />
           </TouchableOpacity>
         )}
@@ -87,27 +87,29 @@ const CustomInput = ({
 const styles = StyleSheet.create({
   container: { marginBottom: 16 },
   label: {
-    fontSize: FONT_SIZES.md,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
     color: COLORS.text,
-    marginBottom: 8,
+    marginBottom: 7,
+    letterSpacing: 0.1,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.lg,
-    paddingHorizontal: 14,
-    height: 52,
-    borderWidth: 1,
+    backgroundColor: COLORS.surfaceRaised,
+    borderRadius: BORDER_RADIUS.xl,
+    paddingHorizontal: 16,
+    height: 54,
+    borderWidth: 1.5,
     borderColor: COLORS.inputBorder,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
   icon: { marginRight: 10 },
-  input: { flex: 1, fontSize: 16, color: '#333' },
+  input: { flex: 1, fontSize: FONT_SIZES.md, color: COLORS.text },
   errorRow: {
     flexDirection: 'row',
     alignItems: 'center',

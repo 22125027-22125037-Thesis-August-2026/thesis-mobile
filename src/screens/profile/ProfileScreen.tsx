@@ -6,6 +6,7 @@ import { AppText, CustomButton } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { COLORS } from '@/theme';
 import { styles } from './ProfileScreen.styles';
 
 const ProfileScreen: React.FC = () => {
@@ -86,7 +87,7 @@ const ProfileScreen: React.FC = () => {
               <MaterialCommunityIcons
                 name="account"
                 size={24}
-                color="#97AF61"
+                color={COLORS.primary}
               />
             </View>
             <View style={styles.detailContent}>
@@ -101,7 +102,7 @@ const ProfileScreen: React.FC = () => {
 
           <View style={styles.detailRow}>
             <View style={styles.detailIconContainer}>
-              <Feather name="mail" size={24} color="#97AF61" />
+              <Feather name="mail" size={24} color={COLORS.primary} />
             </View>
             <View style={styles.detailContent}>
               <AppText style={styles.detailLabel}>
@@ -119,7 +120,7 @@ const ProfileScreen: React.FC = () => {
                   <MaterialCommunityIcons
                     name="briefcase"
                     size={24}
-                    color="#97AF61"
+                    color={COLORS.primary}
                   />
                 </View>
                 <View style={styles.detailContent}>

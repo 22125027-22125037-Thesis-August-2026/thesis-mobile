@@ -32,23 +32,27 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDark} />
 
       <View style={styles.headerBackground}>
         <View style={styles.circle} />
+        <View style={styles.circleSmall} />
       </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardContainer}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}>
           <View style={styles.headerContainer}>
+            <AppText style={styles.brandLabel}>uMatter</AppText>
             <AppText style={styles.title}>{t('auth.login.title')}</AppText>
+            <AppText style={styles.subtitle}>
+              {t('auth.login.subtitleLine1')}
+            </AppText>
           </View>
 
           <View style={styles.formContainer}>
+            <View style={styles.handleBar} />
+
             <CustomInput
               label={t('auth.login.emailLabel')}
               iconName="mail-outline"
@@ -68,11 +72,32 @@ const LoginScreen = () => {
               onTogglePassword={() => setIsPasswordVisible(!isPasswordVisible)}
             />
 
+            <TouchableOpacity
+              style={styles.forgotRow}
+              onPress={() =>
+                Alert.alert(
+                  t('auth.common.notificationTitle'),
+                  t('auth.login.forgotPasswordMessage'),
+                )
+              }
+              accessibilityRole="button"
+            >
+              <AppText style={styles.forgotText}>
+                {t('auth.login.forgotPassword')}
+              </AppText>
+            </TouchableOpacity>
+
             <CustomButton
               title={t('auth.login.submitButton')}
               onPress={handleLogin}
               isLoading={auth?.isLoading}
             />
+
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <AppText style={styles.dividerText}>{t('auth.login.orContinueWith')}</AppText>
+              <View style={styles.dividerLine} />
+            </View>
 
             <View style={styles.socialContainer}>
               {[
@@ -102,22 +127,8 @@ const LoginScreen = () => {
                   {t('auth.login.registerLink')}
                 </AppText>
               </AppText>
-              <TouchableOpacity
-                onPress={() =>
-                  Alert.alert(
-                    t('auth.common.notificationTitle'),
-                    t('auth.login.forgotPasswordMessage'),
-                  )
-                }
-                accessibilityRole="button"
-              >
-                <AppText style={[styles.linkText, styles.forgotPasswordLink]}>
-                  {t('auth.login.forgotPassword')}
-                </AppText>
-              </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

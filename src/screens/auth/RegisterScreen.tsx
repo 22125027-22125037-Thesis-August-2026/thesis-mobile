@@ -243,13 +243,16 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primaryDeeper} />
 
-      <View style={styles.headerBackground}>
-        <View style={styles.circle} />
+      <View style={styles.headerBand}>
+        <View style={styles.headerDecorCircle} />
+        <AppText style={styles.brandLabel}>uMatter</AppText>
+        <AppText style={styles.title}>{t('auth.register.title')}</AppText>
+        <AppText style={styles.subtitle}>
+          {t('auth.register.subtitle')}
+        </AppText>
       </View>
-
-      <AppText style={styles.title}>{t('auth.register.title')}</AppText>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

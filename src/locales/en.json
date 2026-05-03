@@ -230,7 +230,9 @@
       "failureMessage": "Please check your email or password",
       "a11ySocialFacebook": "Sign in with Facebook",
       "a11ySocialGoogle": "Sign in with Google",
-      "a11ySocialInstagram": "Sign in with Instagram"
+      "a11ySocialInstagram": "Sign in with Instagram",
+      "subtitleLine1": "Sign in to continue your journey",
+      "orContinueWith": "or continue with"
     },
     "register": {
       "title": "Sign up",
@@ -265,7 +267,8 @@
       "failureMessage": "This email may already be in use. Please try again.",
       "successNavigateMessage": "Account created successfully! Please sign in.",
       "successTitle": "Success",
-      "successMessage": "Account created successfully!"
+      "successMessage": "Account created successfully!",
+      "subtitle": "Start your mental wellness journey"
     },
     "roles": {
       "teen": "Student",
@@ -361,7 +364,9 @@
       "diaryNoStreak": "No streak yet",
       "foodDiaryTitle": "Nutrition Journal",
       "foodDiaryNoData": "No data yet",
-      "aiChatbotTitle": "Bạn Tâm giao"
+      "aiChatbotTitle": "Your mental health companion",
+      "moodPrompt": "How are you feeling today?",
+      "groupSessionsTitle": "This week's support groups"
     },
     "moods": {
       "sad": "Sad",
@@ -369,6 +374,24 @@
       "anxious": "Anxious",
       "angry": "Angry",
       "neutral": "Okay"
+    }
+  },
+  "social": {
+    "chat": {
+      "connecting": "Connecting to chat..."
+    },
+    "messageList": {
+      "title": "Messages",
+      "unknownUser": "Unknown user",
+      "addFriends": "Add Friends",
+      "loading": "Loading conversations...",
+      "retry": "Retry",
+      "empty": "No conversations to display.",
+      "loadError": "Unable to load social conversations. Please try again.",
+      "friendRequestPreview": "Sent you a friend request.",
+      "noMessagePreview": "No messages yet.",
+      "friendsTab": "Friends ({{count}})",
+      "requestsTab": "Friend requests ({{count}})"
     }
   },
   "session": {
