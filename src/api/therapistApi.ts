@@ -238,6 +238,12 @@ export interface BookingResponse {
   message: string;
 }
 
+export interface ZoomJoinResponse {
+  sdkJwt: string;
+  meetingNumber: string;
+  password: string;
+}
+
 export interface SubmitReviewPayload {
   appointmentId: string;
   rating: number;
@@ -339,6 +345,19 @@ export const bookSession = async (
 ): Promise<BookingResponse> => {
   try {
     const response = await therapistAxiosClient.post<BookingResponse>('/api/v1/bookings', data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getVideoConsultationJoin = async (
+  appointmentId: string,
+): Promise<ZoomJoinResponse> => {
+  try {
+    const response = await therapistAxiosClient.get<ZoomJoinResponse>(
+      `/api/v1/bookings/${appointmentId}/join`,
+    );
     return response.data;
   } catch (error) {
     throw error;

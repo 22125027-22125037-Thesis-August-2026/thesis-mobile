@@ -4,92 +4,55 @@ import { AppText } from '@/components';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import CryptoJS from 'crypto-js';
 import ZoomUs from 'react-native-zoom-us';
 import { COLORS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/VideoConsultationScreen.styles';
-
-const ZOOM_APP_KEY = '_fpH9UMMQqWNyO7NS2rhBg';
-const ZOOM_APP_SECRET = 'PGVVtMBsIl5DmXEUdcnfwhquvMpeeysX';
-const ZOOM_MEETING_NUMBER = '7075120473';
-const ZOOM_MEETING_PASSWORD = 'N212sP';
-
-type ZoomTestingJwtPayload = {
-  appKey: string;
-  iat: number;
-  exp: number;
-  tokenExp: number;
-};
+import { therapistApi } from '@/api';
 
 type VideoConsultationNavigationProp = NativeStackNavigationProp<RootStackParamList, 'VideoConsultation'>;
 type VideoConsultationRouteProp = RouteProp<RootStackParamList, 'VideoConsultation'>;
 
-const base64url = (source: CryptoJS.lib.WordArray): string => {
-  let encodedSource = CryptoJS.enc.Base64.stringify(source);
-  encodedSource = encodedSource.replace(/=+$/, '');
-  encodedSource = encodedSource.replace(/\+/g, '-');
-  encodedSource = encodedSource.replace(/\//g, '_');
-  return encodedSource;
-};
-
-const generateTestingToken = async (): Promise<string> => {
-  // Buffer iat slightly to avoid device clock drift issues vs Zoom servers.
-  const iat = Math.floor(Date.now() / 1000) - 30;
-  // Keep token lifetime short to stay under strict SDK JWT validation limits.
-  const exp = iat + 7200;
-
-  const payload: ZoomTestingJwtPayload = {
-    appKey: ZOOM_APP_KEY,
-    iat,
-    exp,
-    tokenExp: exp,
-  };
-
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
-  const encodedHeader = base64url(stringifiedHeader);
-
-  const stringifiedPayload = CryptoJS.enc.Utf8.parse(JSON.stringify(payload));
-  const encodedPayload = base64url(stringifiedPayload);
-
-  const signatureInput = `${encodedHeader}.${encodedPayload}`;
-  const signed = CryptoJS.HmacSHA256(signatureInput, ZOOM_APP_SECRET);
-  const encodedSignature = base64url(signed);
-
-  return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
+type BackendErrorPayload = {
+  message?: string;
+  error?: string;
 };
 
 const VideoConsultationScreen: React.FC = () => {
   const navigation = useNavigation<VideoConsultationNavigationProp>();
   const route = useRoute<VideoConsultationRouteProp>();
   const { t } = useTranslation();
+  const appointmentId = route.params?.appointmentId;
   const [isZoomInitialized, setIsZoomInitialized] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [initializationError, setInitializationError] = useState<string | null>(null);
+  const [meetingNumber, setMeetingNumber] = useState<string>('');
+  const [meetingPassword, setMeetingPassword] = useState<string>('');
 
   useEffect(() => {
     let isMounted = true;
 
     const initializeZoom = async (): Promise<void> => {
-      let generatedToken = '';
-
       try {
         if (isMounted) {
           setIsInitializing(true);
           setInitializationError(null);
         }
 
-        generatedToken = await generateTestingToken();
+        if (!appointmentId) {
+          throw new Error(t('booking.videoConsultation.initError'));
+        }
 
-        // --- ADD THIS DEBUG BLOCK ---
-        console.log('\n=== TOKEN DEBUG ===');
-        console.log('1. Device Time:', new Date().toISOString());
-        console.log('2. Generated Token:', generatedToken);
-        console.log('===================\n');
+        const { sdkJwt, meetingNumber: fetchedMeetingNumber, password } =
+          await therapistApi.getVideoConsultationJoin(appointmentId);
+
+        if (isMounted) {
+          setMeetingNumber(fetchedMeetingNumber);
+          setMeetingPassword(password);
+        }
 
         await ZoomUs.initialize({
-          jwtToken: generatedToken,
+          jwtToken: sdkJwt,
         });
 
         if (isMounted) {
@@ -97,29 +60,19 @@ const VideoConsultationScreen: React.FC = () => {
           setIsInitializing(false);
         }
       } catch (error: unknown) {
-        console.error('[Zoom Debug] Initialization Error:', error);
-
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const isTokenCredentialError = errorMessage.includes('internalErrorCode=124');
-        const sanitizedMeetingNumber = ZOOM_MEETING_NUMBER.replace(/\s/g, '');
-
-        console.error('[Zoom Debug] Init Context:', {
-          appKey: ZOOM_APP_KEY,
-          meetingNumber: sanitizedMeetingNumber,
-          jwtTokenLength: generatedToken.length,
-          jwtTokenPreview: generatedToken
-            ? `${generatedToken.slice(0, 12)}...${generatedToken.slice(-8)}`
-            : 'not-generated',
-        });
+        const errorMessage =
+          typeof error === 'object' && error && 'response' in error
+            ? ((error as { response?: { data?: BackendErrorPayload } }).response?.data?.message ??
+                (error as { response?: { data?: BackendErrorPayload } }).response?.data?.error ??
+                t('booking.videoConsultation.initError'))
+            : error instanceof Error
+              ? error.message
+              : t('booking.videoConsultation.initError');
 
         if (isMounted) {
           setIsZoomInitialized(false);
           setIsInitializing(false);
-          setInitializationError(
-            isTokenCredentialError
-              ? t('booking.videoConsultation.invalidTokenError')
-              : t('booking.videoConsultation.initError'),
-          );
+          setInitializationError(errorMessage);
         }
       }
     };
@@ -129,13 +82,13 @@ const VideoConsultationScreen: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [appointmentId, t]);
 
   const handleJoinMeeting = async (): Promise<void> => {
     await ZoomUs.joinMeeting({
       userName: 'Bệnh nhân',
-      meetingNumber: ZOOM_MEETING_NUMBER.replace(/\s/g, ''),
-      password: ZOOM_MEETING_PASSWORD,
+      meetingNumber: meetingNumber.replace(/\s/g, ''),
+      password: meetingPassword,
     });
   };
 
