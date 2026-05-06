@@ -312,7 +312,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: BORDER_RADIUS.md,
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
   },
   moodTag: {
     alignSelf: 'flex-start',

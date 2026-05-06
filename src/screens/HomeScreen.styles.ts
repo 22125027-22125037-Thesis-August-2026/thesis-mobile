@@ -143,7 +143,7 @@ export const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: 'rgba(34,197,94,0.12)',
+    backgroundColor: 'rgba(76,175,80,0.12)',
   },
   chatbotTop: {
     flexDirection: 'row',
@@ -155,9 +155,9 @@ export const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 18,
-    backgroundColor: 'rgba(34,197,94,0.15)',
+    backgroundColor: 'rgba(76,175,80,0.15)',
     borderWidth: 1.5,
-    borderColor: 'rgba(34,197,94,0.35)',
+    borderColor: 'rgba(76,175,80,0.35)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -175,7 +175,7 @@ export const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.55)',
   },
   chatbotInvite: {
-    backgroundColor: 'rgba(34,197,94,0.12)',
+    backgroundColor: 'rgba(76,175,80,0.12)',
     borderRadius: 14,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
@@ -183,7 +183,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.18)',
+    borderColor: 'rgba(76,175,80,0.18)',
   },
   chatbotInviteText: {
     flex: 1,
@@ -250,6 +250,31 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xs,
     color: 'rgba(255,255,255,0.8)',
     marginTop: 2,
+  },
+
+  /* ==== MOOD CHECK-IN ==== */
+  moodSection: {
+    marginTop: SPACING.lg,
+  },
+  moodLabel: {
+    fontSize: FONT_SIZES.xs,
+    color: 'rgba(255,255,255,0.7)',
+    marginBottom: SPACING.sm,
+    fontWeight: '500',
+  },
+  moodChips: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+  },
+  moodChip: {
+    flex: 1,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   /* ==== BOTTOM SPACER ==== */

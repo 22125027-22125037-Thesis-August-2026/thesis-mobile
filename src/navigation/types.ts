@@ -1,6 +1,9 @@
 export type RootStackParamList = {
+  Splash: undefined;
+  Onboarding: undefined;
   Login: undefined;
   Register: undefined;
+  ProfileEdit: undefined;
   Home: undefined;
   ParentExperience: undefined;
   AdminExperience: undefined;

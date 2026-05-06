@@ -17,11 +17,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 
-import { trackingApi } from '@/api';
+import { trackingApi, diaryApi } from '@/api';
 import { DailyLogsSection } from '@/components/tracking';
 import { AuthContext } from '@/context/AuthContext';
 import { COLORS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
+import { MOOD_SELECTOR_OPTIONS, MoodTag, getMoodScore } from '@/constants/moods';
 import { styles } from './HomeScreen.styles';
 
 type NavigationPropType = NavigationProp<RootStackParamList>;
@@ -32,6 +33,9 @@ const HomeScreen: React.FC = () => {
   const { t } = useTranslation();
   const [summary, setSummary] = useState<trackingApi.DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentMood, setCurrentMood] = useState<MoodTag>('NEUTRAL');
+  const [todayDiaryId, setTodayDiaryId] = useState<string | null>(null);
+  const [todayDiaryContent, setTodayDiaryContent] = useState<string>('');
 
   const fetchSummary = useCallback(async (): Promise<void> => {
     setIsLoading(true);
@@ -46,11 +50,61 @@ const HomeScreen: React.FC = () => {
     }
   }, []);
 
+  const fetchTodayMood = useCallback(async (): Promise<void> => {
+    if (!userInfo?.profileId) return;
+    try {
+      const entries = await diaryApi.getDiaryEntries(userInfo.profileId);
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayEntries = entries.filter(e => e.entryDate === todayStr);
+      if (todayEntries.length > 0) {
+        const latest = todayEntries.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        )[0];
+        setCurrentMood((latest.moodTag as MoodTag) ?? 'NEUTRAL');
+        setTodayDiaryId(latest.id);
+        setTodayDiaryContent(latest.content ?? '');
+      } else {
+        setCurrentMood('NEUTRAL');
+        setTodayDiaryId(null);
+        setTodayDiaryContent('');
+      }
+    } catch {
+      // silently keep current mood on error
+    }
+  }, [userInfo?.profileId]);
+
   useFocusEffect(
     useCallback(() => {
       fetchSummary();
-    }, [fetchSummary]),
+      fetchTodayMood();
+    }, [fetchSummary, fetchTodayMood]),
   );
+
+  const handleMoodSelect = async (mood: MoodTag): Promise<void> => {
+    const prevMood = currentMood;
+    setCurrentMood(mood);
+    try {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (todayDiaryId) {
+        await diaryApi.updateDiaryEntry(todayDiaryId, {
+          content: todayDiaryContent,
+          moodTag: mood,
+          positivityScore: getMoodScore(mood),
+          entryDate: todayStr,
+        });
+      } else {
+        const created = await diaryApi.createDiaryEntry({
+          content: '',
+          moodTag: mood,
+          positivityScore: getMoodScore(mood),
+          entryDate: todayStr,
+        });
+        setTodayDiaryId(created.id);
+      }
+    } catch {
+      setCurrentMood(prevMood);
+    }
+  };
 
   const handleNavigateChatbot = (): void => {
     navigation.navigate('Chat');
@@ -67,7 +121,7 @@ const HomeScreen: React.FC = () => {
     year: 'numeric',
   });
 
-  const avatarUrl = 'https://via.placeholder.com/80';
+  const avatarUrl = userInfo?.avatarUrl ?? 'https://via.placeholder.com/80';
   const userName = userInfo?.fullName || 'Bạn';
 
   return (
@@ -113,8 +167,34 @@ const HomeScreen: React.FC = () => {
                 Chào, {userName.split(' ').pop()}! 👋
               </AppText>
               <AppText style={styles.greetingSubtext}>
-                {t('home.overview.moodPrompt')}
+                {t('home.overview.greetingSubtext')}
               </AppText>
+            </View>
+          </View>
+
+          {/* Quick mood check-in */}
+          <View style={styles.moodSection}>
+            <AppText style={styles.moodLabel}>{t('home.overview.moodPrompt')}</AppText>
+            <View style={styles.moodChips}>
+              {MOOD_SELECTOR_OPTIONS.map(opt => {
+                const isActive = currentMood === opt.value;
+                return (
+                  <Pressable
+                    key={opt.value}
+                    style={[
+                      styles.moodChip,
+                      isActive && { backgroundColor: `${opt.color}40`, borderColor: opt.color },
+                    ]}
+                    onPress={() => handleMoodSelect(opt.value)}
+                  >
+                    <MaterialCommunityIcons
+                      name={isActive ? opt.activeIcon : opt.icon}
+                      size={26}
+                      color={isActive ? opt.color : 'rgba(255,255,255,0.55)'}
+                    />
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
         </View>

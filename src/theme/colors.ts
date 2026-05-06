@@ -1,79 +1,79 @@
 export const COLORS = {
-  // Brand — bright emerald green (v3)
-  primary: '#22C55E',
-  primaryMid: '#4ADE80',
-  primaryLight: '#BBF7D0',
-  primaryMuted: '#F0FDF4',
-  primaryDark: '#16A34A',
-  primaryDeeper: '#166534',
+  // Brand — vibrant fresh green (design system v2)
+  primary: '#4CAF50',
+  primaryMid: '#66BB6A',
+  primaryLight: '#A5D6A7',
+  primaryMuted: '#E8F5E9',
+  primaryDark: '#2E7D32',
+  primaryDeeper: '#1B5E20',
 
-  // Backgrounds — clean bright white
-  background: '#F8FAFC',
-  backgroundDeep: '#F1F5F9',
-  surface: '#FFFFFF',
+  // Backgrounds — warm cream
+  background: '#F5F0EB',
+  backgroundDeep: '#EDE6DD',
+  surface: '#FDFAF7',
   surfaceRaised: '#FFFFFF',
 
   // Text — WCAG AA compliant
-  text: '#0F172A',
-  textPrimary: '#0F172A',
-  textSecondary: '#475569',   // 5.9:1 on white — WCAG AA ✓
-  textTertiary: '#94A3B8',    // captions ≥14px only
-  textLight: '#475569',
-  textDark: '#1E293B',
+  text: '#1A1A1A',
+  textPrimary: '#1A1A1A',
+  textSecondary: '#4A4035',   // 6.2:1 on white
+  textTertiary: '#7A6F65',    // captions ≥14px only
+  textLight: '#4A4035',
+  textDark: '#333333',
   textInverse: '#FFFFFF',
-  placeholder: '#94A3B8',
-  placeholderMuted: '#CBD5E1',
+  placeholder: '#B7B0AB',
+  placeholderMuted: '#999999',
 
   // Borders
   white: '#FFFFFF',
-  border: '#CBD5E1',
-  borderSubtle: '#E2E8F0',
-  borderNeutral: '#E2E8F0',
+  border: '#C4BAB2',
+  borderSubtle: '#E0D8D0',
+  borderNeutral: '#DDDDDD',
 
   // Inputs
-  inputBackground: '#F8FAFC',
-  inputBorder: '#CBD5E1',
-  inputBorderFocus: '#22C55E',
-  inputIcon: '#475569',
-  inputIconMuted: '#94A3B8',
+  inputBackground: '#F0EBE5',
+  inputBorder: '#C8BDB5',
+  inputBorderFocus: '#4CAF50',
+  inputIcon: '#4A4035',
+  inputIconMuted: '#7A6F65',
 
   // Buttons
-  buttonPrimary: '#0F172A',
+  buttonPrimary: '#1A1A1A',
   buttonPrimaryText: '#FFFFFF',
-  buttonGreen: '#16A34A',
-  buttonRegister: '#94A3B8',
+  buttonGreen: '#43A047',
+  buttonRegister: '#C0A08C',
 
   // Accents
-  accentPositive: '#22C55E',
-  accentNeutral: '#64748B',
-  accentNegative: '#F43F5E',
+  accentPositive: '#4CAF50',
+  accentNeutral: '#8A6040',
+  accentNegative: '#FF6B35',
 
   // Links & social
-  socialBg: '#F1F5F9',
-  link: '#2563EB',            // accessible blue
-  errorBorder: '#F43F5E',
-  errorBg: '#FFF1F2',
-  errorText: '#BE123C',
+  socialBg: '#EDE6DD',
+  link: '#1565C0',
+  errorBorder: '#FF6B35',
+  errorBg: '#FFF3F0',
+  errorText: '#C0392B',
   facebook: '#3B5998',
   google: '#DB4437',
   instagram: '#C13584',
 
   // Journal / Diary
-  journalBackground: '#F1F5F9',
-  journalPillBackground: '#F8FAFC',
-  journalToolbarPill: '#E2E8F0',
-  journalIconStroke: '#1E293B',
-  journalContentBorder: '#64748B',
-  journalInputText: '#94A3B8',
-  journalCounter: '#94A3B8',
-  journalMoodActive: '#DDD6FE',
-  journalMoodFace: '#1E293B',
-  journalMoodTerrible: '#DC2626',
-  journalMoodBad: '#EA580C',
-  journalMoodNeutral: '#D97706',
-  journalMoodGood: '#16A34A',
-  journalMoodExcellent: '#0D9488',
-  chipSelected: '#BBF7D0',
+  journalBackground: '#EDE6DD',
+  journalPillBackground: '#F5F0EB',
+  journalToolbarPill: '#E8E5E3',
+  journalIconStroke: '#2E2018',
+  journalContentBorder: '#736258',
+  journalInputText: '#B7B0AB',
+  journalCounter: '#B49A8A',
+  journalMoodActive: '#D8D1FF',
+  journalMoodFace: '#3C2F2A',
+  journalMoodTerrible: '#D32F2F',
+  journalMoodBad: '#E64A19',
+  journalMoodNeutral: '#F9A825',
+  journalMoodGood: '#43A047',
+  journalMoodExcellent: '#00897B',
+  chipSelected: '#A5D6A7',
 
   // Video
   videoBackground: '#111111',
@@ -84,12 +84,12 @@ export const COLORS = {
   videoEndCall: '#D9534F',
 
   // Consultation feedback
-  consultationFeedbackBackground: '#DCFCE7',
-  consultationFeedbackPrimary: '#16A34A',
-  consultationFeedbackTitle: '#0F172A',
-  consultationFeedbackSecondary: '#64748B',
-  consultationFeedbackAvatar: '#E2E8F0',
-  consultationFeedbackDivider: '#E2E8F0',
+  consultationFeedbackBackground: '#C8E6C9',
+  consultationFeedbackPrimary: '#2E7D32',
+  consultationFeedbackTitle: '#1E2A36',
+  consultationFeedbackSecondary: '#6B7280',
+  consultationFeedbackAvatar: '#E5E7EB',
+  consultationFeedbackDivider: '#D1D5DB',
 
   // Sleep
   sleepHeaderPurple: '#7C4DFF',
@@ -109,20 +109,44 @@ export const COLORS = {
   foodFab: '#1A1A1A',
 
   // Appointments / Therapy
-  appointmentsActive: '#16A34A',
-  therapyBackground: '#FFFFFF',
-  therapyHeroBackground: '#F0FDF4',
-  therapyPrimaryButton: '#0F172A',
+  appointmentsActive: '#2E7D32',
+  therapyBackground: '#FDFAF7',
+  therapyHeroBackground: '#E8F5E9',
+  therapyPrimaryButton: '#1A1A1A',
+
+  // Splash screen
+  splashCircle: 'rgba(255, 255, 255, 0.07)',
+  splashLogoMarkBg: 'rgba(255, 255, 255, 0.15)',
+  splashLogoMarkBorder: 'rgba(255, 255, 255, 0.25)',
+  splashLogoU: 'rgba(200, 230, 170, 0.8)',
+  splashLogoText: 'rgba(220, 240, 200, 0.95)',
+  splashTagline: 'rgba(255, 255, 255, 0.6)',
+  splashDot: 'rgba(255, 255, 255, 0.45)',
+
+  // Onboarding screen
+  onboardingCircle1: 'rgba(255, 255, 255, 0.3)',
+  onboardingCircle2: 'rgba(255, 255, 255, 0.22)',
+  onboardingSkipBg: 'rgba(255, 255, 255, 0.7)',
+  onboardingSkipBorder: 'rgba(255, 255, 255, 0.9)',
+  onboardingContentPanel: 'rgba(255, 255, 255, 0.88)',
+  onboardingContentBorder: 'rgba(255, 255, 255, 0.95)',
+  onboardingSlide1Top: '#A5D6A7',
+  onboardingSlide1Bottom: '#E8F5E9',
+  onboardingSlide2Top: '#FFCC80',
+  onboardingSlide2Bottom: '#FFF8E1',
+  onboardingSlide3Top: '#81D4FA',
+  onboardingSlide3Bottom: '#E1F5FE',
+  onboardingAiBlue: '#0288D1',
 
   // Misc
-  chatbotDark: '#0F172A',
+  chatbotDark: '#1A0F06',
   shadowBase: '#000000',
   emotionSad: '#FB923C',
-  emotionHappy: '#4ADE80',
+  emotionHappy: '#84CC16',
   emotionAnxious: '#A855F7',
   emotionAngry: '#EF4444',
-  emotionNeutral: '#94A3B8',
-  warning: '#F59E0B',
+  emotionNeutral: '#9CA3AF',
+  warning: '#FFC107',
   ratingStar: '#F59E0B',
   rippleDarkSoft: 'rgba(0, 0, 0, 0.05)',
   overlayDarkSoft: 'rgba(0, 0, 0, 0.4)',

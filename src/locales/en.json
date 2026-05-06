@@ -351,6 +351,53 @@
       "feedbackPlaceholder": "I found this session very effective"
     }
   },
+  "splash": {
+    "tagline": "Mindfulness · Healing · Connection"
+  },
+  "onboarding": {
+    "skipButton": "Skip",
+    "slides": {
+      "welcome": {
+        "tag": "Hello",
+        "title": "Welcome to\nuMatter",
+        "body": "A safe space to care for your mental health — every day, in your own way.",
+        "cta": "Get started"
+      },
+      "track": {
+        "tag": "Track",
+        "title": "Daily mental health\njournal",
+        "body": "Log your sleep, emotions and nutrition. Understand yourself better each day.",
+        "cta": "Next"
+      },
+      "ai": {
+        "tag": "AI companion",
+        "title": "\"Your Confidant\"\nalways listens",
+        "body": "An empathetic AI assistant, available 24/7 — no judgement, no pressure.",
+        "cta": "Next"
+      },
+      "therapist": {
+        "tag": "Expert",
+        "title": "Connect with the right\ntherapist for you",
+        "body": "Our AI matches you with verified mental health professionals for video or chat sessions.",
+        "ctaPrimary": "Create free account",
+        "ctaOutline": "Already have an account? Sign in"
+      }
+    }
+  },
+  "profileEdit": {
+    "headerTitle": "Edit profile",
+    "fullNameLabel": "Full name",
+    "fullNamePlaceholder": "Enter full name",
+    "avatarUrlLabel": "Avatar URL",
+    "avatarUrlPlaceholder": "https://...",
+    "avatarHint": "Enter an avatar image URL below",
+    "accountInfoTitle": "Account information",
+    "saveButton": "Save",
+    "validationTitle": "Notice",
+    "validationNameEmpty": "Name cannot be empty.",
+    "errorTitle": "Error",
+    "errorMessage": "Unable to update profile. Please try again."
+  },
   "home": {
     "overview": {
       "dailyLogsTitle": "Daily Logs",
@@ -366,6 +413,7 @@
       "foodDiaryNoData": "No data yet",
       "aiChatbotTitle": "Your mental health companion",
       "moodPrompt": "How are you feeling today?",
+      "greetingSubtext": "Every day is a fresh start ✨",
       "groupSessionsTitle": "This week's support groups"
     },
     "moods": {

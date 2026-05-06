@@ -351,6 +351,53 @@
       "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"
     }
   },
+  "splash": {
+    "tagline": "Tâm lý · Chữa lành · Kết nối"
+  },
+  "onboarding": {
+    "skipButton": "Bỏ qua",
+    "slides": {
+      "welcome": {
+        "tag": "Xin chào",
+        "title": "Chào mừng đến với\nuMatter",
+        "body": "Không gian an toàn để bạn chăm sóc sức khỏe tâm lý — mỗi ngày, theo cách của riêng bạn.",
+        "cta": "Bắt đầu"
+      },
+      "track": {
+        "tag": "Theo dõi",
+        "title": "Nhật ký sức khỏe\ntâm lý hằng ngày",
+        "body": "Ghi lại giấc ngủ, cảm xúc và dinh dưỡng. Hiểu bản thân hơn qua từng ngày.",
+        "cta": "Tiếp theo"
+      },
+      "ai": {
+        "tag": "AI đồng hành",
+        "title": "\"Bạn Tâm Giao\"\nluôn lắng nghe bạn",
+        "body": "Trợ lý AI thấu cảm, sẵn sàng trò chuyện 24/7 — không phán xét, không áp lực.",
+        "cta": "Tiếp theo"
+      },
+      "therapist": {
+        "tag": "Chuyên gia",
+        "title": "Kết nối với chuyên gia\nphù hợp nhất với bạn",
+        "body": "Hệ thống AI ghép nối bạn với chuyên gia tâm lý được xác minh, tư vấn qua video hoặc chat.",
+        "ctaPrimary": "Tạo tài khoản miễn phí",
+        "ctaOutline": "Đã có tài khoản? Đăng nhập"
+      }
+    }
+  },
+  "profileEdit": {
+    "headerTitle": "Chỉnh sửa hồ sơ",
+    "fullNameLabel": "Họ và tên",
+    "fullNamePlaceholder": "Nhập họ và tên",
+    "avatarUrlLabel": "URL ảnh đại diện",
+    "avatarUrlPlaceholder": "https://...",
+    "avatarHint": "Nhập URL ảnh đại diện bên dưới",
+    "accountInfoTitle": "Thông tin tài khoản",
+    "saveButton": "Lưu",
+    "validationTitle": "Thông báo",
+    "validationNameEmpty": "Tên không được để trống.",
+    "errorTitle": "Lỗi",
+    "errorMessage": "Không thể cập nhật thông tin. Vui lòng thử lại."
+  },
   "home": {
     "overview": {
       "dailyLogsTitle": "Nhật kí hằng ngày",
@@ -366,6 +413,7 @@
       "foodDiaryNoData": "Chưa có dữ liệu",
       "aiChatbotTitle": "Người bạn tâm giao",
       "moodPrompt": "Hôm nay bạn cảm thấy thế nào?",
+      "greetingSubtext": "Mỗi ngày là một khởi đầu mới ✨",
       "groupSessionsTitle": "Nhóm hỗ trợ tuần này"
     },
     "moods": {

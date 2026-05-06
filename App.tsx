@@ -1,10 +1,11 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import {
   NavigationContainer,
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import '@/locales/i18n';
 
 import { AppText } from '@/components';
@@ -25,15 +26,20 @@ import {
   LoginScreen,
   MatchingFormScreen,
   MessageListScreen,
+  OnboardingScreen,
   RegisterScreen,
   SocialChatScreen,
   SleepMainScreen,
+  SplashScreen,
   TherapistBookingLandingScreen,
   TherapistDetailScreen,
   TherapyOverviewScreen,
   VideoConsultationScreen,
   WaitingRoomScreen,
 } from '@/screens';
+import ProfileEditScreen from '@/screens/profile/ProfileEditScreen';
+
+const ONBOARDING_KEY = 'hasSeenOnboarding';
 
 import { RootStackParamList, MainTabNavigator } from '@/navigation';
 import { UserRole } from '@/types';
@@ -188,8 +194,20 @@ const AppNav: React.FC = () => {
   const auth = useContext(AuthContext);
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const routeNameRef = useRef<string | undefined>(undefined);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(null);
 
-  if (!auth || auth.isLoading) {
+  useEffect(() => {
+    AsyncStorage.getItem(ONBOARDING_KEY).then(val => {
+      setHasSeenOnboarding(val === 'true');
+    });
+  }, []);
+
+  const markOnboardingDone = async () => {
+    await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+    setHasSeenOnboarding(true);
+  };
+
+  if (!auth || auth.isLoading || hasSeenOnboarding === null) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={COLORS.primary} />
@@ -220,7 +238,34 @@ const AppNav: React.FC = () => {
     >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {userToken ? (
-          renderRoleBasedRoutes(userInfo?.role)
+          <>
+            {renderRoleBasedRoutes(userInfo?.role)}
+            <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
+          </>
+        ) : !hasSeenOnboarding ? (
+          <>
+            <Stack.Screen name="Splash">
+              {() => <SplashScreen onDone={() => {
+                navigationRef.current?.navigate('Onboarding');
+              }} />}
+            </Stack.Screen>
+            <Stack.Screen name="Onboarding">
+              {() => (
+                <OnboardingScreen
+                  onFinish={async () => {
+                    await markOnboardingDone();
+                    navigationRef.current?.navigate('Register');
+                  }}
+                  onSkip={async () => {
+                    await markOnboardingDone();
+                    navigationRef.current?.navigate('Login');
+                  }}
+                />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />

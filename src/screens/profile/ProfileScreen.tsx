@@ -1,17 +1,20 @@
 import React, { useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Image, Alert, ScrollView } from 'react-native';
+import { View, Image, Alert, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { AppText, CustomButton } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '@/theme';
+import { RootStackParamList } from '@/navigation';
 import { styles } from './ProfileScreen.styles';
 
 const ProfileScreen: React.FC = () => {
   const authContext = useContext(AuthContext);
   const { t } = useTranslation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   if (!authContext) {
     return (
@@ -74,6 +77,13 @@ const ProfileScreen: React.FC = () => {
           />
           <AppText style={styles.fullName}>{fullName}</AppText>
           <AppText style={styles.email}>{email}</AppText>
+          <Pressable
+            style={styles.editProfileBtn}
+            onPress={() => navigation.navigate('ProfileEdit')}
+          >
+            <Feather name="edit-2" size={14} color={COLORS.primary} />
+            <AppText style={styles.editProfileBtnText}>Chỉnh sửa hồ sơ</AppText>
+          </Pressable>
         </View>
 
         {/* User Details */}

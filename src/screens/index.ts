@@ -1,4 +1,5 @@
 export { default as HomeScreen } from './HomeScreen';
+export * from './onboarding';
 export * from './auth';
 export * from './booking';
 export * from './chat';
