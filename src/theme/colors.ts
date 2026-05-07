@@ -138,8 +138,33 @@ export const COLORS = {
   onboardingSlide3Bottom: '#E1F5FE',
   onboardingAiBlue: '#0288D1',
 
+  // White alpha variants
+  whiteAlpha06: 'rgba(255, 255, 255, 0.06)',
+  whiteAlpha08: 'rgba(255, 255, 255, 0.08)',
+  whiteAlpha12: 'rgba(255, 255, 255, 0.12)',
+  whiteAlpha15: 'rgba(255, 255, 255, 0.15)',
+  whiteAlpha40: 'rgba(255, 255, 255, 0.4)',
+  whiteAlpha45: 'rgba(255, 255, 255, 0.45)',
+  whiteAlpha50: 'rgba(255, 255, 255, 0.5)',
+  whiteAlpha55: 'rgba(255, 255, 255, 0.55)',
+  whiteAlpha70: 'rgba(255, 255, 255, 0.7)',
+  whiteAlpha75: 'rgba(255, 255, 255, 0.75)',
+  whiteAlpha80: 'rgba(255, 255, 255, 0.8)',
+  whiteAlpha85: 'rgba(255, 255, 255, 0.85)',
+
+  // Primary (green) alpha variants
+  primaryAlpha12: 'rgba(76, 175, 80, 0.12)',
+  primaryAlpha15: 'rgba(76, 175, 80, 0.15)',
+  primaryAlpha18: 'rgba(76, 175, 80, 0.18)',
+  primaryAlpha35: 'rgba(76, 175, 80, 0.35)',
+
+  // Overlay
+  overlayDark45: 'rgba(0, 0, 0, 0.45)',
+  overlayDark14: 'rgba(0, 0, 0, 0.14)',
+
   // Misc
   chatbotDark: '#1A0F06',
+  chatbotShadow: '#1C1008',
   shadowBase: '#000000',
   emotionSad: '#FB923C',
   emotionHappy: '#84CC16',

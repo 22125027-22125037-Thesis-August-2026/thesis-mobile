@@ -414,7 +414,12 @@
       "aiChatbotTitle": "Người bạn tâm giao",
       "moodPrompt": "Hôm nay bạn cảm thấy thế nào?",
       "greetingSubtext": "Mỗi ngày là một khởi đầu mới ✨",
-      "groupSessionsTitle": "Nhóm hỗ trợ tuần này"
+      "groupSessionsTitle": "Nhóm hỗ trợ tuần này",
+      "moodDefaultTerrible": "Hôm nay thật sự rất khó khăn.",
+      "moodDefaultBad": "Mọi chuyện không được tốt lắm.",
+      "moodDefaultNeutral": "Một ngày bình thường.",
+      "moodDefaultGood": "Hôm nay khá ổn!",
+      "moodDefaultExcellent": "Hôm nay thật tuyệt vời!"
     },
     "moods": {
       "sad": "Buồn",

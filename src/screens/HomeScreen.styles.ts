@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: COLORS.whiteAlpha08,
   },
   heroCircleSmall: {
     position: 'absolute',
@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: COLORS.whiteAlpha06,
   },
   topBar: {
     flexDirection: 'row',
@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: FONT_SIZES.xs,
-    color: 'rgba(255,255,255,0.7)',
+    color: COLORS.whiteAlpha70,
     fontWeight: '500',
   },
   notificationButton: {
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: COLORS.whiteAlpha15,
     borderRadius: 20,
   },
   notificationBadge: {
@@ -88,7 +88,7 @@ export const styles = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: COLORS.border,
     borderWidth: 2.5,
-    borderColor: 'rgba(255,255,255,0.5)',
+    borderColor: COLORS.whiteAlpha50,
   },
   profileInfo: {
     flex: 1,
@@ -101,7 +101,7 @@ export const styles = StyleSheet.create({
   },
   greetingSubtext: {
     fontSize: FONT_SIZES.sm,
-    color: 'rgba(255,255,255,0.75)',
+    color: COLORS.whiteAlpha75,
     marginTop: 3,
   },
 
@@ -130,7 +130,7 @@ export const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.card,
     padding: SPACING.md,
     overflow: 'hidden',
-    shadowColor: '#1C1008',
+    shadowColor: COLORS.chatbotShadow,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.30,
     shadowRadius: 12,
@@ -143,7 +143,7 @@ export const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: 'rgba(76,175,80,0.12)',
+    backgroundColor: COLORS.primaryAlpha12,
   },
   chatbotTop: {
     flexDirection: 'row',
@@ -155,9 +155,9 @@ export const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 18,
-    backgroundColor: 'rgba(76,175,80,0.15)',
+    backgroundColor: COLORS.primaryAlpha15,
     borderWidth: 1.5,
-    borderColor: 'rgba(76,175,80,0.35)',
+    borderColor: COLORS.primaryAlpha35,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -172,10 +172,10 @@ export const styles = StyleSheet.create({
   },
   chatbotSubtitle: {
     fontSize: FONT_SIZES.xs,
-    color: 'rgba(255,255,255,0.55)',
+    color: COLORS.whiteAlpha55,
   },
   chatbotInvite: {
-    backgroundColor: 'rgba(76,175,80,0.12)',
+    backgroundColor: COLORS.primaryAlpha12,
     borderRadius: 14,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
@@ -183,20 +183,20 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: 'rgba(76,175,80,0.18)',
+    borderColor: COLORS.primaryAlpha18,
   },
   chatbotInviteText: {
     flex: 1,
   },
   chatbotInviteMain: {
     fontSize: FONT_SIZES.sm,
-    color: 'rgba(255,255,255,0.85)',
+    color: COLORS.whiteAlpha85,
     fontWeight: '600',
     marginBottom: 2,
   },
   chatbotMeta: {
     fontSize: FONT_SIZES.xs,
-    color: 'rgba(255,255,255,0.45)',
+    color: COLORS.whiteAlpha45,
   },
   chatbotPlusBtn: {
     width: 40,
@@ -217,7 +217,7 @@ export const styles = StyleSheet.create({
     height: 140,
     borderRadius: BORDER_RADIUS.xl,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: COLORS.shadowBase,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.14,
     shadowRadius: 8,
@@ -232,7 +232,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: COLORS.overlayDark45,
   },
   sessionContent: {
     position: 'absolute',
@@ -248,7 +248,7 @@ export const styles = StyleSheet.create({
   },
   sessionSubtitle: {
     fontSize: FONT_SIZES.xs,
-    color: 'rgba(255,255,255,0.8)',
+    color: COLORS.whiteAlpha80,
     marginTop: 2,
   },
 
@@ -258,7 +258,7 @@ export const styles = StyleSheet.create({
   },
   moodLabel: {
     fontSize: FONT_SIZES.xs,
-    color: 'rgba(255,255,255,0.7)',
+    color: COLORS.whiteAlpha70,
     marginBottom: SPACING.sm,
     fontWeight: '500',
   },
@@ -270,9 +270,34 @@ export const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: COLORS.whiteAlpha10,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.15)',
+    borderColor: COLORS.whiteAlpha15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  quickInput: {
+    flex: 1,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: COLORS.whiteAlpha12,
+    borderWidth: 1,
+    borderColor: COLORS.whiteAlpha20,
+    paddingHorizontal: SPACING.md,
+    color: COLORS.white,
+    fontSize: FONT_SIZES.sm,
+  },
+  quickSendBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: COLORS.whiteAlpha20,
     justifyContent: 'center',
     alignItems: 'center',
   },

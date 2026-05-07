@@ -414,7 +414,12 @@
       "aiChatbotTitle": "Your mental health companion",
       "moodPrompt": "How are you feeling today?",
       "greetingSubtext": "Every day is a fresh start ✨",
-      "groupSessionsTitle": "This week's support groups"
+      "groupSessionsTitle": "This week's support groups",
+      "moodDefaultTerrible": "Today was really tough.",
+      "moodDefaultBad": "Things weren't great today.",
+      "moodDefaultNeutral": "Just a regular day.",
+      "moodDefaultGood": "Today was pretty good!",
+      "moodDefaultExcellent": "Today was amazing!"
     },
     "moods": {
       "sad": "Sad",

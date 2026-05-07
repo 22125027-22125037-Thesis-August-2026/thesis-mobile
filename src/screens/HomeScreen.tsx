@@ -6,6 +6,7 @@ import {
   View,
   Image,
   Pressable,
+  TextInput,
 } from 'react-native';
 import { AppText } from '@/components';
 import {
@@ -25,6 +26,14 @@ import { RootStackParamList } from '@/navigation';
 import { MOOD_SELECTOR_OPTIONS, MoodTag, getMoodScore } from '@/constants/moods';
 import { styles } from './HomeScreen.styles';
 
+const MOOD_CONTENT_KEY: Record<MoodTag, string> = {
+  TERRIBLE: 'home.overview.moodDefaultTerrible',
+  BAD: 'home.overview.moodDefaultBad',
+  NEUTRAL: 'home.overview.moodDefaultNeutral',
+  GOOD: 'home.overview.moodDefaultGood',
+  EXCELLENT: 'home.overview.moodDefaultExcellent',
+};
+
 type NavigationPropType = NavigationProp<RootStackParamList>;
 
 const HomeScreen: React.FC = () => {
@@ -33,9 +42,10 @@ const HomeScreen: React.FC = () => {
   const { t } = useTranslation();
   const [summary, setSummary] = useState<trackingApi.DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentMood, setCurrentMood] = useState<MoodTag>('NEUTRAL');
+  const [currentMood, setCurrentMood] = useState<MoodTag | null>(null);
+  const [pendingMood, setPendingMood] = useState<MoodTag | null>(null);
+  const [quickContent, setQuickContent] = useState<string>('');
   const [todayDiaryId, setTodayDiaryId] = useState<string | null>(null);
-  const [todayDiaryContent, setTodayDiaryContent] = useState<string>('');
 
   const fetchSummary = useCallback(async (): Promise<void> => {
     setIsLoading(true);
@@ -60,13 +70,11 @@ const HomeScreen: React.FC = () => {
         const latest = todayEntries.sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )[0];
-        setCurrentMood((latest.moodTag as MoodTag) ?? 'NEUTRAL');
+        setCurrentMood((latest.moodTag as MoodTag) ?? null);
         setTodayDiaryId(latest.id);
-        setTodayDiaryContent(latest.content ?? '');
       } else {
-        setCurrentMood('NEUTRAL');
+        setCurrentMood(null);
         setTodayDiaryId(null);
-        setTodayDiaryContent('');
       }
     } catch {
       // silently keep current mood on error
@@ -80,29 +88,30 @@ const HomeScreen: React.FC = () => {
     }, [fetchSummary, fetchTodayMood]),
   );
 
-  const handleMoodSelect = async (mood: MoodTag): Promise<void> => {
-    const prevMood = currentMood;
+  const handleMoodSelect = (mood: MoodTag): void => {
+    if (todayDiaryId) return;
     setCurrentMood(mood);
+    setPendingMood(mood);
+    setQuickContent('');
+  };
+
+  const handleQuickSave = async (): Promise<void> => {
+    if (!pendingMood) return;
+    const content = quickContent.trim() || t(MOOD_CONTENT_KEY[pendingMood]);
     try {
       const todayStr = new Date().toISOString().slice(0, 10);
-      if (todayDiaryId) {
-        await diaryApi.updateDiaryEntry(todayDiaryId, {
-          content: todayDiaryContent,
-          moodTag: mood,
-          positivityScore: getMoodScore(mood),
-          entryDate: todayStr,
-        });
-      } else {
-        const created = await diaryApi.createDiaryEntry({
-          content: '',
-          moodTag: mood,
-          positivityScore: getMoodScore(mood),
-          entryDate: todayStr,
-        });
-        setTodayDiaryId(created.id);
-      }
+      const created = await diaryApi.createDiaryEntry({
+        content,
+        moodTag: pendingMood,
+        positivityScore: getMoodScore(pendingMood),
+        entryDate: todayStr,
+      });
+      setTodayDiaryId(created.id);
+      setPendingMood(null);
+      setQuickContent('');
     } catch {
-      setCurrentMood(prevMood);
+      setCurrentMood(null);
+      setPendingMood(null);
     }
   };
 
@@ -145,7 +154,7 @@ const HomeScreen: React.FC = () => {
               <MaterialCommunityIcons
                 name="calendar-outline"
                 size={16}
-                color="rgba(255,255,255,0.7)"
+                color={COLORS.whiteAlpha70}
               />
               <AppText style={styles.dateText}>{dateString}</AppText>
             </View>
@@ -178,24 +187,45 @@ const HomeScreen: React.FC = () => {
             <View style={styles.moodChips}>
               {MOOD_SELECTOR_OPTIONS.map(opt => {
                 const isActive = currentMood === opt.value;
+                const isLocked = todayDiaryId !== null;
                 return (
                   <Pressable
                     key={opt.value}
                     style={[
                       styles.moodChip,
                       isActive && { backgroundColor: `${opt.color}40`, borderColor: opt.color },
+                      isLocked && !isActive && { opacity: 0.35 },
                     ]}
                     onPress={() => handleMoodSelect(opt.value)}
+                    disabled={isLocked}
                   >
                     <MaterialCommunityIcons
                       name={isActive ? opt.activeIcon : opt.icon}
                       size={26}
-                      color={isActive ? opt.color : 'rgba(255,255,255,0.55)'}
+                      color={isActive ? opt.color : COLORS.whiteAlpha55}
                     />
                   </Pressable>
                 );
               })}
             </View>
+
+            {pendingMood && !todayDiaryId && (
+              <View style={styles.quickInputRow}>
+                <TextInput
+                  style={styles.quickInput}
+                  placeholder={t(MOOD_CONTENT_KEY[pendingMood])}
+                  placeholderTextColor={COLORS.whiteAlpha40}
+                  value={quickContent}
+                  onChangeText={setQuickContent}
+                  onSubmitEditing={handleQuickSave}
+                  returnKeyType="send"
+                  maxLength={200}
+                />
+                <Pressable style={styles.quickSendBtn} onPress={handleQuickSave}>
+                  <MaterialCommunityIcons name="send" size={18} color={COLORS.white} />
+                </Pressable>
+              </View>
+            )}
           </View>
         </View>
 
