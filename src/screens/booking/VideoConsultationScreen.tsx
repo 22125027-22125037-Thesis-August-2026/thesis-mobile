@@ -1,190 +1,158 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
-import { AppText } from '@/components';
+import React, { useMemo, useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTranslation } from 'react-i18next';
-import CryptoJS from 'crypto-js';
-import ZoomUs from 'react-native-zoom-us';
-import { COLORS } from '@/theme';
+import { AppText } from '@/components';
 import { RootStackParamList } from '@/navigation';
+import { COLORS } from '@/theme';
 import styles from '@/screens/booking/VideoConsultationScreen.styles';
 
-const ZOOM_APP_KEY = '_fpH9UMMQqWNyO7NS2rhBg';
-const ZOOM_APP_SECRET = 'PGVVtMBsIl5DmXEUdcnfwhquvMpeeysX';
-const ZOOM_MEETING_NUMBER = '7075120473';
-const ZOOM_MEETING_PASSWORD = 'N212sP';
-
-type ZoomTestingJwtPayload = {
-  appKey: string;
-  iat: number;
-  exp: number;
-  tokenExp: number;
-};
-
-type VideoConsultationNavigationProp = NativeStackNavigationProp<RootStackParamList, 'VideoConsultation'>;
 type VideoConsultationRouteProp = RouteProp<RootStackParamList, 'VideoConsultation'>;
+type VideoConsultationNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'VideoConsultation'
+>;
 
-const base64url = (source: CryptoJS.lib.WordArray): string => {
-  let encodedSource = CryptoJS.enc.Base64.stringify(source);
-  encodedSource = encodedSource.replace(/=+$/, '');
-  encodedSource = encodedSource.replace(/\+/g, '-');
-  encodedSource = encodedSource.replace(/\//g, '_');
-  return encodedSource;
+const SERVER_URL = 'https://meet.jit.si';
+
+const sanitizeRoomName = (raw: string): string =>
+  raw.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-_]/g, '');
+
+const buildMeetingUri = (room: string, displayName?: string): string => {
+  const base = `${SERVER_URL}/${encodeURIComponent(room)}`;
+  const config =
+    '#config.prejoinPageEnabled=false' +
+    '&config.startWithAudioMuted=false' +
+    '&config.startWithVideoMuted=false' +
+    '&config.disableDeepLinking=true';
+  const userInfo = displayName
+    ? `&userInfo.displayName=${encodeURIComponent(displayName)}`
+    : '';
+  return `${base}${config}${userInfo}`;
 };
 
-const generateTestingToken = async (): Promise<string> => {
-  // Buffer iat slightly to avoid device clock drift issues vs Zoom servers.
-  const iat = Math.floor(Date.now() / 1000) - 30;
-  // Keep token lifetime short to stay under strict SDK JWT validation limits.
-  const exp = iat + 7200;
-
-  const payload: ZoomTestingJwtPayload = {
-    appKey: ZOOM_APP_KEY,
-    iat,
-    exp,
-    tokenExp: exp,
-  };
-
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
-  const encodedHeader = base64url(stringifiedHeader);
-
-  const stringifiedPayload = CryptoJS.enc.Utf8.parse(JSON.stringify(payload));
-  const encodedPayload = base64url(stringifiedPayload);
-
-  const signatureInput = `${encodedHeader}.${encodedPayload}`;
-  const signed = CryptoJS.HmacSHA256(signatureInput, ZOOM_APP_SECRET);
-  const encodedSignature = base64url(signed);
-
-  return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
-};
+const INJECTED_JS = `
+  (function() {
+    const post = (type, payload) => window.ReactNativeWebView.postMessage(
+      JSON.stringify({ type, payload })
+    );
+    window.addEventListener('message', (event) => {
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (data && data.type === 'video-conference-left') post('left');
+        if (data && data.type === 'readyToClose') post('left');
+      } catch (e) {}
+    });
+    true;
+  })();
+`;
 
 const VideoConsultationScreen: React.FC = () => {
   const navigation = useNavigation<VideoConsultationNavigationProp>();
   const route = useRoute<VideoConsultationRouteProp>();
-  const { t } = useTranslation();
-  const [isZoomInitialized, setIsZoomInitialized] = useState<boolean>(false);
-  const [isInitializing, setIsInitializing] = useState<boolean>(true);
-  const [initializationError, setInitializationError] = useState<string | null>(null);
+  const { appointmentId, therapistId, slotId, therapistName } = route.params;
 
-  useEffect(() => {
-    let isMounted = true;
+  const defaultRoom = useMemo(() => {
+    const seed = appointmentId || slotId || therapistId || 'consultation';
+    return sanitizeRoomName(`thesis-${seed}`);
+  }, [appointmentId, slotId, therapistId]);
 
-    const initializeZoom = async (): Promise<void> => {
-      let generatedToken = '';
+  const [room, setRoom] = useState<string>(defaultRoom);
+  const [showMeeting, setShowMeeting] = useState<boolean>(false);
 
-      try {
-        if (isMounted) {
-          setIsInitializing(true);
-          setInitializationError(null);
-        }
+  const meetingUri = useMemo(
+    () => buildMeetingUri(room, therapistName),
+    [room, therapistName],
+  );
 
-        generatedToken = await generateTestingToken();
+  const handleJoin = () => {
+    const sanitized = sanitizeRoomName(room);
+    if (!sanitized) {
+      return;
+    }
+    const uri = buildMeetingUri(sanitized, therapistName);
+    console.log('[VideoConsultation] Jitsi meeting URL:', uri);
+    setRoom(sanitized);
+    setShowMeeting(true);
+  };
 
-        // --- ADD THIS DEBUG BLOCK ---
-        console.log('\n=== TOKEN DEBUG ===');
-        console.log('1. Device Time:', new Date().toISOString());
-        console.log('2. Generated Token:', generatedToken);
-        console.log('===================\n');
-
-        await ZoomUs.initialize({
-          jwtToken: generatedToken,
-        });
-
-        if (isMounted) {
-          setIsZoomInitialized(true);
-          setIsInitializing(false);
-        }
-      } catch (error: unknown) {
-        console.error('[Zoom Debug] Initialization Error:', error);
-
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const isTokenCredentialError = errorMessage.includes('internalErrorCode=124');
-        const sanitizedMeetingNumber = ZOOM_MEETING_NUMBER.replace(/\s/g, '');
-
-        console.error('[Zoom Debug] Init Context:', {
-          appKey: ZOOM_APP_KEY,
-          meetingNumber: sanitizedMeetingNumber,
-          jwtTokenLength: generatedToken.length,
-          jwtTokenPreview: generatedToken
-            ? `${generatedToken.slice(0, 12)}...${generatedToken.slice(-8)}`
-            : 'not-generated',
-        });
-
-        if (isMounted) {
-          setIsZoomInitialized(false);
-          setIsInitializing(false);
-          setInitializationError(
-            isTokenCredentialError
-              ? t('booking.videoConsultation.invalidTokenError')
-              : t('booking.videoConsultation.initError'),
-          );
-        }
+  const handleMessage = (event: WebViewMessageEvent) => {
+    try {
+      const parsed = JSON.parse(event.nativeEvent.data);
+      if (parsed?.type === 'left') {
+        setShowMeeting(false);
+        navigation.goBack();
       }
-    };
-
-    void initializeZoom();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const handleJoinMeeting = async (): Promise<void> => {
-    await ZoomUs.joinMeeting({
-      userName: 'Bệnh nhân',
-      meetingNumber: ZOOM_MEETING_NUMBER.replace(/\s/g, ''),
-      password: ZOOM_MEETING_PASSWORD,
-    });
+    } catch {
+      // ignore non-JSON messages from the WebView
+    }
   };
 
-  const handleEndMeeting = (): void => {
-    /*
-     * TODO: Implement logic to trigger this navigation automatically if the user exits
-     * the Zoom meeting less than 5 minutes before the scheduled end time, marking
-     * the session as complete.
-     *
-     * Suggested business flow:
-     * 1. Subscribe to Zoom meeting leave/end callbacks and capture actual exit timestamp.
-     * 2. Compare actual exit timestamp with scheduled end timestamp from backend booking data.
-     * 3. If delta is <= 5 minutes, call session-completion API and persist completion status.
-     * 4. If completion API succeeds, navigate to ConsultationFeedback for post-session review.
-     * 5. If completion API fails, show retry/error state and avoid navigating prematurely.
-     */
-    navigation.navigate('ConsultationFeedback', {
-      ...route.params,
-      endedAt: new Date().toISOString(),
-    });
-  };
+  if (showMeeting) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+        <WebView
+          source={{ uri: meetingUri }}
+          style={{ flex: 1 }}
+          javaScriptEnabled
+          domStorageEnabled
+          allowsInlineMediaPlayback
+          mediaPlaybackRequiresUserAction={false}
+          mixedContentMode="always"
+          originWhitelist={['*']}
+          onMessage={handleMessage}
+          injectedJavaScript={INJECTED_JS}
+          onPermissionRequest={(event: any) => event?.nativeEvent?.grant?.(event.nativeEvent.resources)}
+          allowsProtectedMedia
+          setSupportMultipleWindows={false}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <View style={styles.content}>
-        <AppText style={styles.title}>{t('booking.videoConsultation.readyTitle')}</AppText>
+        <AppText style={styles.title}>Tham gia cuộc gọi tham vấn</AppText>
 
-        {isInitializing ? (
-          <View style={styles.loadingWrapper}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <AppText style={styles.loadingText}>{t('booking.videoConsultation.initializingText')}</AppText>
-          </View>
-        ) : isZoomInitialized ? (
-          <View style={styles.loadingWrapper}>
-            <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleJoinMeeting}>
-              <AppText style={styles.primaryButtonText}>{t('booking.videoConsultation.joinButton')}</AppText>
-            </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          value={room}
+          onChangeText={setRoom}
+          placeholder="Nhập tên phòng Jitsi"
+          placeholderTextColor={COLORS.textSecondary}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
 
-            <TouchableOpacity style={styles.endMeetingButton} activeOpacity={0.85} onPress={handleEndMeeting}>
-              <AppText style={styles.primaryButtonText}>{t('booking.videoConsultation.endButton')}</AppText>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.loadingWrapper}>
-            <AppText style={styles.errorText}>{initializationError ?? t('booking.videoConsultation.defaultError')}</AppText>
-          </View>
-        )}
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.primaryButton}
+          onPress={handleJoin}
+        >
+          <AppText style={styles.primaryButtonText}>Bắt đầu cuộc gọi</AppText>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.endMeetingButton}
+          onPress={() => navigation.goBack()}
+        >
+          <AppText style={styles.primaryButtonText}>Quay lại</AppText>
+        </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
