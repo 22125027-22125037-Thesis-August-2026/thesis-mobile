@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <radialGradient id="ico1" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#6EC35A"></stop>
+      <stop offset="100%" stop-color="#3A8A2E"></stop>
+    </radialGradient>
+    <radialGradient id="ico2" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#A8E063"></stop>
+      <stop offset="100%" stop-color="#56AB2F"></stop>
+    </radialGradient>
+    <filter id="ish">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#2E6B20" flood-opacity="0.25"></feDropShadow>
+    </filter>
+  </defs>
+  
+  <rect width="64" height="64" rx="16" fill="#F0F9EB"></rect>
+  
+  <g transform="translate(8, 6) scale(0.24)">
+    <path d="M100 170 C60 155,28 138,22 108 C14 72,36 44,62 36 C74 32,86 34,100 44 C114 34,126 32,138 36 C164 44,186 72,178 108 C172 138,140 155,100 170Z" fill="url(#ico1)" filter="url(#ish)"></path>
+    <path d="M100 154 C70 142,46 128,42 104 C36 78,54 58,74 52 C84 49,93 52,100 60 C107 52,116 49,126 52 C146 58,164 78,158 104 C154 128,130 142,100 154Z" fill="url(#ico2)" opacity="0.4"></path>
+    <path d="M100 130 C78 118,62 104,62 88 C62 76,72 68,84 68 C91 68,97 72,100 78 C103 72,109 68,116 68 C128 68,138 76,138 88 C138 104,122 118,100 130Z" fill="white" opacity="0.93"></path>
+    <line x1="100" y1="128" x2="100" y2="108" stroke="#4E9A3A" stroke-width="3.5" stroke-linecap="round"></line>
+    <path d="M100 118 C94 112,86 112,84 106 C86 100,94 102,100 108" fill="#5FB84A"></path>
+    <path d="M100 118 C106 112,114 112,116 106 C114 100,106 102,100 108" fill="#5FB84A"></path>
+    <circle cx="76" cy="88" r="5" fill="#3A8A2E" opacity="0.6"></circle>
+    <circle cx="124" cy="88" r="5" fill="#3A8A2E" opacity="0.6"></circle>
+  </g>
+</svg>

@@ -1,6 +1,7 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  Animated,
   RefreshControl,
   ScrollView,
   View,
@@ -24,6 +25,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { COLORS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { MOOD_SELECTOR_OPTIONS, MoodTag, getMoodScore } from '@/constants/moods';
+import LogoMark from '@/assets/logo/LogoMark';
 import { styles } from './HomeScreen.styles';
 
 const MOOD_CONTENT_KEY: Record<MoodTag, string> = {
@@ -36,11 +38,53 @@ const MOOD_CONTENT_KEY: Record<MoodTag, string> = {
 
 type NavigationPropType = NavigationProp<RootStackParamList>;
 
+// ──────────────────────────────────────────────────────────────────────────────
+// AI COMPANION CARD
+// ──────────────────────────────────────────────────────────────────────────────
+
+type CompanionCardProps = { onPress: () => void };
+
+const CompanionCard: React.FC<CompanionCardProps> = ({ onPress }) => {
+  const breathAnim = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(breathAnim, { toValue: 1.07, duration: 1800, useNativeDriver: true }),
+        Animated.timing(breathAnim, { toValue: 1, duration: 1800, useNativeDriver: true }),
+      ]),
+    ).start();
+  }, [breathAnim]);
+  return (
+    <Pressable style={styles.companionCard} onPress={onPress}>
+      <View style={styles.companionOrbitContainer}>
+        <Animated.View style={[styles.companionRingOuter, { transform: [{ scale: breathAnim }] }]}>
+          <View style={styles.companionRingInner}>
+            <View style={styles.companionAvatar}>
+              <LogoMark size={42} />
+            </View>
+          </View>
+        </Animated.View>
+        <View style={[styles.companionOrbitDot, styles.companionOrbitDot1]} />
+        <View style={[styles.companionOrbitDot, styles.companionOrbitDot2]} />
+        <View style={[styles.companionOrbitDot, styles.companionOrbitDot3]} />
+      </View>
+      <AppText style={styles.companionTitle}>Bạn Tâm Giao</AppText>
+      <View style={styles.companionStatusRow}>
+        <View style={styles.companionOnlineDot} />
+        <AppText style={styles.companionStatusTxt}>Online · Sẵn sàng lắng nghe</AppText>
+      </View>
+      <Pressable style={styles.companionCTA} onPress={onPress}>
+        <AppText style={styles.companionCTATxt}>Bắt đầu ngay</AppText>
+        <MaterialCommunityIcons name="chevron-right" size={20} color={COLORS.white} />
+      </Pressable>
+    </Pressable>
+  );
+};
+
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
   const { userInfo } = useContext(AuthContext)!;
   const { t } = useTranslation();
-  const [summary, setSummary] = useState<trackingApi.DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentMood, setCurrentMood] = useState<MoodTag | null>(null);
   const [pendingMood, setPendingMood] = useState<MoodTag | null>(null);
@@ -50,11 +94,9 @@ const HomeScreen: React.FC = () => {
   const fetchSummary = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const data = await trackingApi.getDashboardSummary();
-      setSummary(data);
+      await trackingApi.getDashboardSummary();
     } catch (error) {
       console.error('[HomeScreen] Failed to load dashboard summary:', error);
-      setSummary(null);
     } finally {
       setIsLoading(false);
     }
@@ -237,45 +279,12 @@ const HomeScreen: React.FC = () => {
             isOwnProfile={true}
           />
 
-          {/* AI Chatbot */}
+          {/* AI COMPANION */}
           <View style={styles.section}>
             <AppText style={styles.sectionTitle}>
               {t('home.overview.aiChatbotTitle')}
             </AppText>
-
-            <Pressable style={styles.chatbotCard} onPress={handleNavigateChatbot}>
-              <View style={styles.chatbotDecorCircle} />
-
-              <View style={styles.chatbotTop}>
-                <View style={styles.robotIllustration}>
-                  <MaterialCommunityIcons
-                    name="robot-outline"
-                    size={28}
-                    color={COLORS.primary}
-                  />
-                </View>
-                <View style={styles.chatbotText}>
-                  <AppText style={styles.chatbotTitle}>Bạn Tâm Giao</AppText>
-                  <AppText style={styles.chatbotSubtitle}>
-                    Mình luôn ở đây để lắng nghe bạn
-                  </AppText>
-                </View>
-              </View>
-
-              <View style={styles.chatbotInvite}>
-                <View style={styles.chatbotInviteText}>
-                  <AppText style={styles.chatbotInviteMain}>
-                    Bắt đầu trò chuyện mới
-                  </AppText>
-                  <AppText style={styles.chatbotMeta}>
-                    {summary?.totalAiSessions ?? 0} buổi · {summary?.monthlyAiSessions ?? 0} buổi tháng này
-                  </AppText>
-                </View>
-                <Pressable style={styles.chatbotPlusBtn} onPress={handleNavigateChatbot}>
-                  <MaterialCommunityIcons name="plus" size={22} color={COLORS.white} />
-                </Pressable>
-              </View>
-            </Pressable>
+            <CompanionCard onPress={handleNavigateChatbot} />
           </View>
 
           {/* Group Sessions */}
