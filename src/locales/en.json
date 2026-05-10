@@ -388,15 +388,27 @@
     "headerTitle": "Edit profile",
     "fullNameLabel": "Full name",
     "fullNamePlaceholder": "Enter full name",
-    "avatarUrlLabel": "Avatar URL",
-    "avatarUrlPlaceholder": "https://...",
-    "avatarHint": "Enter an avatar image URL below",
-    "accountInfoTitle": "Account information",
+    "avatarHint": "Tap photo to change",
+    "avatarPickerTitle": "Change avatar",
+    "avatarPickerLibrary": "Choose from library",
+    "avatarPickerCancel": "Cancel",
+    "avatarUploadError": "Could not upload image. Please try again.",
+    "accountInfoTitle": "ACCOUNT INFORMATION",
     "saveButton": "Save",
     "validationTitle": "Notice",
     "validationNameEmpty": "Name cannot be empty.",
     "errorTitle": "Error",
-    "errorMessage": "Unable to update profile. Please try again."
+    "errorMessage": "Unable to update profile. Please try again.",
+    "toastSuccess": "Changes saved 💚",
+    "dangerZoneTitle": "DANGER ZONE",
+    "deleteAccount": "Delete account",
+    "deleteAccountConfirmTitle": "Delete account?",
+    "deleteAccountConfirmMessage": "This action cannot be undone. All your data will be permanently deleted.",
+    "deleteAccountCancel": "Cancel",
+    "deleteAccountConfirm": "Delete",
+    "phoneLabel": "Phone number",
+    "dobLabel": "Date of birth",
+    "readonlyFieldNote": "Cannot be edited"
   },
   "home": {
     "overview": {
@@ -458,11 +470,34 @@
     "emailLabel": "Email",
     "roleLabel": "Role",
     "logoutButton": "Logout",
-    "logoutConfirmTitle": "Confirm Logout",
-    "logoutConfirmMessage": "Are you sure you want to logout?",
+    "logoutConfirmTitle": "Log out?",
+    "logoutConfirmMessage": "See you soon 💚",
     "logoutConfirmCancel": "Cancel",
     "logoutConfirmAction": "Logout",
-    "errorLoadingProfile": "Error loading profile"
+    "errorLoadingProfile": "Error loading profile",
+    "greeting": "Hey there 💚",
+    "statsStreak": "Journal streak",
+    "statsAiSessions": "AI sessions",
+    "statsMember": "Member since",
+    "sectionAccount": "ACCOUNT",
+    "sectionSettings": "SETTINGS",
+    "sectionSupport": "SUPPORT",
+    "menuPersonalInfo": "Personal info",
+    "menuPersonalInfoSub": "Name, avatar, email",
+    "menuNotifications": "Notifications",
+    "menuNotificationsSub": "Journal, sleep & meal reminders",
+    "menuPrivacy": "Privacy & data",
+    "menuPrivacySub": "Who can view your journal",
+    "menuLanguage": "Language",
+    "menuTheme": "Appearance",
+    "menuThemeSub": "Light / Dark / System",
+    "menuHelp": "Help",
+    "menuHelpSub": "Frequently asked questions",
+    "menuContact": "Contact us",
+    "menuContactSub": "Send feedback to the team",
+    "menuAbout": "About uMatter",
+    "menuAboutSub": "Version 1.0.0",
+    "appVersionFooter": "uMatter v1.0.0 · Made with 💚"
   },
   "matching": {
     "submitError": "Unable to submit data. Please try again.",
@@ -534,6 +569,33 @@
     "customInput": {
       "showPassword": "Show password",
       "hidePassword": "Hide password"
+    }
+  },
+  "chat": {
+    "overview": {
+      "headerTitle": "Soul Companion",
+      "headerSubtitle": "AI · Always here to listen 💚",
+      "heroTitle": "Talk to AI",
+      "heroSubtitle": "I'm always here to listen 💚",
+      "heroCTA": "Start a new conversation",
+      "historyTitle": "Conversation history",
+      "emptyText": "No conversations yet.\nI'm ready to listen when you need me 💚",
+      "loading": "Loading..."
+    },
+    "room": {
+      "botName": "Soul Companion",
+      "botStatus": "online",
+      "inputPlaceholder": "Share your thoughts...",
+      "loadingHistory": "Loading chat history...",
+      "crisisMessage": "I'm worried about you. If you need help, please call:",
+      "crisisPhone": "1800 599 920",
+      "quickReply1": "I'm okay 😊",
+      "quickReply2": "Feeling a bit sad",
+      "quickReply3": "Feeling anxious",
+      "actionCopy": "Copy",
+      "actionReport": "Report",
+      "actionCancel": "Cancel",
+      "actionTitle": "Message"
     }
   }
 }

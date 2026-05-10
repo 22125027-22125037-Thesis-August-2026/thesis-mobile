@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { COLORS, SPACING } from '@/theme';
+import AppText from '@/components/AppText';
+import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 import { ChatSessionOverview } from '@/types';
 import { formatSessionDate, getEmotionColor } from '@/utils';
 
@@ -10,77 +11,111 @@ interface TherapySessionCardProps {
   onPress: (sessionId: string) => void;
 }
 
-const TherapySessionCard: React.FC<TherapySessionCardProps> = ({
-  session,
-  onPress,
-}) => {
+const EMOTION_ICON: Record<string, string> = {
+  happy: 'emoticon-happy-outline',
+  sad: 'emoticon-sad-outline',
+  anxious: 'emoticon-confused-outline',
+  angry: 'emoticon-angry-outline',
+  neutral: 'emoticon-neutral-outline',
+};
+
+const TherapySessionCard: React.FC<TherapySessionCardProps> = ({ session, onPress }) => {
+  const emotionKey = (session.emotion ?? 'neutral').toLowerCase();
+  const iconName = EMOTION_ICON[emotionKey] ?? 'emoticon-neutral-outline';
+  const emotionColor = getEmotionColor(session.emotion);
+
   return (
     <Pressable
-      style={styles.cardContainer}
-      onPress={() => onPress(session.sessionId)}
-    >
-      <View
-        style={[
-          styles.colorBar,
-          { backgroundColor: getEmotionColor(session.emotion) },
-        ]}
-      />
-      <View style={styles.cardContent}>
-        <Text style={styles.dateText}>{formatSessionDate(session.updatedAt)}</Text>
-        <Text style={styles.previewText} numberOfLines={1}>
-          {session.preview}
-        </Text>
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => onPress(session.sessionId)}>
+      {/* Emotion icon */}
+      <View style={[styles.iconContainer, { backgroundColor: emotionColor + '22' }]}>
+        <MaterialCommunityIcons name={iconName} size={22} color={emotionColor} />
       </View>
 
-      <Pressable
-        style={styles.moreButton}
-        onPress={() => console.log('Open Menu', session.sessionId)}
-      >
-        <MaterialCommunityIcons
-          name="dots-vertical"
-          size={20}
-          color={COLORS.textSecondary}
-        />
-      </Pressable>
+      {/* Content */}
+      <View style={styles.content}>
+        <View style={styles.topRow}>
+          <AppText style={styles.sessionTitle} numberOfLines={1}>
+            {session.preview ?? 'Cuộc trò chuyện'}
+          </AppText>
+          <AppText style={styles.dateText}>
+            {formatSessionDate(session.updatedAt)}
+          </AppText>
+        </View>
+        <AppText style={styles.previewText} numberOfLines={1}>
+          {session.preview}
+        </AppText>
+      </View>
+
+      {/* Chevron */}
+      <MaterialCommunityIcons
+        name="chevron-right"
+        size={18}
+        color={COLORS.textTertiary}
+        style={styles.chevron}
+      />
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  cardContainer: {
+  card: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
-    borderRadius: 16,
-    marginBottom: SPACING.md,
     alignItems: 'center',
+    backgroundColor: COLORS.surfaceRaised,
+    borderRadius: BORDER_RADIUS.xxl,
+    marginBottom: SPACING.sm,
+    padding: 14,
     shadowColor: COLORS.shadowBase,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
     elevation: 2,
-    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
   },
-  colorBar: {
-    width: 6,
-    height: '100%',
+  cardPressed: {
+    opacity: 0.8,
   },
-  cardContent: {
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: BORDER_RADIUS.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: SPACING.sm,
+    flexShrink: 0,
+  },
+  content: {
     flex: 1,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.md,
+    gap: 3,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: SPACING.xs,
+  },
+  sessionTitle: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    flex: 1,
   },
   dateText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginBottom: 4,
+    fontSize: 11,
+    color: COLORS.textTertiary,
+    flexShrink: 0,
   },
   previewText: {
-    fontSize: 14,
-    color: COLORS.textPrimary,
-    fontWeight: '500',
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.textSecondary,
+    lineHeight: 17,
   },
-  moreButton: {
-    padding: SPACING.md,
+  chevron: {
+    marginLeft: SPACING.xs,
+    flexShrink: 0,
   },
 });
 

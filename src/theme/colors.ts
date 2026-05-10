@@ -163,8 +163,6 @@ export const COLORS = {
   overlayDark14: 'rgba(0, 0, 0, 0.14)',
 
   // Misc
-  chatbotDark: '#1A0F06',
-  chatbotShadow: '#1C1008',
   shadowBase: '#000000',
   emotionSad: '#FB923C',
   emotionHappy: '#84CC16',

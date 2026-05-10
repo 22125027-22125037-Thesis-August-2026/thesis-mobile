@@ -35,7 +35,7 @@ interface AuthContextType {
   login: (email: string, pass: string) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => void;
-  updateProfile: (data: { fullName?: string; avatarUrl?: string }) => Promise<void>;
+  updateProfile: (data: { fullName?: string; avatarUrl?: string; phoneNumber?: string }) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateProfile = async (data: { fullName?: string; avatarUrl?: string }) => {
+  const updateProfile = async (data: { fullName?: string; avatarUrl?: string; phoneNumber?: string }) => {
     try {
       await axiosClient.patch(`${AUTH_BASE_PATH}/profile`, data);
       const userRes = await axiosClient.get<User | ApiResponse<User>>(`${AUTH_BASE_PATH}/me`);

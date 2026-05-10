@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     backgroundColor: COLORS.background,
-    paddingBottom: SPACING.xxl + 80,
+    paddingBottom: SPACING.xxl,
   },
 
   /* ==== HERO HEADER ==== */
@@ -223,10 +223,15 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.primaryDark,
+    backgroundColor: COLORS.primary,
     borderRadius: BORDER_RADIUS.xl,
     paddingVertical: 13,
     paddingHorizontal: SPACING.xl,
+    shadowColor: COLORS.primaryAlpha35,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 3,
   },
   companionCTATxt: {
     fontSize: FONT_SIZES.sm,

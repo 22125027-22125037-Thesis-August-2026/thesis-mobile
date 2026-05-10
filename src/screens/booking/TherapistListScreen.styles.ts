@@ -70,7 +70,7 @@ export default StyleSheet.create({
   },
   list: {
     paddingHorizontal: SPACING.screenHorizontal,
-    paddingBottom: SPACING.xxl + 40,
+    paddingBottom: SPACING.xl,
     paddingTop: SPACING.sm,
   },
   card: {

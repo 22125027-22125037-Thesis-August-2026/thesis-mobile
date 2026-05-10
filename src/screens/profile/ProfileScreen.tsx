@@ -1,15 +1,24 @@
 import React, { useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Image, Alert, ScrollView, Pressable } from 'react-native';
+import {
+  View,
+  Image,
+  Alert,
+  ScrollView,
+  Pressable,
+  RefreshControl,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { AppText, CustomButton } from '@/components';
+import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { styles } from './ProfileScreen.styles';
+
+const PLACEHOLDER = require('../../assets/booking/placeholder.png');
 
 const ProfileScreen: React.FC = () => {
   const authContext = useContext(AuthContext);
@@ -18,142 +27,200 @@ const ProfileScreen: React.FC = () => {
 
   if (!authContext) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <AppText style={styles.errorText}>
-            {t('profile.errorLoadingProfile')}
-          </AppText>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <AppText>{t('profile.errorLoadingProfile')}</AppText>
         </View>
       </SafeAreaView>
     );
   }
 
   const { userInfo, logout } = authContext;
+  const fullName = userInfo?.fullName || 'Bạn';
+  const email = userInfo?.email ?? '';
+  const role = userInfo?.role ?? '';
+  const avatarSource = userInfo?.avatarUrl
+    ? { uri: userInfo.avatarUrl }
+    : PLACEHOLDER;
 
   const handleLogout = () => {
     Alert.alert(
       t('profile.logoutConfirmTitle'),
       t('profile.logoutConfirmMessage'),
       [
-        {
-          text: t('profile.logoutConfirmCancel'),
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: t('profile.logoutConfirmAction'),
-          onPress: () => {
-            logout();
-          },
-          style: 'destructive',
-        },
+        { text: t('profile.logoutConfirmCancel'), style: 'cancel' },
+        { text: t('profile.logoutConfirmAction'), onPress: logout, style: 'destructive' },
       ],
     );
   };
 
-  const avatarUrl = userInfo?.avatarUrl ?? 'https://via.placeholder.com/100';
-  const fullName = userInfo?.fullName ?? 'User';
-  const email = userInfo?.email ?? 'user@example.com';
+  type MenuItem = {
+    icon: string;
+    title: string;
+    subtitle: string;
+    onPress?: () => void;
+  };
+
+  const wip = () =>
+    Alert.alert('Sắp ra mắt', 'Tính năng này đang được phát triển 💚');
+
+  const accountMenuItems: MenuItem[] = [
+    {
+      icon: 'bell-outline',
+      title: t('profile.menuNotifications'),
+      subtitle: t('profile.menuNotificationsSub'),
+      onPress: wip,
+    },
+    {
+      icon: 'shield-check-outline',
+      title: t('profile.menuPrivacy'),
+      subtitle: t('profile.menuPrivacySub'),
+      onPress: wip,
+    },
+    {
+      icon: 'translate',
+      title: t('profile.menuLanguage'),
+      subtitle: 'Tiếng Việt',
+      onPress: wip,
+    },
+    {
+      icon: 'theme-light-dark',
+      title: t('profile.menuTheme'),
+      subtitle: t('profile.menuThemeSub'),
+      onPress: wip,
+    },
+  ];
+
+  const supportMenuItems: MenuItem[] = [
+    {
+      icon: 'lifebuoy',
+      title: t('profile.menuHelp'),
+      subtitle: t('profile.menuHelpSub'),
+      onPress: wip,
+    },
+    {
+      icon: 'email-outline',
+      title: t('profile.menuContact'),
+      subtitle: t('profile.menuContactSub'),
+      onPress: wip,
+    },
+    {
+      icon: 'information-outline',
+      title: t('profile.menuAbout'),
+      subtitle: t('profile.menuAboutSub'),
+      onPress: wip,
+    },
+  ];
+
+  const renderMenuSection = (items: MenuItem[]) => (
+    <View style={styles.menuCard}>
+      {items.map((item, index) => (
+        <Pressable
+          key={item.title}
+          style={({ pressed }) => [
+            styles.menuRow,
+            index === items.length - 1 && styles.menuRowLast,
+            pressed && { opacity: 0.7 },
+          ]}
+          onPress={item.onPress}
+        >
+          <View style={styles.menuIconContainer}>
+            <MaterialCommunityIcons name={item.icon} size={22} color={COLORS.primary} />
+          </View>
+          <View style={styles.menuTextBlock}>
+            <AppText style={styles.menuTitle}>{item.title}</AppText>
+            <AppText style={styles.menuSubtitle}>{item.subtitle}</AppText>
+          </View>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={18}
+            color={COLORS.textTertiary}
+            style={styles.menuChevron}
+          />
+        </Pressable>
+      ))}
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => { /* TODO: wire refreshUser */ }}
+            tintColor={COLORS.primary}
+            colors={[COLORS.primary]}
+          />
+        }
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <AppText style={styles.headerTitle}>
-            {t('profile.headerTitle')}
-          </AppText>
+        {/* ===== HERO HEADER ===== */}
+        <View style={styles.heroHeader}>
+          <View style={styles.heroCircleLarge} />
+          <View style={styles.heroCircleSmall} />
+          <AppText style={styles.heroGreeting}>{t('profile.greeting')}</AppText>
+          <AppText style={styles.heroTitle}>{t('profile.headerTitle')}</AppText>
         </View>
 
-        {/* Avatar & User Info */}
-        <View style={styles.userInfoCard}>
-          <Image
-            source={{ uri: avatarUrl }}
-            style={styles.avatar}
-            defaultSource={require('../../assets/booking/placeholder.png')}
-          />
-          <AppText style={styles.fullName}>{fullName}</AppText>
-          <AppText style={styles.email}>{email}</AppText>
+        {/* ===== AVATAR CARD ===== */}
+        <View style={styles.avatarCard}>
+          <View style={styles.avatarWrapper}>
+            <Image
+              source={avatarSource}
+              style={styles.avatar}
+              defaultSource={PLACEHOLDER}
+            />
+          </View>
+
+          <AppText style={styles.userName}>{fullName}</AppText>
+          {!!email && <AppText style={styles.userEmail}>{email}</AppText>}
+          {!!role && (
+            <View style={styles.roleChip}>
+              <AppText style={styles.roleChipText}>🌱 {role}</AppText>
+            </View>
+          )}
+
+          {/* CTA */}
+          <View style={styles.ctaWrapper}>
+            <Pressable
+              style={({ pressed }) => [styles.ctaPill, pressed && { opacity: 0.85 }]}
+              onPress={() => navigation.navigate('ProfileEdit')}
+            >
+              <Feather name="edit-2" size={14} color={COLORS.white} />
+              <AppText style={styles.ctaPillText}>{t('profile.menuPersonalInfo')}</AppText>
+            </Pressable>
+          </View>
+        </View>
+
+        {/* ===== SETTINGS SECTION ===== */}
+        <View style={styles.sectionBlock}>
+          <AppText style={styles.sectionLabel}>{t('profile.sectionSettings')}</AppText>
+          {renderMenuSection(accountMenuItems)}
+        </View>
+
+        {/* ===== SUPPORT SECTION ===== */}
+        <View style={styles.sectionBlock}>
+          <AppText style={styles.sectionLabel}>{t('profile.sectionSupport')}</AppText>
+          {renderMenuSection(supportMenuItems)}
+        </View>
+
+        {/* ===== LOGOUT ===== */}
+        <View style={styles.logoutBlock}>
           <Pressable
-            style={styles.editProfileBtn}
-            onPress={() => navigation.navigate('ProfileEdit')}
+            style={({ pressed }) => [styles.logoutRow, pressed && { opacity: 0.7 }]}
+            onPress={handleLogout}
           >
-            <Feather name="edit-2" size={14} color={COLORS.primary} />
-            <AppText style={styles.editProfileBtnText}>Chỉnh sửa hồ sơ</AppText>
+            <Feather name="log-out" size={18} color={COLORS.accentNegative} />
+            <AppText style={styles.logoutText}>{t('profile.logoutButton')}</AppText>
           </Pressable>
         </View>
 
-        {/* User Details */}
-        <View style={styles.section}>
-          <AppText style={styles.sectionTitle}>
-            {t('profile.personalInfoTitle')}
-          </AppText>
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailIconContainer}>
-              <MaterialCommunityIcons
-                name="account"
-                size={24}
-                color={COLORS.primary}
-              />
-            </View>
-            <View style={styles.detailContent}>
-              <AppText style={styles.detailLabel}>
-                {t('profile.fullNameLabel')}
-              </AppText>
-              <AppText style={styles.detailValue}>{fullName}</AppText>
-            </View>
-          </View>
-
-          <View style={styles.divider} />
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailIconContainer}>
-              <Feather name="mail" size={24} color={COLORS.primary} />
-            </View>
-            <View style={styles.detailContent}>
-              <AppText style={styles.detailLabel}>
-                {t('profile.emailLabel')}
-              </AppText>
-              <AppText style={styles.detailValue}>{email}</AppText>
-            </View>
-          </View>
-
-          {userInfo?.role && (
-            <>
-              <View style={styles.divider} />
-              <View style={styles.detailRow}>
-                <View style={styles.detailIconContainer}>
-                  <MaterialCommunityIcons
-                    name="briefcase"
-                    size={24}
-                    color={COLORS.primary}
-                  />
-                </View>
-                <View style={styles.detailContent}>
-                  <AppText style={styles.detailLabel}>
-                    {t('profile.roleLabel')}
-                  </AppText>
-                  <AppText style={styles.detailValue}>{userInfo.role}</AppText>
-                </View>
-              </View>
-            </>
-          )}
+        {/* ===== FOOTER ===== */}
+        <View style={styles.footer}>
+          <AppText style={styles.footerText}>{t('profile.appVersionFooter')}</AppText>
         </View>
-
-        {/* Logout Button */}
-        <View style={styles.section}>
-          <CustomButton
-            onPress={handleLogout}
-            title={t('profile.logoutButton')}
-          />
-        </View>
-
-        {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,148 +1,216 @@
 // src/screens/chat/ChatScreen.tsx
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  View, FlatList, TextInput, Pressable, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+  View,
+  FlatList,
+  TextInput,
+  Pressable,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ActionSheetIOS,
+  Alert,
+  Animated,
+  Clipboard,
+} from 'react-native';
 import { AppText } from '@/components';
-import { NavigationProp, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import {
+  NavigationProp,
+  useNavigation,
+  useRoute,
+  RouteProp,
+  CommonActions,
+} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import { useTranslation } from 'react-i18next';
 import { aiApi } from '@/api';
 import {
-  BOT_NAME,
-  BOT_STATUS,
   CHAT_SENDER,
   ERROR_MESSAGE_TEXT,
   INITIAL_CHAT_MESSAGE,
-  LOADING_HISTORY_TEXT,
 } from '@/constants';
-import { COLORS, SPACING, BORDER_RADIUS, FONTS } from '@/theme';
+import { COLORS } from '@/theme';
 import { Message, BackendChatMessage } from '@/types';
 import { RootStackParamList } from '@/navigation';
+import { styles } from './ChatScreen.styles';
 
 type NavigationPropType = NavigationProp<RootStackParamList>;
 
-const INITIAL_MESSAGE: Message = {
+const makeInitialMessage = (): Message => ({
   id: '1',
   text: INITIAL_CHAT_MESSAGE,
   isUser: false,
   timestamp: new Date(),
+});
+
+// ─── Animated blinking dot ───────────────────────────────────────────────────
+const BlinkingDot: React.FC = () => {
+  const opacity = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 0.2, duration: 700, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true }),
+      ]),
+    ).start();
+  }, [opacity]);
+  return <Animated.View style={[styles.onlineDot, { opacity }]} />;
 };
 
+// ─── Animated typing dots ────────────────────────────────────────────────────
+const TypingDots: React.FC = () => {
+  const dot0 = useRef(new Animated.Value(0)).current;
+  const dot1 = useRef(new Animated.Value(0)).current;
+  const dot2 = useRef(new Animated.Value(0)).current;
+  const dots = [dot0, dot1, dot2];
+
+  useEffect(() => {
+    const animations = dots.map((anim, i) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(i * 150),
+          Animated.timing(anim, { toValue: -6, duration: 300, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0, duration: 300, useNativeDriver: true }),
+          Animated.delay(450),
+        ]),
+      ),
+    );
+    animations.forEach(a => a.start());
+    return () => animations.forEach(a => a.stop());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <View style={styles.typingIndicator}>
+      {dots.map((anim, i) => (
+        <Animated.View
+          key={i}
+          style={[styles.typingDot, { transform: [{ translateY: anim }] }]}
+        />
+      ))}
+    </View>
+  );
+};
+
+// ─── Main screen ─────────────────────────────────────────────────────────────
 const ChatScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
   const route = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
+  const { t } = useTranslation();
   const incomingSessionId = route.params?.sessionId || null;
-  
+
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(incomingSessionId);
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<Message[]>([makeInitialMessage()]);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>('');
   const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [crisisDetected, setCrisisDetected] = useState<boolean>(false);
+  const [showQuickReplies, setShowQuickReplies] = useState<boolean>(true);
   const flatListRef = useRef<FlatList>(null);
 
-  // Fetch chat history when component mounts or sessionId changes
+  const quickReplies = [
+    t('chat.room.quickReply1'),
+    t('chat.room.quickReply2'),
+    t('chat.room.quickReply3'),
+  ];
+
   useEffect(() => {
     const fetchHistory = async () => {
       if (incomingSessionId) {
         setIsLoadingHistory(true);
+        setShowQuickReplies(false);
         try {
           const backendMessages: BackendChatMessage[] = await aiApi.getChatHistory(
             incomingSessionId,
           );
-
-          // Map BackendChatMessage to Message format
-          // Backend returns in ASCENDING order (oldest first), so we reverse for inverted FlatList
           const mappedMessages: Message[] = backendMessages
-            .map((msg) => ({
+            .map(msg => ({
               id: msg.messageId,
               text: msg.content,
               isUser: msg.sender === CHAT_SENDER.USER,
               timestamp: new Date(msg.sentAt),
             }))
-            .reverse(); // Reverse because FlatList is inverted and backend sends oldest first
-
+            .reverse();
           setMessages(mappedMessages);
           setCurrentSessionId(incomingSessionId);
         } catch (error) {
           console.error('Error loading chat history:', error);
-          // Fallback to initial message on error
-          setMessages([INITIAL_MESSAGE]);
+          setMessages([makeInitialMessage()]);
         } finally {
           setIsLoadingHistory(false);
         }
       } else {
-        // New chat session
-        setMessages([INITIAL_MESSAGE]);
+        setMessages([makeInitialMessage()]);
         setCurrentSessionId(null);
+        setShowQuickReplies(true);
       }
     };
-
     fetchHistory();
   }, [incomingSessionId]);
 
-  // Scroll to bottom on new messages
-  const scrollToBottom = useCallback(() => {
+  const scrollToTop = useCallback(() => {
     if (flatListRef.current && messages.length > 0) {
-      flatListRef.current.scrollToIndex({
-        index: 0,
-        animated: true,
-      });
+      flatListRef.current.scrollToIndex({ index: 0, animated: true });
     }
   }, [messages.length]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
+    scrollToTop();
+  }, [messages, scrollToTop]);
 
-  const handleSendMessage = useCallback(async (): Promise<void> => {
-    if (!inputText.trim()) return;
+  // Always navigate explicitly to AIChatTab — never relies on back stack
+  const handleGoBack = useCallback(() => {
+    navigation.dispatch(
+      CommonActions.navigate({ name: 'MainTabs', params: { screen: 'AIChatTab' } }),
+    );
+  }, [navigation]);
 
-    // Create user message
+  const sendText = useCallback(async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    setShowQuickReplies(false);
     const userMessage: Message = {
       id: `msg_${Date.now()}`,
-      text: inputText.trim(),
+      text: trimmed,
       isUser: true,
       timestamp: new Date(),
     };
-
-    // Add user message to UI immediately
     setMessages(prev => [userMessage, ...prev]);
     setInputText('');
     setIsTyping(true);
 
     try {
-      // Call backend API with session_id (ping-pong logic)
       const response = await aiApi.sendMessage({
         sessionId: currentSessionId ?? undefined,
-        content: userMessage.text,
+        content: trimmed,
       });
 
-      // If this is the first message (no session established), capture session_id
       if (currentSessionId === null && response.sessionId) {
         setCurrentSessionId(response.sessionId);
       }
 
-      // Create AI message
       const aiMessage: Message = {
         id: `msg_${Date.now() + 1}`,
         text: response.content,
         isUser: false,
         timestamp: new Date(),
       };
-
-      // Add AI message to UI
       setMessages(prev => [aiMessage, ...prev]);
 
-      // Handle crisis detection if needed (you can add notifications here)
       if (response.crisisDetected) {
-        console.warn('⚠️ Crisis detected:', response.sentimentDetected);
-        // TODO: Show crisis alert or notification
+        setCrisisDetected(true);
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      // TODO: Show error toast/alert to user
       const errorMessage: Message = {
         id: `msg_${Date.now() + 2}`,
         text: ERROR_MESSAGE_TEXT,
@@ -153,122 +221,148 @@ const ChatScreen: React.FC = () => {
     } finally {
       setIsTyping(false);
     }
-  }, [inputText, currentSessionId]);
+  }, [currentSessionId]);
 
-  const renderMessage = useCallback(({ item }: { item: Message }) => {
-    const isUser = item.isUser;
+  const handleSendMessage = useCallback(() => {
+    sendText(inputText);
+  }, [inputText, sendText]);
 
-    return (
-      <View
-        style={[
-          styles.messageContainer,
-          isUser ? styles.userMessageContainer : styles.aiMessageContainer,
-        ]}>
-        {!isUser && (
-          <View style={styles.avatarContainer}>
-            <MaterialCommunityIcons
-              name="robot"
-              size={24}
-              color={COLORS.textPrimary}
-            />
-          </View>
-        )}
+  const handleQuickReply = (reply: string) => sendText(reply);
 
-        <View
-          style={[
-            styles.messageBubble,
-            isUser ? styles.userBubble : styles.aiBubble,
-          ]}>
-          <AppText
+  const handleLongPress = (item: Message) => {
+    const options = [
+      t('chat.room.actionCopy'),
+      t('chat.room.actionReport'),
+      t('chat.room.actionCancel'),
+    ];
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        { options, cancelButtonIndex: 2, destructiveButtonIndex: 1 },
+        buttonIndex => {
+          if (buttonIndex === 0) Clipboard.setString(item.text);
+        },
+      );
+    } else {
+      Alert.alert(t('chat.room.actionTitle'), undefined, [
+        { text: options[0], onPress: () => Clipboard.setString(item.text) },
+        { text: options[1], style: 'destructive' },
+        { text: options[2], style: 'cancel' },
+      ]);
+    }
+  };
+
+  const renderMessage = useCallback(
+    ({ item, index }: { item: Message; index: number }) => {
+      const isUser = item.isUser;
+      const prevItem = index < messages.length - 1 ? messages[index + 1] : null;
+      const showAvatar = !isUser && (prevItem === null || prevItem.isUser);
+
+      return (
+        <>
+          <Pressable
+            onLongPress={() => handleLongPress(item)}
             style={[
-              styles.messageText,
-              isUser ? styles.userMessageText : styles.aiMessageText,
+              styles.messageContainer,
+              isUser ? styles.userMessageContainer : styles.aiMessageContainer,
             ]}>
-            {item.text}
-          </AppText>
-          <AppText
-            style={[
-              styles.timestamp,
-              isUser ? styles.userTimestamp : styles.aiTimestamp,
-            ]}>
-            {item.timestamp.toLocaleTimeString('vi-VN', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </AppText>
-        </View>
+            {!isUser && (
+              <View style={[styles.avatarSlot, showAvatar && {}]}>
+                {showAvatar && (
+                  <View style={styles.avatarContainer}>
+                    <MaterialCommunityIcons
+                      name="robot-happy-outline"
+                      size={16}
+                      color={COLORS.white}
+                    />
+                  </View>
+                )}
+              </View>
+            )}
 
-        {isUser && <View style={styles.userAvatarPlaceholder} />}
-      </View>
-    );
-  }, []);
+            <View style={[styles.messageBubble, isUser ? styles.userBubble : styles.aiBubble]}>
+              <AppText
+                style={[
+                  styles.messageText,
+                  isUser ? styles.userMessageText : styles.aiMessageText,
+                ]}>
+                {item.text}
+              </AppText>
+              <AppText
+                style={[
+                  styles.timestamp,
+                  isUser ? styles.userTimestamp : styles.aiTimestamp,
+                ]}>
+                {item.timestamp.toLocaleTimeString('vi-VN', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </AppText>
+            </View>
 
-  const renderTypingIndicator = (): React.ReactElement => {
-    return (
-      <View style={styles.messageContainer}>
+            {isUser && <View style={styles.userAvatarPlaceholder} />}
+          </Pressable>
+
+          {!isUser && index === 0 && showQuickReplies && (
+            <View style={styles.quickRepliesRow}>
+              {quickReplies.map(reply => (
+                <Pressable
+                  key={reply}
+                  style={({ pressed }) => [
+                    styles.quickReplyChip,
+                    pressed && { opacity: 0.7 },
+                  ]}
+                  onPress={() => handleQuickReply(reply)}>
+                  <AppText style={styles.quickReplyText}>{reply}</AppText>
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </>
+      );
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [messages, showQuickReplies, t],
+  );
+
+  const renderTypingIndicator = (): React.ReactElement => (
+    <View style={[styles.messageContainer, styles.aiMessageContainer]}>
+      <View style={styles.avatarSlot}>
         <View style={styles.avatarContainer}>
-          <MaterialCommunityIcons
-            name="robot"
-            size={24}
-            color={COLORS.textPrimary}
-          />
-        </View>
-        <View style={[styles.messageBubble, styles.aiBubble]}>
-          <View style={styles.typingIndicator}>
-            <View style={styles.typingDot} />
-            <View style={styles.typingDot} />
-            <View style={styles.typingDot} />
-          </View>
+          <MaterialCommunityIcons name="robot-happy-outline" size={16} color={COLORS.white} />
         </View>
       </View>
-    );
-  };
+      <View style={[styles.messageBubble, styles.aiBubble, styles.typingBubble]}>
+        <TypingDots />
+      </View>
+    </View>
+  );
 
-  const handleGoBack = (): void => {
-    navigation.goBack();
-  };
-
-  const handleMenuPress = (): void => {
-    // TODO: Implement menu action
-    console.log('Menu pressed');
-  };
+  const typingRow: Message = { id: 'typing', text: '', isUser: false, timestamp: new Date() };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
+        style={styles.container}>
+
         {/* ===== HEADER ===== */}
         <View style={styles.header}>
           <Pressable style={styles.backButton} onPress={handleGoBack}>
-            <Feather name="chevron-left" size={24} color={COLORS.textPrimary} />
+            <Feather name="chevron-left" size={22} color={COLORS.white} />
           </Pressable>
 
           <View style={styles.headerCenter}>
             <View style={styles.botAvatarSmall}>
-              <MaterialCommunityIcons
-                name="robot"
-                size={20}
-                color={COLORS.primary}
-              />
+              <MaterialCommunityIcons name="robot-happy-outline" size={20} color={COLORS.white} />
             </View>
             <View style={styles.headerTextContainer}>
-              <AppText style={styles.botName}>{BOT_NAME}</AppText>
+              <AppText style={styles.botName}>{t('chat.room.botName')}</AppText>
               <View style={styles.onlineIndicator}>
-                <View style={styles.onlineDot} />
-                <AppText style={styles.onlineText}>{BOT_STATUS}</AppText>
+                <BlinkingDot />
+                <AppText style={styles.onlineText}>{t('chat.room.botStatus')}</AppText>
               </View>
             </View>
           </View>
-
-          <Pressable style={styles.menuButton} onPress={handleMenuPress}>
-            <MaterialCommunityIcons
-              name="dots-vertical"
-              size={24}
-              color={COLORS.textPrimary}
-            />
-          </Pressable>
         </View>
 
         {/* ===== CHAT AREA ===== */}
@@ -276,19 +370,17 @@ const ChatScreen: React.FC = () => {
           {isLoadingHistory ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={COLORS.primary} />
-              <AppText style={styles.loadingText}>{LOADING_HISTORY_TEXT}</AppText>
+              <AppText style={styles.loadingText}>{t('chat.room.loadingHistory')}</AppText>
             </View>
           ) : (
             <FlatList
               ref={flatListRef}
-              data={isTyping ? [{ id: 'typing' }, ...messages] : messages}
-              renderItem={(props) => {
-                if (props.item.id === 'typing') {
-                  return renderTypingIndicator();
-                }
+              data={isTyping ? [typingRow, ...messages] : messages}
+              renderItem={props => {
+                if (props.item.id === 'typing') return renderTypingIndicator();
                 return renderMessage(props);
               }}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               inverted
               scrollEventThrottle={16}
               contentContainerStyle={styles.flatListContent}
@@ -297,258 +389,54 @@ const ChatScreen: React.FC = () => {
           )}
         </View>
 
-        {/* ===== INPUT TOOLBAR ===== */}
-        <View style={styles.inputToolbar}>
-          <Pressable style={styles.iconButton}>
+        {/* ===== CRISIS BANNER ===== */}
+        {crisisDetected && (
+          <View style={styles.crisisBanner}>
             <MaterialCommunityIcons
-              name="microphone"
-              size={24}
-              color={COLORS.textSecondary}
+              name="alert-circle-outline"
+              size={18}
+              color={COLORS.white}
+              style={{ marginRight: 8 }}
             />
-          </Pressable>
+            <AppText style={styles.crisisText}>
+              {t('chat.room.crisisMessage')}{' '}
+              <AppText style={styles.crisisLink}>{t('chat.room.crisisPhone')}</AppText>
+            </AppText>
+            <Pressable onPress={() => setCrisisDetected(false)} style={styles.crisisDismiss}>
+              <Feather name="x" size={16} color={COLORS.white} />
+            </Pressable>
+          </View>
+        )}
 
-          <TextInput
-            style={[styles.textInput, { fontFamily: FONTS.regular }]}
-            placeholder="Aa"
-            placeholderTextColor={COLORS.placeholder}
-            value={inputText}
-            onChangeText={setInputText}
-            multiline={true}
-            maxLength={500}
-            editable={!isTyping}
-          />
-
-          <Pressable style={styles.iconButton}>
-            <MaterialCommunityIcons
-              name="paperclip"
-              size={24}
-              color={COLORS.textSecondary}
+        {/* ===== INPUT BAR ===== */}
+        <SafeAreaView edges={['bottom']} style={styles.inputSafeArea}>
+          <View style={styles.inputToolbar}>
+            <TextInput
+              style={styles.textInput}
+              placeholder={t('chat.room.inputPlaceholder')}
+              placeholderTextColor={COLORS.textTertiary}
+              value={inputText}
+              onChangeText={setInputText}
+              multiline
+              maxLength={500}
+              editable={!isTyping}
             />
-          </Pressable>
 
-          <Pressable
-            style={[
-              styles.sendButton,
-              (!inputText.trim() || isTyping) && styles.sendButtonDisabled,
-            ]}
-            onPress={handleSendMessage}
-            disabled={!inputText.trim() || isTyping}>
-            <MaterialCommunityIcons
-              name="send"
-              size={20}
-              color={
-                !inputText.trim() || isTyping
-                  ? COLORS.placeholder
-                  : COLORS.primary
-              }
-            />
-          </Pressable>
-        </View>
+            <Pressable
+              style={[
+                styles.sendButton,
+                (!inputText.trim() || isTyping) && styles.sendButtonDisabled,
+              ]}
+              onPress={handleSendMessage}
+              disabled={!inputText.trim() || isTyping}>
+              <MaterialCommunityIcons name="arrow-up" size={22} color={COLORS.white} />
+            </Pressable>
+          </View>
+        </SafeAreaView>
+
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.surface,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.surface,
-  },
-  // ===== HEADER STYLES =====
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderSubtle,
-  },
-  backButton: {
-    padding: SPACING.xs,
-    marginRight: SPACING.md,
-  },
-  headerCenter: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  botAvatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.therapyHeroBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: SPACING.md,
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  botName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 2,
-  },
-  onlineIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  onlineDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.primary,
-    marginRight: 4,
-  },
-  onlineText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-  },
-  menuButton: {
-    padding: SPACING.xs,
-    marginLeft: SPACING.md,
-  },
-  // ===== CHAT AREA STYLES =====
-  chatArea: {
-    flex: 1,
-    backgroundColor: COLORS.therapyBackground,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-  },
-  loadingText: {
-    marginTop: SPACING.md,
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  flatListContent: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-  },
-  messageContainer: {
-    flexDirection: 'row',
-    marginBottom: SPACING.md,
-    alignItems: 'flex-end',
-  },
-  userMessageContainer: {
-    justifyContent: 'flex-end',
-  },
-  aiMessageContainer: {
-    justifyContent: 'flex-start',
-  },
-  avatarContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.therapyHeroBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: SPACING.sm,
-    flexShrink: 0,
-  },
-  userAvatarPlaceholder: {
-    width: 32,
-    marginLeft: SPACING.sm,
-    flexShrink: 0,
-  },
-  messageBubble: {
-    maxWidth: '75%',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.lg,
-  },
-  userBubble: {
-    backgroundColor: '#8B6F47',
-    borderBottomRightRadius: 4,
-  },
-  aiBubble: {
-    backgroundColor: COLORS.surface,
-    borderBottomLeftRadius: 4,
-    shadowColor: COLORS.shadowBase,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  messageText: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 4,
-  },
-  userMessageText: {
-    color: COLORS.white,
-    fontWeight: '500',
-  },
-  aiMessageText: {
-    color: COLORS.textPrimary,
-  },
-  timestamp: {
-    fontSize: 11,
-    marginTop: 2,
-  },
-  userTimestamp: {
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  aiTimestamp: {
-    color: COLORS.textSecondary,
-  },
-  typingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 24,
-    justifyContent: 'center',
-  },
-  typingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.textSecondary,
-    marginHorizontal: 3,
-    opacity: 0.6,
-  },
-  // ===== INPUT TOOLBAR STYLES =====
-  inputToolbar: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.surface,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderSubtle,
-    gap: SPACING.sm,
-  },
-  iconButton: {
-    padding: SPACING.xs,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    flex: 1,
-    backgroundColor: COLORS.inputBackground,
-    borderRadius: 24,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    fontSize: 14,
-    color: COLORS.textPrimary,
-    maxHeight: 100,
-  },
-  sendButton: {
-    padding: SPACING.xs,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sendButtonDisabled: {
-    opacity: 0.5,
-  },
-});
 
 export default ChatScreen;

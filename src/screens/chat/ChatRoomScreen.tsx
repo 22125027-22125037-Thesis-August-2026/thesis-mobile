@@ -6,7 +6,7 @@ import { COLORS, SPACING } from '@/theme';
 
 const ChatRoomScreen: React.FC = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
         <AppText style={styles.text}>
           Tính năng Chat Room đang được phát triển

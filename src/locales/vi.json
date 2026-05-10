@@ -388,15 +388,27 @@
     "headerTitle": "Chỉnh sửa hồ sơ",
     "fullNameLabel": "Họ và tên",
     "fullNamePlaceholder": "Nhập họ và tên",
-    "avatarUrlLabel": "URL ảnh đại diện",
-    "avatarUrlPlaceholder": "https://...",
-    "avatarHint": "Nhập URL ảnh đại diện bên dưới",
-    "accountInfoTitle": "Thông tin tài khoản",
+    "avatarHint": "Nhấn vào ảnh để thay đổi",
+    "avatarPickerTitle": "Thay ảnh đại diện",
+    "avatarPickerLibrary": "Chọn từ thư viện",
+    "avatarPickerCancel": "Hủy",
+    "avatarUploadError": "Không thể tải ảnh lên. Vui lòng thử lại.",
+    "accountInfoTitle": "THÔNG TIN TÀI KHOẢN",
     "saveButton": "Lưu",
     "validationTitle": "Thông báo",
     "validationNameEmpty": "Tên không được để trống.",
     "errorTitle": "Lỗi",
-    "errorMessage": "Không thể cập nhật thông tin. Vui lòng thử lại."
+    "errorMessage": "Không thể cập nhật thông tin. Vui lòng thử lại.",
+    "toastSuccess": "Đã lưu thay đổi 💚",
+    "dangerZoneTitle": "VÙNG NGUY HIỂM",
+    "deleteAccount": "Xoá tài khoản",
+    "deleteAccountConfirmTitle": "Xoá tài khoản?",
+    "deleteAccountConfirmMessage": "Hành động này không thể hoàn tác. Tất cả dữ liệu của bạn sẽ bị xoá vĩnh viễn.",
+    "deleteAccountCancel": "Hủy",
+    "deleteAccountConfirm": "Xoá",
+    "phoneLabel": "Số điện thoại",
+    "dobLabel": "Ngày sinh",
+    "readonlyFieldNote": "Không thể chỉnh sửa"
   },
   "home": {
     "overview": {
@@ -458,11 +470,34 @@
     "emailLabel": "Email",
     "roleLabel": "Vai trò",
     "logoutButton": "Đăng xuất",
-    "logoutConfirmTitle": "Xác nhận đăng xuất",
-    "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất?",
+    "logoutConfirmTitle": "Đăng xuất?",
+    "logoutConfirmMessage": "Hẹn gặp lại bạn sớm 💚",
     "logoutConfirmCancel": "Hủy",
     "logoutConfirmAction": "Đăng xuất",
-    "errorLoadingProfile": "Lỗi tải hồ sơ"
+    "errorLoadingProfile": "Lỗi tải hồ sơ",
+    "greeting": "Chào bạn 💚",
+    "statsStreak": "Streak nhật ký",
+    "statsAiSessions": "Phiên AI",
+    "statsMember": "Thành viên từ",
+    "sectionAccount": "TÀI KHOẢN",
+    "sectionSettings": "CÀI ĐẶT",
+    "sectionSupport": "HỖ TRỢ",
+    "menuPersonalInfo": "Thông tin cá nhân",
+    "menuPersonalInfoSub": "Tên, ảnh đại diện, email",
+    "menuNotifications": "Thông báo",
+    "menuNotificationsSub": "Nhắc viết nhật ký, ngủ, ăn",
+    "menuPrivacy": "Quyền riêng tư & dữ liệu",
+    "menuPrivacySub": "Người được xem nhật ký của bạn",
+    "menuLanguage": "Ngôn ngữ",
+    "menuTheme": "Giao diện",
+    "menuThemeSub": "Sáng / Tối / Hệ thống",
+    "menuHelp": "Trợ giúp",
+    "menuHelpSub": "Câu hỏi thường gặp",
+    "menuContact": "Liên hệ",
+    "menuContactSub": "Gửi phản hồi cho team",
+    "menuAbout": "Về uMatter",
+    "menuAboutSub": "Phiên bản 1.0.0",
+    "appVersionFooter": "uMatter v1.0.0 · Made with 💚"
   },
   "matching": {
     "submitError": "Không thể gửi dữ liệu. Vui lòng thử lại.",
@@ -534,6 +569,33 @@
     "customInput": {
       "showPassword": "Hiện mật khẩu",
       "hidePassword": "Ẩn mật khẩu"
+    }
+  },
+  "chat": {
+    "overview": {
+      "headerTitle": "Bạn Tâm Giao",
+      "headerSubtitle": "AI · Luôn ở đây lắng nghe bạn 💚",
+      "heroTitle": "Trò chuyện với AI",
+      "heroSubtitle": "Mình luôn ở đây lắng nghe bạn 💚",
+      "heroCTA": "Bắt đầu tâm sự mới",
+      "historyTitle": "Lịch sử trò chuyện",
+      "emptyText": "Chưa có cuộc trò chuyện nào.\nMình sẵn sàng lắng nghe khi bạn cần 💚",
+      "loading": "Đang tải..."
+    },
+    "room": {
+      "botName": "Bạn Tâm Giao",
+      "botStatus": "đang trực tuyến",
+      "inputPlaceholder": "Tâm sự với mình...",
+      "loadingHistory": "Đang tải lịch sử trò chuyện...",
+      "crisisMessage": "Mình lo cho bạn. Nếu cần, hãy gọi đường dây hỗ trợ:",
+      "crisisPhone": "1800 599 920",
+      "quickReply1": "Mình ổn 😊",
+      "quickReply2": "Buồn một chút",
+      "quickReply3": "Lo lắng quá",
+      "actionCopy": "Sao chép",
+      "actionReport": "Báo cáo",
+      "actionCancel": "Huỷ",
+      "actionTitle": "Tin nhắn"
     }
   }
 }

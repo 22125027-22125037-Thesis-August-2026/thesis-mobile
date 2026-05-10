@@ -65,12 +65,6 @@ const TherapistListScreen = () => {
         <View style={styles.circleLarge} />
         <View style={styles.circleSmall} />
         <View style={styles.headerTopRow}>
-          <Pressable
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Feather name="arrow-left" size={18} color={COLORS.white} />
-          </Pressable>
           <AppText style={styles.headerTitle}>Tìm Chuyên Gia</AppText>
         </View>
         <AppText style={styles.headerSubtitle}>

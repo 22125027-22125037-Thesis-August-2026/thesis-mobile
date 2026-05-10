@@ -3,13 +3,18 @@
 import React, { useCallback, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  View, FlatList, Pressable, ActivityIndicator } from 'react-native';
+  View,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+} from 'react-native';
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Feather from 'react-native-vector-icons/Feather';
+import { useTranslation } from 'react-i18next';
 import { aiApi } from '@/api';
 import { TherapySessionCard, AppText } from '@/components';
-import { EMPTY_CHAT_TEXT } from '@/constants';
 import { COLORS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { ChatSessionOverview } from '@/types';
@@ -19,11 +24,17 @@ type NavigationPropType = NavigationProp<RootStackParamList>;
 
 const TherapyOverviewScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
+  const { t } = useTranslation();
   const [sessions, setSessions] = useState<ChatSessionOverview[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  const fetchSessions = useCallback(async () => {
-    setIsLoading(true);
+  const fetchSessions = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
     try {
       const data = await aiApi.getSessions();
       setSessions(data);
@@ -32,6 +43,7 @@ const TherapyOverviewScreen: React.FC = () => {
       setSessions([]);
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, []);
 
@@ -41,74 +53,106 @@ const TherapyOverviewScreen: React.FC = () => {
     }, [fetchSessions]),
   );
 
-  // Hàm mở phiên Chat mới
   const handleStartNewSession = () => {
     navigation.navigate('Chat', { sessionId: undefined });
   };
 
-  // Hàm mở lại phiên Chat cũ
   const handleResumeSession = (sessionId: string) => {
     navigation.navigate('Chat', { sessionId });
-  };
-
-  const handleGoBack = () => {
-    navigation.goBack();
   };
 
   const renderSessionCard = ({ item }: { item: ChatSessionOverview }) => (
     <TherapySessionCard session={item} onPress={handleResumeSession} />
   );
 
-  // 3. RENDER MÀN HÌNH CHÍNH
+  const renderEmpty = () => (
+    <View style={styles.emptyContainer}>
+      <MaterialCommunityIcons
+        name="robot-happy-outline"
+        size={56}
+        color={COLORS.primaryLight}
+      />
+      <AppText style={styles.emptyText}>{t('chat.overview.emptyText')}</AppText>
+    </View>
+  );
+
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
-        
+
         {/* ===== HEADER ===== */}
         <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={handleGoBack}>
-            <Feather name="chevron-left" size={24} color={COLORS.textPrimary} />
-          </Pressable>
-          <AppText style={styles.headerTitle}>Bạn Tâm Giao</AppText>
-          <View style={styles.headerSpacer} />
-        </View>
-
-        {/* ===== HERO SECTION ===== */}
-        <View style={styles.heroSection}>
-          <View style={styles.heroCard}>
-            {/* Nếu có file ảnh thật, dùng <Image source={require('...')} /> thay cho Icon này */}
-            <MaterialCommunityIcons name="robot-outline" size={80} color={COLORS.primary} style={styles.heroIcon} />
-            <AppText style={styles.heroTitle}>Trò chuyện cùng AI</AppText>
-            <AppText style={styles.heroSubtitle}>Mình luôn ở đây để lắng nghe bạn</AppText>
-            
-            <Pressable style={styles.primaryBtn} onPress={handleStartNewSession}>
-              <AppText style={styles.primaryBtnText}>Bắt đầu tâm sự</AppText>
-            </Pressable>
+          <View style={styles.headerTextContainer}>
+            <AppText style={styles.headerTitle}>{t('chat.overview.headerTitle')}</AppText>
+            <AppText style={styles.headerSubtitle}>{t('chat.overview.headerSubtitle')}</AppText>
           </View>
         </View>
 
-        {/* ===== LỊCH SỬ TRÒ CHUYỆN ===== */}
-        <View style={styles.historySection}>
-          <AppText style={styles.sectionTitle}>Lịch sử trò chuyện</AppText>
-          {isLoading ? (
-            <View style={styles.centerStateContainer}>
-              <ActivityIndicator size="large" color={COLORS.primary} />
-            </View>
-          ) : sessions.length === 0 ? (
-            <View style={styles.centerStateContainer}>
-              <AppText style={styles.emptyStateText}>{EMPTY_CHAT_TEXT}</AppText>
-            </View>
-          ) : (
-            <FlatList
-              data={sessions}
-              keyExtractor={(item) => item.sessionId}
-              renderItem={renderSessionCard}
-              contentContainerStyle={styles.listContainer}
-              showsVerticalScrollIndicator={false}
+        {/* ===== SCROLLABLE BODY ===== */}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => fetchSessions(true)}
+              tintColor={COLORS.primary}
+              colors={[COLORS.primary]}
             />
-          )}
-        </View>
+          }>
 
+          {/* ===== HERO CARD ===== */}
+          <View style={styles.heroWrapper}>
+            <View style={styles.heroCard}>
+              <View style={styles.heroTopRow}>
+                <View style={styles.aiAvatar}>
+                  <MaterialCommunityIcons
+                    name="robot-happy-outline"
+                    size={28}
+                    color={COLORS.white}
+                  />
+                </View>
+                <View style={styles.heroTextContainer}>
+                  <AppText style={styles.heroTitle}>{t('chat.overview.heroTitle')}</AppText>
+                  <AppText style={styles.heroSubtitle}>{t('chat.overview.heroSubtitle')}</AppText>
+                </View>
+              </View>
+
+              <Pressable
+                style={({ pressed }) => [styles.heroCTAPill, pressed && { opacity: 0.8 }]}
+                onPress={handleStartNewSession}>
+                <AppText style={styles.heroCTAText}>{t('chat.overview.heroCTA')}</AppText>
+                <View style={styles.heroCTAButton}>
+                  <MaterialCommunityIcons name="plus" size={18} color={COLORS.white} />
+                </View>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* ===== LỊCH SỬ TRÒ CHUYỆN ===== */}
+          <View style={styles.historySection}>
+            <AppText style={styles.sectionTitle}>{t('chat.overview.historyTitle')}</AppText>
+
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+              </View>
+            ) : sessions.length === 0 ? (
+              renderEmpty()
+            ) : (
+              <FlatList
+                data={sessions}
+                keyExtractor={(item) => item.sessionId}
+                renderItem={renderSessionCard}
+                contentContainerStyle={styles.listContainer}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+              />
+            )}
+          </View>
+
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

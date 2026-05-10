@@ -176,7 +176,7 @@ const HomeScreen: React.FC = () => {
   const userName = userInfo?.fullName || 'Bạn';
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
