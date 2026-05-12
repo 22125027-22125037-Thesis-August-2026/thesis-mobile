@@ -5,7 +5,6 @@ import {
   FlatList,
   Image,
   RefreshControl,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -16,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { socialApi } from '@/api';
 import { AppText } from '@/components';
 import { RootStackParamList } from '@/navigation';
-import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
+import { COLORS } from '@/theme';
 import { SocialChannelSummary, SocialFriendRequestSummary } from '@/types';
 import { styles } from './MessageListScreen.style';
 
@@ -125,15 +124,6 @@ const MessageListScreen: React.FC = () => {
     });
   }, [activeTab, channels, incomingRequests, t]);
 
-  const handleGoBack = useCallback(() => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-      return;
-    }
-
-    navigation.goBack();
-  }, [navigation]);
-
   const handleOpenConversation = useCallback(
     (item: ConversationListItem) => {
       if (item.kind !== 'channel' || !item.channelId || !item.channelType) {
@@ -206,10 +196,6 @@ const MessageListScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
         <View style={styles.headerShell}>
-          <TouchableOpacity style={styles.backButton} onPress={handleGoBack} activeOpacity={0.85}>
-            <MaterialCommunityIcons name="chevron-left" size={22} color={COLORS.white} />
-          </TouchableOpacity>
-
           <AppText style={styles.headerTitle}>
             {t('social.messageList.title')}
           </AppText>

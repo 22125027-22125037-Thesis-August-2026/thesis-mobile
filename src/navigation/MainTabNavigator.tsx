@@ -6,7 +6,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {
   HomeScreen,
   TherapyOverviewScreen,
-  ChatRoomScreen,
+  MessageListScreen,
   ProfileScreen,
 } from '@/screens';
 import { TherapistBookingLandingScreen } from '@/screens/booking';
@@ -89,7 +89,7 @@ const MainTabNavigator: React.FC = () => {
       {/* Chat Room Tab */}
       <Tab.Screen
         name="ChatRoomTab"
-        component={ChatRoomScreen}
+        component={MessageListScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="message-square" size={size} color={color} />

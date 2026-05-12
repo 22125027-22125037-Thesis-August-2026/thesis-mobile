@@ -18,15 +18,6 @@ export const styles = StyleSheet.create({
     borderBottomLeftRadius: 36,
     borderBottomRightRadius: 36,
   },
-  backButton: {
-    width: 38,
-    height: 38,
-    borderRadius: BORDER_RADIUS.full,
-    borderWidth: 1,
-    borderColor: COLORS.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   headerTitle: {
     marginTop: SPACING.md,
     fontSize: FONT_SIZES.xxl,
