@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SOCIAL_API_BASE_URL = 'http://localhost:8083';
+const SOCIAL_API_BASE_URL = 'http://20.6.130.74:8083';
 const HARDCODED_TEST_TOKEN = '';
 const HAS_HARDCODED_TEST_TOKEN = HARDCODED_TEST_TOKEN.trim().length > 0;
 const IS_DEV = __DEV__;
