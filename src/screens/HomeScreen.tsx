@@ -288,6 +288,7 @@ const HomeScreen: React.FC = () => {
           </View>
 
           {/* Group Sessions */}
+          {/*
           <View style={styles.section}>
             <AppText style={styles.sectionTitle}>
               {t('home.overview.groupSessionsTitle')}
@@ -353,6 +354,7 @@ const HomeScreen: React.FC = () => {
               </Pressable>
             </ScrollView>
           </View>
+          */}
 
           <View style={styles.bottomSpacer} />
         </View>
