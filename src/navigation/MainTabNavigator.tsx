@@ -9,7 +9,7 @@ import {
   ChatRoomScreen,
   ProfileScreen,
 } from '@/screens';
-import { TherapistListScreen } from '@/screens/booking';
+import { TherapistBookingLandingScreen } from '@/screens/booking';
 import { COLORS } from '@/theme';
 
 export type MainTabParamList = {
@@ -74,7 +74,7 @@ const MainTabNavigator: React.FC = () => {
       {/* Therapist Tab */}
       <Tab.Screen
         name="TherapistTab"
-        component={TherapistListScreen}
+        component={TherapistBookingLandingScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons

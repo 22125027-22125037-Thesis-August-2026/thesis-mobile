@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   ImageBackground,
   ActivityIndicator,
-  BackHandler,
 } from 'react-native';
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -149,40 +149,6 @@ const TherapistBookingLanding: React.FC = () => {
     };
   }, [profileId]);
 
-  const handleNavigateHome = React.useCallback(() => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-      return;
-    }
-
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'MainTabs',
-            state: {
-              index: 0,
-              routes: [{ name: 'HomeTab' }],
-            },
-          },
-        ],
-      }),
-    );
-  }, [navigation]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const onHardwareBack = () => {
-        handleNavigateHome();
-        return true;
-      };
-
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onHardwareBack);
-      return () => subscription.remove();
-    }, [handleNavigateHome]),
-  );
-
   const handleNavigateMatchingForm = () => {
     navigation.navigate('MatchingForm');
   };
@@ -245,13 +211,8 @@ const TherapistBookingLanding: React.FC = () => {
         : `Buổi tham vấn sẽ diễn ra ${remainingText}`;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <View style={styles.headerTopRow}>
-          <TouchableOpacity style={styles.backButton} onPress={handleNavigateHome}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.white} />
-          </TouchableOpacity>
-        </View>
         <AppText style={styles.brandText}>uMatter</AppText>
         <AppText style={styles.subHeader}>
           Kết nối và trò chuyện cùng chuyên gia trị liệu phù hợp với bạn
@@ -374,7 +335,7 @@ const TherapistBookingLanding: React.FC = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -161,10 +161,6 @@ const HomeScreen: React.FC = () => {
     navigation.navigate('Chat');
   };
 
-  const handleNavigateTherapistFilter = (): void => {
-    navigation.navigate('TherapistBookingLanding');
-  };
-
   const today = new Date();
   const dateString = today.toLocaleDateString('vi-VN', {
     month: 'numeric',
@@ -301,7 +297,7 @@ const HomeScreen: React.FC = () => {
             >
               <Pressable
                 style={styles.sessionCard}
-                onPress={handleNavigateTherapistFilter}
+                onPress={handleNavigateTherapistLanding}
               >
                 <Image
                   source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=200&fit=crop' }}
@@ -316,7 +312,7 @@ const HomeScreen: React.FC = () => {
 
               <Pressable
                 style={styles.sessionCard}
-                onPress={handleNavigateTherapistFilter}
+                onPress={handleNavigateTherapistLanding}
               >
                 <Image
                   source={{ uri: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop' }}

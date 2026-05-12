@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryDeeper,
     borderBottomLeftRadius: 44,
     borderBottomRightRadius: 44,
-    paddingTop: 48,
+    paddingTop: 20,
     paddingBottom: 36,
     paddingHorizontal: 20,
     position: 'relative',

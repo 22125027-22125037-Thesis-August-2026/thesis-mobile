@@ -5,6 +5,5 @@ export { default as ConsultationFeedbackScreen } from './ConsultationFeedbackScr
 export { default as MatchingFormScreen } from './MatchingFormScreen';
 export { default as TherapistDetailScreen } from './TherapistDetailScreen';
 export { default as TherapistBookingLandingScreen } from './TherapistBookingLanding';
-export { default as TherapistListScreen } from './TherapistListScreen';
 export { default as VideoConsultationScreen } from './VideoConsultationScreen';
 export { default as WaitingRoomScreen } from './WaitingRoomScreen';
