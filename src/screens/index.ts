@@ -6,3 +6,4 @@ export * from './chat';
 export * from './social';
 export * from './profile';
 export * from './tracking';
+export * from './notification';

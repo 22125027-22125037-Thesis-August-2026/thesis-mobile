@@ -196,7 +196,10 @@ const HomeScreen: React.FC = () => {
               />
               <AppText style={styles.dateText}>{dateString}</AppText>
             </View>
-            <Pressable style={styles.notificationButton}>
+            <Pressable
+              style={styles.notificationButton}
+              onPress={() => navigation.navigate('Notification')}
+            >
               <Feather name="bell" size={20} color={COLORS.white} />
               <View style={styles.notificationBadge} />
             </Pressable>

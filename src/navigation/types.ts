@@ -12,6 +12,8 @@ export type RootStackParamList = {
   // Nâng cấp: Màn hình Chat giờ đây có thể nhận sessionId (phiên cũ) hoặc không có (phiên mới)
   Chat: { sessionId?: string | null } | undefined;
   MessageList: undefined;
+  Notification: undefined;
+  NotificationDetail: { notificationId: string };
   SocialChat: {
     channelId: string;
     recipientName: string;

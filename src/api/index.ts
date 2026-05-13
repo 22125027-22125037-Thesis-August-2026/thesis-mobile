@@ -4,13 +4,14 @@ export { default as socialAxiosClient } from '@/api/socialAxiosClient';
 import * as dataAccessGrantApi from '@/api/dataAccessGrantApi';
 import * as diaryApi from '@/api/diaryApi';
 import * as foodApi from '@/api/foodApi';
+import * as notificationApi from '@/api/notificationApi';
 import * as profileApi from '@/api/profileApi';
 import * as socialApi from '@/api/socialApi';
 import * as sleepApi from '@/api/sleepApi';
 import * as therapistApi from '@/api/therapistApi';
 import * as trackingApi from '@/api/trackingApi';
 
-export { dataAccessGrantApi, diaryApi, foodApi, profileApi, socialApi, sleepApi, therapistApi, trackingApi };
+export { dataAccessGrantApi, diaryApi, foodApi, notificationApi, profileApi, socialApi, sleepApi, therapistApi, trackingApi };
 export * from '@/api/dataAccessGrantApi';
 export * from '@/api/diaryApi';
 export * from '@/api/foodApi';

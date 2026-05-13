@@ -1,0 +1,84 @@
+{
+  "content": [
+    {
+      "notificationId": "3e67b91e-2b8c-4a7a-8c3e-1d5b20c4c801",
+      "profileId": "e1d0add5-b9c8-57b5-36e6-059991832f17",
+      "title": "Tin nhan moi tu Dave",
+      "message": "52 Tin nhan chua doc",
+      "type": "CHAT",
+      "read": false,
+      "createdAt": "2026-05-13T09:55:00Z"
+    },
+    {
+      "notificationId": "d9c25b41-b5ef-4b1b-9f2e-27d8a4c0c2a2",
+      "profileId": "e1d0add5-b9c8-57b5-36e6-059991832f17",
+      "title": "Ban chua cap nhat cam xuc",
+      "message": "5 ngay chua cap nhat",
+      "type": "REMINDER",
+      "read": false,
+      "createdAt": "2026-05-13T08:00:00Z"
+    },
+    {
+      "notificationId": "a0d4a2c2-ff6b-49d7-b1b6-1b7b2a54b9a1",
+      "profileId": "e1d0add5-b9c8-57b5-36e6-059991832f17",
+      "title": "Nhat ki thang nay",
+      "message": "21/30 Nhat ki da viet cho thang nay",
+      "type": "STREAK",
+      "read": false,
+      "createdAt": "2026-05-13T04:00:00Z"
+    },
+    {
+      "notificationId": "cb5b8a4c-0c3e-4d2e-9dbe-13a2ed6a8f42",
+      "profileId": "e1d0add5-b9c8-57b5-36e6-059991832f17",
+      "title": "Bai tap hang tuan hoan thanh",
+      "message": "22 phut thien moi ngay",
+      "type": "STREAK",
+      "read": true,
+      "createdAt": "2026-05-12T10:00:00Z"
+    },
+    {
+      "notificationId": "0a1b2c3d-4e5f-6789-9abc-def012345678",
+      "profileId": "e1d0add5-b9c8-57b5-36e6-059991832f17",
+      "title": "Stress cai thien",
+      "message": "Muc do stress hien tai la 3",
+      "type": "INSIGHT",
+      "read": true,
+      "createdAt": "2026-05-11T10:00:00Z"
+    },
+    {
+      "notificationId": "f7e2d1c3-9b8a-4f23-a1b6-7c9d3e2f1a0b",
+      "profileId": "e1d0add5-b9c8-57b5-36e6-059991832f17",
+      "title": "05:25AM",
+      "message": "Therapy with Dr. Freud AI",
+      "type": "BOOKING",
+      "read": false,
+      "createdAt": "2026-05-10T10:00:00Z"
+    },
+    {
+      "notificationId": "98b7c6d5-e4f3-4a2b-9c8d-7e6f5a4b3c2d",
+      "profileId": "e1d0add5-b9c8-57b5-36e6-059991832f17",
+      "title": "7h 50m",
+      "message": "Suc khoe giac ngu cai thien",
+      "type": "INSIGHT",
+      "read": false,
+      "createdAt": "2026-05-08T10:00:00Z"
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 20,
+    "offset": 0,
+    "paged": true,
+    "unpaged": false,
+    "sort": { "sorted": false, "unsorted": true, "empty": true }
+  },
+  "totalElements": 7,
+  "totalPages": 1,
+  "size": 20,
+  "number": 0,
+  "sort": { "sorted": false, "unsorted": true, "empty": true },
+  "first": true,
+  "last": true,
+  "numberOfElements": 7,
+  "empty": false
+}

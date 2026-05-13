@@ -26,6 +26,8 @@ import {
   LoginScreen,
   MatchingFormScreen,
   MessageListScreen,
+  NotificationScreen,
+  NotificationDetailScreen,
   OnboardingScreen,
   RegisterScreen,
   SocialChatScreen,
@@ -129,6 +131,8 @@ const renderTeenExperienceRoutes = () => {
       {/* Nested Screens (Deep Linking Stacks) */}
       <Stack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="MessageList" component={MessageListScreen} />
+      <Stack.Screen name="Notification" component={NotificationScreen} />
+      <Stack.Screen name="NotificationDetail" component={NotificationDetailScreen} />
       <Stack.Screen name="SocialChat" component={SocialChatScreen} />
       <Stack.Screen name="TherapistBookingLanding" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="AppointmentsHistory" component={AppointmentsHistoryScreen} />
