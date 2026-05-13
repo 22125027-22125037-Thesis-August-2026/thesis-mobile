@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -12,7 +11,6 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppText } from '@/components';
 import { RootStackParamList } from '@/navigation';
-import { COLORS } from '@/theme';
 import styles from '@/screens/booking/VideoConsultationScreen.styles';
 
 type VideoConsultationRouteProp = RouteProp<RootStackParamList, 'VideoConsultation'>;
@@ -22,6 +20,7 @@ type VideoConsultationNavigationProp = NativeStackNavigationProp<
 >;
 
 const SERVER_URL = 'https://meet.jit.si';
+const ONE_MINUTE_MS = 60 * 1000;
 
 const sanitizeRoomName = (raw: string): string =>
   raw.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-_]/g, '');
@@ -41,6 +40,15 @@ const buildMeetingUri = (room: string, displayName?: string): string => {
     ? `&userInfo.displayName=${encodeURIComponent(displayName)}`
     : '';
   return `${base}${config}${userInfo}`;
+};
+
+const getConsultationEndMs = (slotStartDatetime: string): number | null => {
+  const startDate = new Date(slotStartDatetime);
+  const startMs = startDate.getTime();
+  if (Number.isNaN(startMs)) {
+    return null;
+  }
+  return startMs + ONE_MINUTE_MS;
 };
 
 const INJECTED_JS = `
@@ -236,15 +244,44 @@ const INJECTED_JS = `
 const VideoConsultationScreen: React.FC = () => {
   const navigation = useNavigation<VideoConsultationNavigationProp>();
   const route = useRoute<VideoConsultationRouteProp>();
-  const { appointmentId, therapistId, slotId, therapistName } = route.params;
+  const {
+    appointmentId,
+    therapistId,
+    slotId,
+    slotStartDatetime,
+    method,
+    reason,
+    therapistName,
+    therapistSpecialty,
+    therapistAvatarUrl,
+  } = route.params;
 
   const defaultRoom = useMemo(() => {
     const seed = appointmentId || slotId || therapistId || 'consultation';
-    return sanitizeRoomName(`thesis-${seed}`);
+    return sanitizeRoomName(`umatter-${seed}`);
   }, [appointmentId, slotId, therapistId]);
 
-  const [room, setRoom] = useState<string>(defaultRoom);
+  const [room] = useState<string>(defaultRoom);
   const [showMeeting, setShowMeeting] = useState<boolean>(false);
+  const consultationEndMs = useMemo(
+    () => getConsultationEndMs(slotStartDatetime),
+    [slotStartDatetime],
+  );
+  const [isPastOneMinute, setIsPastOneMinute] = useState<boolean>(() => {
+    if (!consultationEndMs) return false;
+    return Date.now() >= consultationEndMs;
+  });
+
+  useEffect(() => {
+    if (!consultationEndMs) return undefined;
+    const remainingMs = consultationEndMs - Date.now();
+    if (remainingMs <= 0) {
+      setIsPastOneMinute(true);
+      return undefined;
+    }
+    const timeoutId = setTimeout(() => setIsPastOneMinute(true), remainingMs);
+    return () => clearTimeout(timeoutId);
+  }, [consultationEndMs]);
 
   const meetingUri = useMemo(
     () => buildMeetingUri(room, therapistName),
@@ -252,13 +289,12 @@ const VideoConsultationScreen: React.FC = () => {
   );
 
   const handleJoin = () => {
-    const sanitized = sanitizeRoomName(room);
+    const sanitized = sanitizeRoomName(defaultRoom);
     if (!sanitized) {
       return;
     }
     const uri = buildMeetingUri(sanitized, therapistName);
     console.log('[VideoConsultation] Jitsi meeting URL:', uri);
-    setRoom(sanitized);
     setShowMeeting(true);
   };
 
@@ -272,6 +308,25 @@ const VideoConsultationScreen: React.FC = () => {
     } catch {
       // ignore non-JSON messages from the WebView
     }
+  };
+
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
+  const handleEndPress = () => {
+    navigation.navigate('ConsultationFeedback', {
+      appointmentId,
+      therapistId,
+      slotId,
+      slotStartDatetime,
+      method,
+      reason,
+      therapistName,
+      therapistSpecialty,
+      therapistAvatarUrl,
+      endedAt: new Date().toISOString(),
+    });
   };
 
   // After the hangup button, meet.jit.si redirects to its own thank-you /
@@ -329,16 +384,6 @@ const VideoConsultationScreen: React.FC = () => {
       <View style={styles.content}>
         <AppText style={styles.title}>Tham gia cuộc gọi tham vấn</AppText>
 
-        <TextInput
-          style={styles.input}
-          value={room}
-          onChangeText={setRoom}
-          placeholder="Nhập tên phòng Jitsi"
-          placeholderTextColor={COLORS.textSecondary}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.primaryButton}
@@ -350,10 +395,22 @@ const VideoConsultationScreen: React.FC = () => {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.endMeetingButton}
-          onPress={() => navigation.goBack()}
+          onPress={handleBackPress}
         >
           <AppText style={styles.primaryButtonText}>Quay lại</AppText>
         </TouchableOpacity>
+
+        {isPastOneMinute && (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.endMeetingButton}
+            onPress={handleEndPress}
+          >
+            <AppText style={styles.primaryButtonText}>
+              Kết thúc và đánh giá buổi tham vấn
+            </AppText>
+          </TouchableOpacity>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
