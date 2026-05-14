@@ -313,12 +313,12 @@
     },
     "videoConsultation": {
       "readyTitle": "Ready to connect with an expert",
-      "initializingText": "Initializing Zoom...",
-      "joinButton": "Open Zoom & Join",
+      "initializingText": "Initializing video session...",
+      "joinButton": "Open meeting & join",
       "endButton": "End Meeting",
-      "invalidTokenError": "Invalid JWT token or does not match Meeting SDK credentials. Please recreate SDK JWT from backend.",
-      "initError": "Unable to initialize Zoom. Please check JWT token and try again.",
-      "defaultError": "Unable to initialize Zoom."
+      "invalidTokenError": "Invalid meeting token. Please regenerate the token and try again.",
+      "initError": "Unable to initialize the video session. Please try again.",
+      "defaultError": "Unable to initialize the video session."
     },
     "consultationDetail": {
       "headerTitle": "Expert consultation",

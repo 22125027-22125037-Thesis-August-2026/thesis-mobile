@@ -33,7 +33,6 @@
     "react-native-svg": "^15.15.4",
     "react-native-vector-icons": "^10.3.0",
     "react-native-webview": "^13.16.1",
-    "react-native-zoom-us": "^17.0.0",
     "text-encoding": "^0.7.0"
   },
   "devDependencies": {

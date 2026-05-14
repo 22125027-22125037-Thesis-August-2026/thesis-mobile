@@ -313,12 +313,12 @@
     },
     "videoConsultation": {
       "readyTitle": "Sẵn sàng kết nối với chuyên gia",
-      "initializingText": "Đang khởi tạo Zoom...",
-      "joinButton": "Mở Zoom & Tham gia",
+      "initializingText": "Đang khởi tạo phiên video...",
+      "joinButton": "Mở cuộc họp & tham gia",
       "endButton": "End Meeting",
-      "invalidTokenError": "JWT token không hợp lệ hoặc không khớp Meeting SDK credentials. Vui lòng tạo lại SDK JWT từ backend.",
-      "initError": "Không thể khởi tạo Zoom. Vui lòng kiểm tra JWT token và thử lại.",
-      "defaultError": "Không thể khởi tạo Zoom."
+      "invalidTokenError": "Token cuộc họp không hợp lệ. Vui lòng tạo lại và thử lại.",
+      "initError": "Không thể khởi tạo phiên video. Vui lòng thử lại.",
+      "defaultError": "Không thể khởi tạo phiên video."
     },
     "consultationDetail": {
       "headerTitle": "Tham vấn chuyên gia",
