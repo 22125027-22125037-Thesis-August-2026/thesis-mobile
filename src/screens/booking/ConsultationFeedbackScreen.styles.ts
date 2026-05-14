@@ -128,6 +128,17 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: COLORS.consultationFeedbackSecondary,
   },
+  noteLabel: {
+    marginTop: 12,
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.consultationFeedbackTitle,
+  },
+  noteMeta: {
+    marginTop: 10,
+    fontSize: 12,
+    color: COLORS.consultationFeedbackSecondary,
+  },
   primaryButton: {
     width: '100%',
     height: 48,
@@ -158,6 +169,11 @@ const styles = StyleSheet.create({
   submitErrorText: {
     marginTop: 8,
     fontSize: 14,
+    color: COLORS.errorText,
+  },
+  noteErrorText: {
+    marginTop: 8,
+    fontSize: 13,
     color: COLORS.errorText,
   },
 });

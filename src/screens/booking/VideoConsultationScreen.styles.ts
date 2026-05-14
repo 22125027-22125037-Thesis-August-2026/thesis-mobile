@@ -83,6 +83,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     marginTop: SPACING.md,
   },
+  disabledButton: {
+    opacity: 0.5,
+  },
 });
 
 export default styles;
