@@ -1,5 +1,5 @@
 // src/screens/booking/TherapistBookingLanding.tsx
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -101,53 +102,41 @@ const TherapistBookingLanding: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchLandingData = async () => {
-      if (!profileId) {
-        if (isMounted) {
-          setActiveTherapist(null);
-          setUpcomingAppointment(null);
-          setIsLoading(false);
-        }
-        return;
-      }
-
-      setIsLoading(true);
-
-      const [therapistResult, upcomingResult] = await Promise.allSettled([
-        therapistApi.getActiveAssignedTherapist(profileId),
-        therapistApi.getUpcomingAppointment(profileId),
-      ]);
-
-      if (!isMounted) {
-        return;
-      }
-
-      if (therapistResult.status === 'fulfilled') {
-        setActiveTherapist(therapistResult.value);
-      } else {
-        console.error('[TherapistBookingLanding] Failed to load active therapist:', therapistResult.reason);
-        setActiveTherapist(null);
-      }
-
-      if (upcomingResult.status === 'fulfilled') {
-        setUpcomingAppointment(upcomingResult.value);
-      } else {
-        console.error('[TherapistBookingLanding] Failed to load upcoming appointment:', upcomingResult.reason);
-        setUpcomingAppointment(null);
-      }
-
+  const fetchLandingData = useCallback(async (): Promise<void> => {
+    if (!profileId) {
+      setActiveTherapist(null);
+      setUpcomingAppointment(null);
       setIsLoading(false);
-    };
+      return;
+    }
 
-    fetchLandingData();
+    setIsLoading(true);
 
-    return () => {
-      isMounted = false;
-    };
+    const [therapistResult, upcomingResult] = await Promise.allSettled([
+      therapistApi.getActiveAssignedTherapist(profileId),
+      therapistApi.getUpcomingAppointment(profileId),
+    ]);
+
+    if (therapistResult.status === 'fulfilled') {
+      setActiveTherapist(therapistResult.value);
+    } else {
+      console.error('[TherapistBookingLanding] Failed to load active therapist:', therapistResult.reason);
+      setActiveTherapist(null);
+    }
+
+    if (upcomingResult.status === 'fulfilled') {
+      setUpcomingAppointment(upcomingResult.value);
+    } else {
+      console.error('[TherapistBookingLanding] Failed to load upcoming appointment:', upcomingResult.reason);
+      setUpcomingAppointment(null);
+    }
+
+    setIsLoading(false);
   }, [profileId]);
+
+  useEffect(() => {
+    fetchLandingData();
+  }, [fetchLandingData]);
 
   const handleNavigateMatchingForm = () => {
     navigation.navigate('MatchingForm');
@@ -229,7 +218,17 @@ const TherapistBookingLanding: React.FC = () => {
         style={styles.leafBackground}
         resizeMode="cover"
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={fetchLandingData}
+              tintColor={COLORS.primary}
+              colors={[COLORS.primary]}
+            />
+          }
+        >
           {isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="small" color={COLORS.primary} />

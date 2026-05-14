@@ -92,13 +92,10 @@ const HomeScreen: React.FC = () => {
   const [todayDiaryId, setTodayDiaryId] = useState<string | null>(null);
 
   const fetchSummary = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
     try {
       await trackingApi.getDashboardSummary();
     } catch (error) {
       console.error('[HomeScreen] Failed to load dashboard summary:', error);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
@@ -123,11 +120,19 @@ const HomeScreen: React.FC = () => {
     }
   }, [userInfo?.profileId]);
 
+  const fetchAll = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      await Promise.all([fetchSummary(), fetchTodayMood()]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchSummary, fetchTodayMood]);
+
   useFocusEffect(
     useCallback(() => {
-      fetchSummary();
-      fetchTodayMood();
-    }, [fetchSummary, fetchTodayMood]),
+      fetchAll();
+    }, [fetchAll]),
   );
 
   const handleMoodSelect = (mood: MoodTag): void => {
@@ -177,7 +182,7 @@ const HomeScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={fetchSummary} />
+          <RefreshControl refreshing={isLoading} onRefresh={fetchAll} />
         }
         contentContainerStyle={styles.scrollContent}
       >

@@ -52,6 +52,7 @@ Known titles:
 - `Room Not Open` (`403`)
 - `Invalid Appointment State` (`409`)
 - `Clinical Note Conflict` (`409`)
+- `Clinical Note Forbidden` (`403`)
 - `Review Conflict` (`409`)
 - `Review Forbidden` (`403`)
 - `Validation Error` (`400`)
@@ -71,9 +72,11 @@ Known titles:
 | POST | `/api/v1/bookings` | Yes | Any authenticated user | Create a booking from an available slot |
 | GET | `/api/v1/bookings/{appointmentId}/join` | Yes | Any authenticated user | Join a video session |
 | GET | `/api/v1/profiles/{profileId}/appointments/upcoming` | Yes | `self` or `ROLE_ADMIN` | Get the closest upcoming appointment for a profile |
+| GET | `/api/v1/profiles/{profileId}/appointments/history` | Yes | `self` or `ROLE_ADMIN` | Get completed/cancelled appointment history for a profile |
 | GET | `/api/v1/therapists/{id}` | Yes | Any authenticated user | Get therapist detail profile payload |
 | GET | `/api/v1/therapists/{id}/slots` | Yes | Any authenticated user | Get pageable future available slots |
-| POST | `/api/v1/notes` | Yes | `ROLE_THERAPIST` | Submit a clinical note |
+| POST | `/api/v1/notes` | Yes | `ROLE_THERAPIST`, `ROLE_ADMIN` | Submit a clinical note |
+| GET | `/api/v1/notes/appointments/{appointmentId}` | Yes | `ROLE_PATIENT`, `ROLE_THERAPIST`, `ROLE_ADMIN` | Get a clinical note for an appointment |
 | POST | `/api/v1/reviews` | Yes | `ROLE_PATIENT` | Submit a therapist review |
 | POST | `/api/v1/matching/preferences` | Yes | Any authenticated user | Save profile matching preferences |
 | GET | `/api/v1/matching/therapists` | Yes | Any authenticated user | Find therapist matches by preferences |
@@ -177,7 +180,59 @@ Possible errors:
 - `404` no upcoming appointment found for requested profile
 - `401` unauthenticated
 
-### 4. Get Therapist Detail
+### 4. Get Completed/Cancelled Appointment History
+
+- Method/Path: `GET /api/v1/profiles/{profileId}/appointments/history`
+- Auth: Required
+- Description: Returns all appointments for a profile where status is `COMPLETED` or `CANCELLED`, ordered by `startDatetime` descending.
+
+Path params:
+
+- `profileId` (UUID profile ID)
+
+Authorization:
+
+- Allowed when JWT principal ID equals path `profileId`.
+- Allowed when caller has `ROLE_ADMIN`.
+- Otherwise returns `403`.
+
+Response `200` (example):
+
+```json
+[
+  {
+    "appointmentId": "1d7e6402-f91d-4a8f-8178-ec2ccb281d1f",
+    "profileId": "76d7800a-ae23-4f65-9d3d-c9536e2bdf5a",
+    "therapistId": "5f2afc57-d6e4-4dd4-a2f2-34b2520ff31f",
+    "therapistName": "Dr. Sarah Johnson",
+    "therapistSpecialization": "Anxiety & Panic Disorders",
+    "location": "United States",
+    "slotId": "9b3ea8e0-7eaf-4b9f-a72e-932c9ce0e0d6",
+    "mode": "VIDEO",
+    "status": "COMPLETED",
+    "startDatetime": "2026-03-20T08:00:00Z"
+  },
+  {
+    "appointmentId": "7c4d6a4f-e4d1-41d1-b951-d718fc68f943",
+    "profileId": "76d7800a-ae23-4f65-9d3d-c9536e2bdf5a",
+    "therapistId": "5f2afc57-d6e4-4dd4-a2f2-34b2520ff31f",
+    "therapistName": "Dr. Sarah Johnson",
+    "therapistSpecialization": "Anxiety & Panic Disorders",
+    "location": "United States",
+    "slotId": "f2482f84-85a6-4b7f-9e36-9f4e0f93b689",
+    "mode": "VIDEO",
+    "status": "CANCELLED",
+    "startDatetime": "2026-03-12T08:00:00Z"
+  }
+]
+```
+
+Possible errors:
+
+- `403` caller is not the same profile and not admin
+- `401` unauthenticated
+
+### 5. Get Therapist Detail
 
 - Method/Path: `GET /api/v1/therapists/{id}`
 - Auth: Required
@@ -233,7 +288,7 @@ Possible errors:
 - `404` therapist not found
 - `401` unauthenticated
 
-### 5. Get Therapist Available Slots
+### 6. Get Therapist Available Slots
 
 - Method/Path: `GET /api/v1/therapists/{id}/slots`
 - Auth: Required
@@ -278,12 +333,12 @@ Possible errors:
 - `404` therapist not found
 - `401` unauthenticated
 
-### 6. Submit Clinical Note
+### 7. Submit Clinical Note
 
 - Method/Path: `POST /api/v1/notes`
 - Auth: Required
-- Role: `ROLE_THERAPIST`
-- Description: Creates one clinical note for an in-progress appointment and marks appointment as `COMPLETED`.
+- Role: `ROLE_THERAPIST`, `ROLE_ADMIN`
+- Description: Creates one clinical note for an in-progress appointment and marks appointment as `COMPLETED`. Only the assigned therapist or an admin can submit a note.
 
 Request body:
 
@@ -310,13 +365,44 @@ Response `201`:
 Possible errors:
 
 - `400` validation failure
-- `403` forbidden role
+- `403` appointment does not belong to caller
 - `404` appointment not found
 - `409` appointment not `IN_PROGRESS`
 - `409` note already exists for appointment
 - `401` unauthenticated
 
-### 7. Submit Review
+### 8. Get Clinical Note By Appointment
+
+- Method/Path: `GET /api/v1/notes/appointments/{appointmentId}`
+- Auth: Required
+- Role: `ROLE_PATIENT`, `ROLE_THERAPIST`, `ROLE_ADMIN`
+- Description: Returns the clinical note for the appointment if the caller is the appointment patient, therapist, or an admin.
+
+Path params:
+
+- `appointmentId` (UUID)
+
+Response `200`:
+
+```json
+{
+  "noteId": "2eb65f39-7da4-4ca4-9820-e9c412084d45",
+  "appointmentId": "76d7800a-ae23-4f65-9d3d-c9536e2bdf5a",
+  "appointmentStatus": "COMPLETED",
+  "diagnosis": "Moderate anxiety symptoms",
+  "recommendations": "Weekly CBT sessions for 8 weeks",
+  "createdAt": "2026-04-15T07:35:21.913Z"
+}
+```
+
+Possible errors:
+
+- `403` appointment does not belong to caller
+- `404` appointment not found
+- `404` clinical note not found for appointment
+- `401` unauthenticated
+
+### 9. Submit Review
 
 - Method/Path: `POST /api/v1/reviews`
 - Auth: Required
@@ -357,7 +443,7 @@ Possible errors:
 - `409` review already exists
 - `401` unauthenticated
 
-### 8. Save Matching Preferences
+### 10. Save Matching Preferences
 
 - Method/Path: `POST /api/v1/matching/preferences`
 - Auth: Required
@@ -396,7 +482,7 @@ Possible errors:
 - `400` validation failure
 - `401` unauthenticated
 
-### 9. Find Matching Therapists
+### 11. Find Matching Therapists
 
 - Method/Path: `GET /api/v1/matching/therapists`
 - Auth: Required
@@ -422,7 +508,7 @@ Possible errors:
 - `404` matching preferences not found for caller
 - `401` unauthenticated
 
-### 10. Assign Therapist
+### 12. Assign Therapist
 
 - Method/Path: `POST /api/v1/matching/assign/{therapistId}`
 - Auth: Required
@@ -441,7 +527,7 @@ Possible errors:
 - `404` therapist not found
 - `401` unauthenticated
 
-### 11. Get Active Assigned Therapist
+### 13. Get Active Assigned Therapist
 
 - Method/Path: `GET /api/v1/profiles/{profileId}/assigned-therapist`
 - Auth: Required
@@ -492,7 +578,7 @@ Response `403` (example):
 }
 ```
 
-### 12. Trigger Slot Generation (Test Endpoint)
+### 14. Trigger Slot Generation (Test Endpoint)
 
 - Method/Path: `POST /api/v1/test/trigger-generation`
 - Auth: Not required
@@ -506,7 +592,7 @@ Response `200`:
 }
 ```
 
-### 13. Trigger Slot Cleanup (Test Endpoint)
+### 15. Trigger Slot Cleanup (Test Endpoint)
 
 - Method/Path: `POST /api/v1/test/trigger-cleanup`
 - Auth: Not required
@@ -549,6 +635,13 @@ Get closest upcoming appointment:
 
 ```bash
 curl "http://localhost:8082/api/v1/profiles/<profile-id>/appointments/upcoming" \
+  -H "Authorization: Bearer <token>"
+```
+
+Get completed/cancelled appointment history:
+
+```bash
+curl "http://localhost:8082/api/v1/profiles/<profile-id>/appointments/history" \
   -H "Authorization: Bearer <token>"
 ```
 

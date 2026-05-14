@@ -254,6 +254,15 @@ export interface SubmitReviewResponse {
   message: string;
 }
 
+export interface ClinicalNote {
+  noteId: string;
+  appointmentId: string;
+  appointmentStatus: string;
+  diagnosis: string;
+  recommendations: string;
+  createdAt: string;
+}
+
 export interface ActiveAssignedTherapist {
   assignmentId: string;
   profileId: string;
@@ -345,6 +354,21 @@ export const bookSession = async (
   }
 };
 
+export const joinVideoSession = async (appointmentId: string): Promise<boolean> => {
+  try {
+    const response = await therapistAxiosClient.get(
+      `/api/v1/bookings/${appointmentId}/join`,
+    );
+    return response.status === 200;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return false;
+    }
+
+    return false;
+  }
+};
+
 export const submitReview = async (
   data: SubmitReviewPayload,
 ): Promise<SubmitReviewResponse> => {
@@ -352,6 +376,23 @@ export const submitReview = async (
     const response = await therapistAxiosClient.post<SubmitReviewResponse>('/api/v1/reviews', data);
     return response.data;
   } catch (error) {
+    throw error;
+  }
+};
+
+export const getClinicalNoteByAppointment = async (
+  appointmentId: string,
+): Promise<ClinicalNote | null> => {
+  try {
+    const response = await therapistAxiosClient.get<ClinicalNote>(
+      `/api/v1/notes/appointments/${appointmentId}`,
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+
     throw error;
   }
 };

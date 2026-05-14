@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { joinVideoSession } from '@/api';
 import { AppText } from '@/components';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/VideoConsultationScreen.styles';
@@ -263,6 +264,8 @@ const VideoConsultationScreen: React.FC = () => {
 
   const [room] = useState<string>(defaultRoom);
   const [showMeeting, setShowMeeting] = useState<boolean>(false);
+  const [isJoinAllowed, setIsJoinAllowed] = useState<boolean>(false);
+  const [isJoinLoading, setIsJoinLoading] = useState<boolean>(true);
   const consultationEndMs = useMemo(
     () => getConsultationEndMs(slotStartDatetime),
     [slotStartDatetime],
@@ -283,12 +286,47 @@ const VideoConsultationScreen: React.FC = () => {
     return () => clearTimeout(timeoutId);
   }, [consultationEndMs]);
 
+  useEffect(() => {
+    let isActive = true;
+
+    const fetchJoinStatus = async () => {
+      if (!appointmentId) {
+        if (isActive) {
+          setIsJoinAllowed(false);
+          setIsJoinLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const ok = await joinVideoSession(appointmentId);
+        if (isActive) {
+          setIsJoinAllowed(ok);
+        }
+      } finally {
+        if (isActive) {
+          setIsJoinLoading(false);
+        }
+      }
+    };
+
+    fetchJoinStatus();
+    return () => {
+      isActive = false;
+    };
+  }, [appointmentId]);
+
   const meetingUri = useMemo(
     () => buildMeetingUri(room, therapistName),
     [room, therapistName],
   );
 
+  const isActionEnabled = !isJoinLoading && isJoinAllowed;
+
   const handleJoin = () => {
+    if (!isActionEnabled) {
+      return;
+    }
     const sanitized = sanitizeRoomName(defaultRoom);
     if (!sanitized) {
       return;
@@ -315,6 +353,9 @@ const VideoConsultationScreen: React.FC = () => {
   };
 
   const handleEndPress = () => {
+    if (!isActionEnabled) {
+      return;
+    }
     navigation.navigate('ConsultationFeedback', {
       appointmentId,
       therapistId,
@@ -386,8 +427,9 @@ const VideoConsultationScreen: React.FC = () => {
 
         <TouchableOpacity
           activeOpacity={0.85}
-          style={styles.primaryButton}
+          style={[styles.primaryButton, !isActionEnabled && styles.disabledButton]}
           onPress={handleJoin}
+          disabled={!isActionEnabled}
         >
           <AppText style={styles.primaryButtonText}>Bắt đầu cuộc gọi</AppText>
         </TouchableOpacity>
@@ -403,8 +445,9 @@ const VideoConsultationScreen: React.FC = () => {
         {isPastOneMinute && (
           <TouchableOpacity
             activeOpacity={0.85}
-            style={styles.endMeetingButton}
+            style={[styles.endMeetingButton, !isActionEnabled && styles.disabledButton]}
             onPress={handleEndPress}
+            disabled={!isActionEnabled}
           >
             <AppText style={styles.primaryButtonText}>
               Kết thúc và đánh giá buổi tham vấn

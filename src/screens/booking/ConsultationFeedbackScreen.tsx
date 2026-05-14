@@ -6,7 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AxiosError } from 'axios';
-import { getTherapistDetails, submitReview, TherapistDetail } from '@/api';
+import { ClinicalNote, getClinicalNoteByAppointment, getTherapistDetails, submitReview, TherapistDetail } from '@/api';
 import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/ConsultationFeedbackScreen.styles';
@@ -36,6 +36,9 @@ const ConsultationFeedbackScreen: React.FC = () => {
   const [selectedRating, setSelectedRating] = useState<number>(4);
   const [reviewText, setReviewText] = useState<string>('');
   const [therapist, setTherapist] = useState<TherapistDetail | null>(null);
+  const [clinicalNote, setClinicalNote] = useState<ClinicalNote | null>(null);
+  const [isNoteLoading, setIsNoteLoading] = useState<boolean>(false);
+  const [noteError, setNoteError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>('');
 
@@ -73,6 +76,44 @@ const ConsultationFeedbackScreen: React.FC = () => {
     };
   }, [therapistId]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadClinicalNote = async (): Promise<void> => {
+      if (!appointmentId) {
+        setClinicalNote(null);
+        setIsNoteLoading(false);
+        setNoteError('');
+        return;
+      }
+
+      setIsNoteLoading(true);
+      setNoteError('');
+
+      try {
+        const note = await getClinicalNoteByAppointment(appointmentId);
+        if (isMounted) {
+          setClinicalNote(note);
+        }
+      } catch {
+        if (isMounted) {
+          setClinicalNote(null);
+          setNoteError(t('booking.consultationFeedback.noteLoadError'));
+        }
+      } finally {
+        if (isMounted) {
+          setIsNoteLoading(false);
+        }
+      }
+    };
+
+    void loadClinicalNote();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [appointmentId, t]);
+
   const startedAt = useMemo(() => parseDate(slotStartDatetime), [slotStartDatetime]);
   const summaryTime = useMemo(() => {
     if (!startedAt) {
@@ -97,6 +138,25 @@ const ConsultationFeedbackScreen: React.FC = () => {
       year: 'numeric',
     });
   }, [startedAt]);
+
+  const noteCreatedAt = useMemo(
+    () => parseDate(clinicalNote?.createdAt),
+    [clinicalNote?.createdAt],
+  );
+  const noteCreatedLabel = useMemo(() => {
+    if (!noteCreatedAt) {
+      return '';
+    }
+
+    return noteCreatedAt.toLocaleString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  }, [noteCreatedAt]);
 
   const resolvedTherapistName = therapist?.fullName?.trim() || therapistName || 'Đang cập nhật';
   const resolvedTherapistSpecialty = therapist?.specialty?.trim() || therapistSpecialty || 'Đang cập nhật chuyên môn';
@@ -193,6 +253,30 @@ const ConsultationFeedbackScreen: React.FC = () => {
           value={reviewText}
           onChangeText={setReviewText}
         />
+      </View>
+
+      <View style={styles.card}>
+        <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.noteTitle')}</AppText>
+        {isNoteLoading ? (
+          <AppText style={styles.descriptionText}>{t('booking.consultationFeedback.noteLoading')}</AppText>
+        ) : null}
+        {!isNoteLoading && clinicalNote ? (
+          <>
+            <AppText style={styles.noteLabel}>{t('booking.consultationFeedback.noteDiagnosis')}</AppText>
+            <AppText style={styles.descriptionText}>{clinicalNote.diagnosis}</AppText>
+            <AppText style={styles.noteLabel}>{t('booking.consultationFeedback.noteRecommendations')}</AppText>
+            <AppText style={styles.descriptionText}>{clinicalNote.recommendations}</AppText>
+            {noteCreatedLabel ? (
+              <AppText style={styles.noteMeta}>
+                {t('booking.consultationFeedback.noteCreatedAt', { date: noteCreatedLabel })}
+              </AppText>
+            ) : null}
+          </>
+        ) : null}
+        {!isNoteLoading && !clinicalNote ? (
+          <AppText style={styles.descriptionText}>{t('booking.consultationFeedback.noteEmpty')}</AppText>
+        ) : null}
+        {noteError ? <AppText style={styles.noteErrorText}>{noteError}</AppText> : null}
       </View>
 
       <View style={styles.card}>
