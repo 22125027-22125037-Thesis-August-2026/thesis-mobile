@@ -146,7 +146,9 @@ const TherapistBookingLanding: React.FC = () => {
   };
 
   const handleNavigateAppointmentsHistory = () => {
-    navigation.navigate('AppointmentsHistory');
+    navigation.navigate('AppointmentsHistory', {
+      currentTherapistId: activeTherapist?.id,
+    });
   };
 
   const handleOpenTherapistDetails = () => {

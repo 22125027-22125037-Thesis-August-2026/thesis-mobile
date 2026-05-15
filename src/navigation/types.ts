@@ -31,7 +31,7 @@ export type RootStackParamList = {
   // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
   TherapyOverview: undefined;
 
-  AppointmentsHistory: undefined;
+  AppointmentsHistory: { currentTherapistId?: string } | undefined;
   MatchingForm: undefined;
   TherapistDetails: { id: string; appointmentId?: string };
   Booking: { therapistId: string };
@@ -74,6 +74,7 @@ export type RootStackParamList = {
     therapistSpecialty?: string;
     therapistAvatarUrl?: string | null;
     endedAt?: string;
+    isReadOnly?: boolean;
   };
   // Resolved from main
   SleepMain: { viewProfileId?: string } | undefined;

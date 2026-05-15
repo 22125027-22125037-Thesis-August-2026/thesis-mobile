@@ -52,6 +52,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
     therapistName,
     therapistSpecialty,
     therapistAvatarUrl,
+    isReadOnly = false,
   } = route.params;
 
   useEffect(() => {
@@ -250,6 +251,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
               key={emoji}
               style={styles.ratingCircle}
               activeOpacity={0.85}
+              disabled={isReadOnly}
               onPress={() => setSelectedRating(index + 1)}
             >
               <AppText style={styles.ratingEmoji}>{emoji}</AppText>
@@ -268,6 +270,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
           placeholder={t('booking.consultationFeedback.feedbackPlaceholder')}
           placeholderTextColor={COLORS.consultationFeedbackSecondary}
           multiline
+          editable={!isReadOnly}
           value={reviewText}
           onChangeText={setReviewText}
         />
@@ -315,10 +318,10 @@ const ConsultationFeedbackScreen: React.FC = () => {
       {submitError ? <AppText style={styles.submitErrorText}>{submitError}</AppText> : null}
 
       <TouchableOpacity
-        style={styles.confirmButton}
+        style={[styles.confirmButton, isReadOnly ? { opacity: 0.5 } : null]}
         activeOpacity={0.9}
         onPress={() => void handleConfirmReview()}
-        disabled={isSubmitting}
+        disabled={isSubmitting || isReadOnly}
       >
         <AppText style={styles.confirmButtonText}>
           {isSubmitting
