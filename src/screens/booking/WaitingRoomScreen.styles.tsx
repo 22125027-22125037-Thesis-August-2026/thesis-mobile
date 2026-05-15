@@ -228,6 +228,57 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.textSecondary,
   },
+  availableSlotsLoadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  availableSlotsLoadingText: {
+    marginTop: 0,
+    marginLeft: 8,
+  },
+  availableSlotsDateGroup: {
+    marginTop: 14,
+  },
+  availableSlotsDateLabel: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 8,
+  },
+  availableSlotsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  availableSlotButton: {
+    width: '31%',
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 11,
+    marginBottom: 10,
+    marginHorizontal: '1.1%',
+  },
+  availableSlotButtonSelected: {
+    backgroundColor: COLORS.buttonPrimary,
+    borderColor: COLORS.buttonPrimary,
+  },
+  availableSlotButtonUnselected: {
+    backgroundColor: COLORS.white,
+    borderColor: COLORS.border,
+  },
+  availableSlotButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  availableSlotButtonTextSelected: {
+    color: COLORS.white,
+  },
+  availableSlotButtonTextUnselected: {
+    color: COLORS.text,
+  },
 });
 
 export default styles;

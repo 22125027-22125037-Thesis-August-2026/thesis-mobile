@@ -1,11 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, BackHandler, Image, ScrollView, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, BackHandler, Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import { AppText } from '@/components';
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AxiosError } from 'axios';
-import { bookSession, getTherapistDetails, TherapistDetail } from '@/api';
+import {
+  bookSession,
+  getTherapistAvailableSlots,
+  getTherapistDetails,
+  TherapistAvailableSlot,
+  TherapistDetail,
+} from '@/api';
 import { RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
 import styles from '@/screens/booking/WaitingRoomScreen.styles';
@@ -22,6 +28,55 @@ const TEN_MINUTES_IN_MS = 10 * 60 * 1000;
 const parseAppointmentStart = (slotStartDatetime: string): Date | null => {
   const parsed = new Date(slotStartDatetime);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const formatTimeLabel = (isoDatetime: string): string =>
+  new Date(isoDatetime).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+
+const formatGroupDateLabel = (dateString: string): string => {
+  const parsed = new Date(`${dateString}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return dateString;
+  }
+  return parsed.toLocaleDateString('vi-VN', {
+    weekday: 'long',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+
+type GroupedSlots = Array<{
+  date: string;
+  items: Array<{ slotId: string; startDatetime: string; label: string }>;
+}>;
+
+const groupSlotsByDate = (slots: TherapistAvailableSlot[]): GroupedSlots => {
+  const grouped: Record<string, { slotId: string; startDatetime: string; label: string }[]> = {};
+
+  for (const slot of slots) {
+    const dateKey = slot.startDatetime.slice(0, 10);
+    if (!grouped[dateKey]) {
+      grouped[dateKey] = [];
+    }
+    grouped[dateKey].push({
+      slotId: slot.slotId,
+      startDatetime: slot.startDatetime,
+      label: `${formatTimeLabel(slot.startDatetime)} - ${formatTimeLabel(slot.endDatetime)}`,
+    });
+  }
+
+  for (const dateKey of Object.keys(grouped)) {
+    grouped[dateKey].sort((a, b) => a.startDatetime.localeCompare(b.startDatetime));
+  }
+
+  return Object.keys(grouped)
+    .sort()
+    .map(date => ({ date, items: grouped[date] }));
 };
 
 const formatRelativeRemaining = (remainingMs: number): string => {
@@ -63,8 +118,8 @@ const WaitingRoomScreen: React.FC = () => {
   const {
     appointmentId: routeAppointmentId,
     therapistId,
-    slotId,
-    slotStartDatetime,
+    slotId: routeSlotId,
+    slotStartDatetime: routeSlotStartDatetime,
     method,
     reason = FALLBACK_REASON,
     isBooked: routeIsBooked = false,
@@ -78,6 +133,12 @@ const WaitingRoomScreen: React.FC = () => {
   const [isBooked, setIsBooked] = useState<boolean>(routeIsBooked);
   const [appointmentId, setAppointmentId] = useState<string | undefined>(routeAppointmentId);
   const [bookingError, setBookingError] = useState<string>('');
+  const [currentSlotId, setCurrentSlotId] = useState<string>(routeSlotId);
+  const [currentSlotStartDatetime, setCurrentSlotStartDatetime] = useState<string>(routeSlotStartDatetime);
+  const [availableSlots, setAvailableSlots] = useState<TherapistAvailableSlot[]>([]);
+  const [isLoadingAvailableSlots, setIsLoadingAvailableSlots] = useState<boolean>(false);
+  const [availableSlotsError, setAvailableSlotsError] = useState<string>('');
+  const [showAvailableSlots, setShowAvailableSlots] = useState<boolean>(false);
   const leaveAlertVisibleRef = useRef<boolean>(false);
 
   useEffect(() => {
@@ -118,7 +179,10 @@ const WaitingRoomScreen: React.FC = () => {
     };
   }, [therapistId]);
 
-  const appointmentStart = useMemo(() => parseAppointmentStart(slotStartDatetime), [slotStartDatetime]);
+  const appointmentStart = useMemo(
+    () => parseAppointmentStart(currentSlotStartDatetime),
+    [currentSlotStartDatetime],
+  );
 
   const displayTime = useMemo(() => {
     if (!appointmentStart) {
@@ -171,6 +235,24 @@ const WaitingRoomScreen: React.FC = () => {
     ? { uri: therapist.avatarUrl }
     : FALLBACK_AVATAR;
 
+  const groupedAvailableSlots = useMemo(
+    () => groupSlotsByDate(availableSlots),
+    [availableSlots],
+  );
+
+  const loadAvailableSlots = useCallback(async () => {
+    setIsLoadingAvailableSlots(true);
+    setAvailableSlotsError('');
+    try {
+      const slots = await getTherapistAvailableSlots(therapistId);
+      setAvailableSlots(slots);
+    } catch {
+      setAvailableSlotsError('Không thể tải danh sách khung giờ trống. Vui lòng thử lại.');
+    } finally {
+      setIsLoadingAvailableSlots(false);
+    }
+  }, [therapistId]);
+
   const confirmBooking = useCallback(async () => {
     if (isBooking || isBooked) {
       return;
@@ -180,24 +262,36 @@ const WaitingRoomScreen: React.FC = () => {
     setBookingError('');
 
     try {
-      const bookingResponse = await bookSession({ slotId });
+      const bookingResponse = await bookSession({ slotId: currentSlotId });
       setAppointmentId(bookingResponse.appointmentId);
       setIsBooked(true);
+      setShowAvailableSlots(false);
+      setAvailableSlots([]);
     } catch (error) {
       const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
       const backendMessage = axiosError.response?.data?.detail ?? axiosError.response?.data?.message;
       setBookingError(backendMessage ?? 'Đặt lịch thất bại. Vui lòng thử lại.');
+      if (axiosError.response?.status === 409) {
+        setShowAvailableSlots(true);
+        loadAvailableSlots();
+      }
     } finally {
       setIsBooking(false);
     }
-  }, [isBooking, isBooked, slotId]);
+  }, [isBooking, isBooked, currentSlotId, loadAvailableSlots]);
+
+  const handleSelectAlternativeSlot = useCallback((slot: TherapistAvailableSlot) => {
+    setCurrentSlotId(slot.slotId);
+    setCurrentSlotStartDatetime(slot.startDatetime);
+    setBookingError('');
+  }, []);
 
   const handleJoinConsultation = useCallback(() => {
     navigation.navigate('VideoConsultation', {
       appointmentId,
       therapistId,
-      slotId,
-      slotStartDatetime,
+      slotId: currentSlotId,
+      slotStartDatetime: currentSlotStartDatetime,
       method,
       reason,
       therapistName,
@@ -208,8 +302,8 @@ const WaitingRoomScreen: React.FC = () => {
     navigation,
     appointmentId,
     therapistId,
-    slotId,
-    slotStartDatetime,
+    currentSlotId,
+    currentSlotStartDatetime,
     method,
     reason,
     therapistName,
@@ -384,6 +478,77 @@ const WaitingRoomScreen: React.FC = () => {
           {isLoadingTherapist ? <AppText style={styles.helperText}>Đang tải thông tin chuyên gia...</AppText> : null}
           {therapistError ? <AppText style={styles.errorText}>{therapistError}</AppText> : null}
         </View>
+
+        {showAvailableSlots ? (
+          <View style={styles.card}>
+            <AppText style={styles.infoTitle}>Khung giờ trống khác</AppText>
+            <AppText style={styles.helperText}>
+              Khung giờ bạn chọn đã được đặt. Hãy chọn một khung giờ khác bên dưới rồi nhấn xác nhận lại.
+            </AppText>
+
+            {isLoadingAvailableSlots ? (
+              <View style={styles.availableSlotsLoadingRow}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+                <AppText style={[styles.helperText, styles.availableSlotsLoadingText]}>
+                  Đang tải khung giờ trống...
+                </AppText>
+              </View>
+            ) : null}
+
+            {!isLoadingAvailableSlots && availableSlotsError ? (
+              <AppText style={styles.errorText}>{availableSlotsError}</AppText>
+            ) : null}
+
+            {!isLoadingAvailableSlots && !availableSlotsError && groupedAvailableSlots.length === 0 ? (
+              <AppText style={styles.helperText}>Hiện không còn khung giờ trống.</AppText>
+            ) : null}
+
+            {!isLoadingAvailableSlots && !availableSlotsError
+              ? groupedAvailableSlots.map(group => (
+                  <View key={group.date} style={styles.availableSlotsDateGroup}>
+                    <AppText style={styles.availableSlotsDateLabel}>
+                      {formatGroupDateLabel(group.date)}
+                    </AppText>
+                    <View style={styles.availableSlotsGrid}>
+                      {group.items.map(item => {
+                        const isSelected = currentSlotId === item.slotId;
+                        return (
+                          <TouchableOpacity
+                            key={item.slotId}
+                            activeOpacity={0.8}
+                            style={[
+                              styles.availableSlotButton,
+                              isSelected
+                                ? styles.availableSlotButtonSelected
+                                : styles.availableSlotButtonUnselected,
+                            ]}
+                            onPress={() =>
+                              handleSelectAlternativeSlot({
+                                slotId: item.slotId,
+                                startDatetime: item.startDatetime,
+                                endDatetime: '',
+                              })
+                            }
+                          >
+                            <AppText
+                              style={[
+                                styles.availableSlotButtonText,
+                                isSelected
+                                  ? styles.availableSlotButtonTextSelected
+                                  : styles.availableSlotButtonTextUnselected,
+                              ]}
+                            >
+                              {item.label}
+                            </AppText>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </View>
+                ))
+              : null}
+          </View>
+        ) : null}
       </ScrollView>
 
       <View style={styles.floatingContainer}>
