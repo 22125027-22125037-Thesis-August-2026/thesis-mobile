@@ -22,6 +22,7 @@ type VideoConsultationNavigationProp = NativeStackNavigationProp<
 
 const SERVER_URL = 'https://meet.jit.si';
 const ONE_MINUTE_MS = 60 * 1000;
+const TEN_MINUTES_MS = 10 * ONE_MINUTE_MS;
 
 const sanitizeRoomName = (raw: string): string =>
   raw.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-_]/g, '');
@@ -50,6 +51,15 @@ const getConsultationEndMs = (slotStartDatetime: string): number | null => {
     return null;
   }
   return startMs + ONE_MINUTE_MS;
+};
+
+const getStartMs = (slotStartDatetime: string): number | null => {
+  const startDate = new Date(slotStartDatetime);
+  const startMs = startDate.getTime();
+  if (Number.isNaN(startMs)) {
+    return null;
+  }
+  return startMs;
 };
 
 const INJECTED_JS = `
@@ -274,6 +284,11 @@ const VideoConsultationScreen: React.FC = () => {
     if (!consultationEndMs) return false;
     return Date.now() >= consultationEndMs;
   });
+  const startMs = useMemo(() => getStartMs(slotStartDatetime), [slotStartDatetime]);
+  const [isWithinTenMinutes, setIsWithinTenMinutes] = useState<boolean>(() => {
+    if (!startMs) return false;
+    return Date.now() <= startMs + TEN_MINUTES_MS;
+  });
 
   useEffect(() => {
     if (!consultationEndMs) return undefined;
@@ -285,6 +300,18 @@ const VideoConsultationScreen: React.FC = () => {
     const timeoutId = setTimeout(() => setIsPastOneMinute(true), remainingMs);
     return () => clearTimeout(timeoutId);
   }, [consultationEndMs]);
+
+  useEffect(() => {
+    if (!startMs) return undefined;
+    const remainingMs = startMs + TEN_MINUTES_MS - Date.now();
+    if (remainingMs <= 0) {
+      setIsWithinTenMinutes(false);
+      return undefined;
+    }
+    setIsWithinTenMinutes(true);
+    const timeoutId = setTimeout(() => setIsWithinTenMinutes(false), remainingMs);
+    return () => clearTimeout(timeoutId);
+  }, [startMs]);
 
   useEffect(() => {
     let isActive = true;
@@ -445,11 +472,22 @@ const VideoConsultationScreen: React.FC = () => {
         {isPastOneMinute && (
           <TouchableOpacity
             activeOpacity={0.85}
-            style={[styles.endMeetingButton, !isActionEnabled && styles.disabledButton]}
+            style={[
+              styles.endMeetingButton,
+              isWithinTenMinutes
+                ? styles.endMeetingButtonYellow
+                : styles.endMeetingButtonGreen,
+              !isActionEnabled && styles.disabledButton,
+            ]}
             onPress={handleEndPress}
             disabled={!isActionEnabled}
           >
-            <AppText style={styles.primaryButtonText}>
+            <AppText
+              style={[
+                styles.primaryButtonText,
+                isWithinTenMinutes && styles.endMeetingButtonYellowText,
+              ]}
+            >
               Kết thúc và đánh giá buổi tham vấn
             </AppText>
           </TouchableOpacity>

@@ -83,6 +83,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     marginTop: SPACING.md,
   },
+  endMeetingButtonYellow: {
+    backgroundColor: COLORS.warning,
+  },
+  endMeetingButtonGreen: {
+    backgroundColor: COLORS.buttonGreen,
+  },
+  endMeetingButtonYellowText: {
+    color: COLORS.textPrimary,
+  },
   disabledButton: {
     opacity: 0.5,
   },

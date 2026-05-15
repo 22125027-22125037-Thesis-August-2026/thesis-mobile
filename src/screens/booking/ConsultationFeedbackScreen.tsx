@@ -297,6 +297,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
         {noteError ? <AppText style={styles.noteErrorText}>{noteError}</AppText> : null}
       </View>
 
+      {/*
       <View style={styles.card}>
         <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.homeworkTitle')}</AppText>
         <AppText style={styles.subtitleStrong}>{t('booking.consultationFeedback.homeworkSubtitle')}</AppText>
@@ -304,6 +305,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
           {t('booking.consultationFeedback.homeworkDescription')}
         </AppText>
       </View>
+      */}
 
       <View style={styles.card}>
         <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.reasonTitle')}</AppText>
