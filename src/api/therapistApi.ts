@@ -350,6 +350,20 @@ export const getTherapistDetails = async (id: string): Promise<TherapistDetail> 
   }
 };
 
+export const getTherapistReviews = async (
+  therapistId: string,
+): Promise<TherapistReview[]> => {
+  try {
+    const response = await therapistAxiosClient.get<TherapistReview[]>(
+      `/api/v1/therapists/${therapistId}/reviews`,
+    );
+
+    return response.data ?? [];
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getTherapistAvailableSlots = async (
   therapistId: string,
 ): Promise<TherapistAvailableSlot[]> => {

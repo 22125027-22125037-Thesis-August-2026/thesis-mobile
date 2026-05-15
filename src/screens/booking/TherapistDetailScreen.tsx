@@ -27,6 +27,9 @@ const TherapistDetailScreen: React.FC = () => {
   const therapistId = route.params.id;
   const appointmentId = route.params.appointmentId;
   const [therapist, setTherapist] = useState<therapistApi.TherapistDetail | null>(null);
+  const [reviews, setReviews] = useState<therapistApi.TherapistReview[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState<boolean>(true);
+  const [reviewsErrorMessage, setReviewsErrorMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -46,6 +49,25 @@ const TherapistDetailScreen: React.FC = () => {
     };
 
     loadTherapistDetail();
+  }, [therapistId]);
+
+  useEffect(() => {
+    const loadTherapistReviews = async () => {
+      setReviewsLoading(true);
+      setReviewsErrorMessage('');
+
+      try {
+        const response = await therapistApi.getTherapistReviews(therapistId);
+        setReviews(response);
+      } catch {
+        setReviews([]);
+        setReviewsErrorMessage('Không thể tải đánh giá. Vui lòng thử lại.');
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    loadTherapistReviews();
   }, [therapistId]);
 
   const stats: StatItem[] = useMemo(() => {
@@ -183,8 +205,15 @@ const TherapistDetailScreen: React.FC = () => {
 
         <View style={styles.sectionCard}>
           <AppText style={styles.sectionTitle}>Đánh giá</AppText>
-          {therapist.reviews.length > 0 ? (
-            therapist.reviews.map((review) => (
+          {reviewsLoading ? (
+            <View>
+              <ActivityIndicator color={COLORS.primary} size="small" />
+              <AppText style={styles.sectionBody}>Đang tải đánh giá...</AppText>
+            </View>
+          ) : reviewsErrorMessage ? (
+            <AppText style={styles.sectionBody}>{reviewsErrorMessage}</AppText>
+          ) : reviews.length > 0 ? (
+            reviews.map((review) => (
             <View key={review.id} style={styles.reviewItem}>
               <Image
                 source={review.reviewerAvatarUrl ? { uri: review.reviewerAvatarUrl } : FALLBACK_AVATAR}
