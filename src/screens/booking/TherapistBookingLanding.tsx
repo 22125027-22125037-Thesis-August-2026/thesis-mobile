@@ -149,6 +149,17 @@ const TherapistBookingLanding: React.FC = () => {
     navigation.navigate('AppointmentsHistory');
   };
 
+  const handleOpenTherapistDetails = () => {
+    if (!activeTherapist) {
+      return;
+    }
+
+    navigation.navigate('TherapistDetails', {
+      id: activeTherapist.id,
+      appointmentId: upcomingAppointment?.appointmentId,
+    });
+  };
+
   const handleChatAction = () => {
     if (upcomingAppointment) {
       navigation.navigate('WaitingRoom', {
@@ -240,7 +251,11 @@ const TherapistBookingLanding: React.FC = () => {
           ) : null}
 
           {activeTherapist ? (
-            <View style={styles.therapistCard}>
+            <TouchableOpacity
+              style={styles.therapistCard}
+              onPress={handleOpenTherapistDetails}
+              activeOpacity={0.9}
+            >
               <Image
                 source={
                   activeTherapist.avatarUrl
@@ -265,7 +280,7 @@ const TherapistBookingLanding: React.FC = () => {
                   </AppText>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           ) : (
             <View style={styles.emptyCard}>
               <AppText style={styles.emptyCardTitle}>Bạn chưa có chuyên gia đang hoạt động</AppText>
@@ -317,7 +332,7 @@ const TherapistBookingLanding: React.FC = () => {
               <AppText style={styles.actionButtonText}>Lịch sử tham vấn chuyên gia</AppText>
             </TouchableOpacity>
 
-            {activeTherapist ? (
+            {activeTherapist && !upcomingAppointment ? (
               <TouchableOpacity
                 style={[styles.actionButton, styles.actionButtonSecondary]}
                 onPress={handleNavigateMatchingForm}

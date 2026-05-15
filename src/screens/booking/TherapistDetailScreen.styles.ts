@@ -16,11 +16,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.whiteAlpha80,
+    shadowColor: COLORS.shadowBase,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 4,
+    elevation: 3,
   },
   headerTitle: {
     color: COLORS.white,
@@ -28,8 +36,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   headerSpacer: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
   },
   contentContainer: {
     padding: 16,
