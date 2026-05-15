@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import { BackHandler, Platform, ToastAndroid } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import {
   HomeScreen,
@@ -10,6 +14,7 @@ import {
   ProfileScreen,
 } from '@/screens';
 import { TherapistBookingLandingScreen } from '@/screens/booking';
+import { RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
 
 export type MainTabParamList = {
@@ -21,8 +26,74 @@ export type MainTabParamList = {
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+const TAB_ROUTE_NAMES: Array<keyof MainTabParamList> = [
+  'HomeTab',
+  'AIChatTab',
+  'TherapistTab',
+  'ChatRoomTab',
+  'ProfileTab',
+];
 
 const MainTabNavigator: React.FC = () => {
+  const { t } = useTranslation();
+  const parentNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const lastBackPressRef = useRef<number | null>(null);
+
+  const getActiveTabName = useCallback((): keyof MainTabParamList => {
+    const parentState = parentNavigation.getState();
+    const activeRoute = parentState.routes[parentState.index];
+    const nestedState = activeRoute?.state;
+
+    if (
+      nestedState &&
+      typeof nestedState.index === 'number' &&
+      Array.isArray(nestedState.routes)
+    ) {
+      const nestedRoute = nestedState.routes[nestedState.index];
+      const nestedName = nestedRoute?.name as keyof MainTabParamList | undefined;
+      if (nestedName && TAB_ROUTE_NAMES.includes(nestedName)) {
+        return nestedName;
+      }
+    }
+
+    const routeName = activeRoute?.name as keyof MainTabParamList | undefined;
+    if (routeName && TAB_ROUTE_NAMES.includes(routeName)) {
+      return routeName;
+    }
+
+    return 'HomeTab';
+  }, [parentNavigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== 'android') {
+        return undefined;
+      }
+
+      const onBackPress = () => {
+        const activeRouteName = getActiveTabName();
+        if (activeRouteName !== 'HomeTab') {
+          lastBackPressRef.current = null;
+          parentNavigation.navigate('MainTabs', { screen: 'HomeTab' });
+          return true;
+        }
+
+        const now = Date.now();
+        if (lastBackPressRef.current && now - lastBackPressRef.current < 2000) {
+          BackHandler.exitApp();
+          return true;
+        }
+
+        lastBackPressRef.current = now;
+        ToastAndroid.show(t('common.backToExit'), ToastAndroid.SHORT);
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [getActiveTabName, parentNavigation, t]),
+  );
+
   return (
     <Tab.Navigator
       screenOptions={{

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 import { AppText } from '@/components';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -186,7 +186,9 @@ const ConsultationFeedbackScreen: React.FC = () => {
         comment: reviewText.trim(),
       });
 
-      navigation.navigate('TherapistBookingLanding');
+      navigation.dispatch(
+        CommonActions.navigate({ name: 'MainTabs', params: { screen: 'TherapistTab' } }),
+      );
     } catch (error) {
       const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
       const backendMessage = axiosError.response?.data?.detail ?? axiosError.response?.data?.message;

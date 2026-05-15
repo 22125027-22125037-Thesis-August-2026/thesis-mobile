@@ -33,7 +33,6 @@ import {
   SocialChatScreen,
   SleepMainScreen,
   SplashScreen,
-  TherapistBookingLandingScreen,
   TherapistDetailScreen,
   TherapyOverviewScreen,
   VideoConsultationScreen,
@@ -134,7 +133,6 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="Notification" component={NotificationScreen} />
       <Stack.Screen name="NotificationDetail" component={NotificationDetailScreen} />
       <Stack.Screen name="SocialChat" component={SocialChatScreen} />
-      <Stack.Screen name="TherapistBookingLanding" component={TherapistBookingLandingScreen} />
       <Stack.Screen name="AppointmentsHistory" component={AppointmentsHistoryScreen} />
       <Stack.Screen name="MatchingForm" component={MatchingFormScreen} />
       <Stack.Screen name="TherapistDetails" component={TherapistDetailScreen} />

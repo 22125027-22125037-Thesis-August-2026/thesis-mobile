@@ -6,6 +6,9 @@
     "good": "HAPPY",
     "excellent": "EXCELLENT"
   },
+  "common": {
+    "backToExit": "Press back again to exit"
+  },
   "entry": {
     "screenTitle": "How are you feeling today?",
     "editTitle": "Edit journal",
