@@ -370,8 +370,8 @@ const WaitingRoomScreen: React.FC = () => {
       promptLeaveConfirmation(() => navigation.goBack());
       return;
     }
-    navigation.goBack();
-  }, [isBooked, navigation, promptLeaveConfirmation]);
+    navigateToTherapistTab();
+  }, [isBooked, navigateToTherapistTab, navigation, promptLeaveConfirmation]);
 
   useFocusEffect(
     useCallback(() => {
@@ -380,12 +380,13 @@ const WaitingRoomScreen: React.FC = () => {
           promptLeaveConfirmation(() => navigation.goBack());
           return true;
         }
-        return false;
+        navigateToTherapistTab();
+        return true;
       };
 
       const subscription = BackHandler.addEventListener('hardwareBackPress', onHardwareBack);
       return () => subscription.remove();
-    }, [isBooked, navigation, promptLeaveConfirmation]),
+    }, [isBooked, navigateToTherapistTab, navigation, promptLeaveConfirmation]),
   );
 
   const primaryButtonText = isBooked ? 'Tham gia' : 'Xác nhận đặt lịch với chuyên gia';
