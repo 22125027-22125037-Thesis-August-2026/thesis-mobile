@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native';
 import { COLORS } from '@/theme';
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: COLORS.chipSelected,
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.chipSelected,
@@ -9,7 +13,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 16,
     paddingTop: 20,
-    paddingBottom: 28,
+    paddingBottom: 120,
     gap: 16,
   },
   backButton: {
@@ -118,6 +122,56 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     color: COLORS.errorText,
+  },
+  reminderText: {
+    marginTop: 8,
+    fontSize: 12,
+    lineHeight: 16,
+    color: COLORS.errorText,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  floatingContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 20,
+    backgroundColor: COLORS.chipSelected,
+  },
+  floatingButton: {
+    width: '100%',
+    height: 52,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  floatingButtonPrimary: {
+    backgroundColor: COLORS.warning,
+  },
+  floatingButtonSecondary: {
+    backgroundColor: COLORS.primary,
+  },
+  floatingButtonText: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  floatingButtonTextSecondary: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: COLORS.white,
   },
   infoTitle: {
     fontSize: 18,
