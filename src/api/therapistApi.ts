@@ -301,6 +301,19 @@ export interface AppointmentHistoryEntry {
   startDatetime: string;
 }
 
+export interface UnreviewedAppointment {
+  appointmentId: string;
+  profileId: string;
+  therapistId: string;
+  therapistName: string;
+  therapistSpecialization: string;
+  location: string;
+  slotId: string;
+  mode: 'VIDEO' | 'CHAT';
+  status: 'COMPLETED';
+  startDatetime: string;
+}
+
 interface AssignedTherapistResponse {
   assignmentId: string;
   profileId: string;
@@ -460,6 +473,20 @@ export const getAppointmentHistory = async (
   try {
     const response = await therapistAxiosClient.get<AppointmentHistoryEntry[]>(
       `/api/v1/profiles/${profileId}/appointments/history`,
+    );
+
+    return response.data ?? [];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUnreviewedAppointments = async (
+  profileId: string,
+): Promise<UnreviewedAppointment[]> => {
+  try {
+    const response = await therapistAxiosClient.get<UnreviewedAppointment[]>(
+      `/api/v1/profiles/${profileId}/appointments/unreviewed`,
     );
 
     return response.data ?? [];

@@ -94,6 +94,7 @@ const TherapistBookingLanding: React.FC = () => {
 
   const [activeTherapist, setActiveTherapist] = useState<therapistApi.ActiveAssignedTherapist | null>(null);
   const [upcomingAppointment, setUpcomingAppointment] = useState<therapistApi.UpcomingAppointment | null>(null);
+  const [unreviewedAppointments, setUnreviewedAppointments] = useState<therapistApi.UnreviewedAppointment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [now, setNow] = useState<Date>(new Date());
 
@@ -109,15 +110,17 @@ const TherapistBookingLanding: React.FC = () => {
     if (!profileId) {
       setActiveTherapist(null);
       setUpcomingAppointment(null);
+      setUnreviewedAppointments([]);
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
 
-    const [therapistResult, upcomingResult] = await Promise.allSettled([
+    const [therapistResult, upcomingResult, unreviewedResult] = await Promise.allSettled([
       therapistApi.getActiveAssignedTherapist(profileId),
       therapistApi.getUpcomingAppointment(profileId),
+      therapistApi.getUnreviewedAppointments(profileId),
     ]);
 
     if (therapistResult.status === 'fulfilled') {
@@ -132,6 +135,13 @@ const TherapistBookingLanding: React.FC = () => {
     } else {
       console.error('[TherapistBookingLanding] Failed to load upcoming appointment:', upcomingResult.reason);
       setUpcomingAppointment(null);
+    }
+
+    if (unreviewedResult.status === 'fulfilled') {
+      setUnreviewedAppointments(unreviewedResult.value);
+    } else {
+      console.error('[TherapistBookingLanding] Failed to load unreviewed appointments:', unreviewedResult.reason);
+      setUnreviewedAppointments([]);
     }
 
     setIsLoading(false);
@@ -181,6 +191,20 @@ const TherapistBookingLanding: React.FC = () => {
     }
 
     navigation.navigate('TherapistDetails', { id: activeTherapist.id });
+  };
+
+  const handleOpenReview = (appointment: therapistApi.UnreviewedAppointment) => {
+    navigation.navigate('ConsultationFeedback', {
+      appointmentId: appointment.appointmentId,
+      therapistId: appointment.therapistId,
+      slotId: appointment.slotId,
+      slotStartDatetime: appointment.startDatetime,
+      method: appointment.mode === 'CHAT' ? 'Chat' : 'Video',
+      therapistName: appointment.therapistName,
+      therapistSpecialty: appointment.therapistSpecialization,
+      therapistAvatarUrl: null,
+      isReadOnly: false,
+    });
   };
 
   const handleOpenWaitingRoom = () => {
@@ -321,6 +345,57 @@ const TherapistBookingLanding: React.FC = () => {
                 />
               </View>
             </TouchableOpacity>
+          ) : null}
+
+          {unreviewedAppointments.length > 0 ? (
+            <View style={styles.unreviewedSection}>
+              <AppText style={styles.unreviewedSectionTitle}>Buổi tham vấn chờ đánh giá</AppText>
+              <AppText style={styles.unreviewedSectionSubtitle}>
+                Chia sẻ cảm nhận của bạn để giúp chuyên gia phục vụ tốt hơn.
+              </AppText>
+
+              {unreviewedAppointments.map(appointment => {
+                const cardMethod = appointment.mode === 'CHAT' ? 'Chat' : 'Video';
+                const cardTime = formatAppointmentTime(appointment.startDatetime);
+                const cardDate = formatAppointmentDate(appointment.startDatetime);
+
+                return (
+                  <TouchableOpacity
+                    key={appointment.appointmentId}
+                    activeOpacity={0.9}
+                    style={styles.unreviewedCard}
+                    onPress={() => handleOpenReview(appointment)}
+                  >
+                    <AppText style={styles.unreviewedCardTitle} numberOfLines={2}>
+                      {appointment.therapistName}
+                    </AppText>
+                    <AppText style={styles.unreviewedCardSubtitle}>
+                      {appointment.therapistSpecialization || 'Chưa cập nhật chuyên môn'} • {cardMethod}
+                    </AppText>
+
+                    <View style={styles.upcomingTimeDateRow}>
+                      <AppText style={styles.upcomingTimeText}>{cardTime}</AppText>
+                      <AppText style={styles.upcomingDateText}>{cardDate}</AppText>
+                    </View>
+
+                    <View style={styles.unreviewedStatusBadge}>
+                      <Ionicons name="star-outline" size={14} color={COLORS.consultationFeedbackPrimary} />
+                      <AppText style={styles.upcomingStatusText}>Buổi tham vấn chưa được đánh giá</AppText>
+                    </View>
+
+                    <View style={styles.upcomingCardActionRow}>
+                      <AppText style={styles.upcomingCardActionText}>Đánh giá ngay</AppText>
+                      <Ionicons
+                        name="chevron-forward"
+                        size={16}
+                        color={COLORS.text}
+                        style={styles.upcomingCardActionIcon}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           ) : null}
 
           <View style={styles.footerSpacer} />
