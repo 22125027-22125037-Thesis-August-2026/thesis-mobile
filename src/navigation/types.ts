@@ -33,7 +33,7 @@ export type RootStackParamList = {
 
   AppointmentsHistory: undefined;
   MatchingForm: undefined;
-  TherapistDetails: { id: string };
+  TherapistDetails: { id: string; appointmentId?: string };
   Booking: { therapistId: string };
   ConsultationDetail: {
     therapistId: string;

@@ -357,6 +357,9 @@
       "submittingButton": "Submitting...",
       "submitErrorMissingAppointment": "Cannot submit review because appointment information is missing.",
       "submitErrorGeneric": "Unable to submit review. Please try again.",
+      "submitErrorConflict": "Reviews can only be submitted for completed consultations.",
+      "conflictTitle": "Review unavailable",
+      "conflictOkButton": "Got it",
       "confirmButton": "Confirm",
       "feedbackPlaceholder": "I found this session very effective"
     }

@@ -25,6 +25,7 @@ const TherapistDetailScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<TherapistDetailRouteProp>();
   const therapistId = route.params.id;
+  const appointmentId = route.params.appointmentId;
   const [therapist, setTherapist] = useState<therapistApi.TherapistDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -103,8 +104,9 @@ const TherapistDetailScreen: React.FC = () => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
           activeOpacity={0.8}
+          hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
         >
-          <Ionicons name="arrow-back" size={22} color={COLORS.white} />
+          <Ionicons name="arrow-back" size={22} color={COLORS.primaryDark} />
         </TouchableOpacity>
         <AppText style={styles.headerTitle}>Thông tin chi tiết</AppText>
         <View style={styles.headerSpacer} />
@@ -206,12 +208,14 @@ const TherapistDetailScreen: React.FC = () => {
         ) : null}
       </ScrollView>
 
-      <View style={styles.footer}>
-        <CustomButton
-          title="Đặt lịch hẹn"
-          onPress={() => navigation.navigate('Booking', { therapistId })}
-        />
-      </View>
+      {!appointmentId ? (
+        <View style={styles.footer}>
+          <CustomButton
+            title="Đặt lịch hẹn"
+            onPress={() => navigation.navigate('Booking', { therapistId })}
+          />
+        </View>
+      ) : null}
     </View>
   );
 };

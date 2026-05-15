@@ -357,6 +357,9 @@
       "submittingButton": "Đang gửi...",
       "submitErrorMissingAppointment": "Không thể gửi đánh giá vì thiếu thông tin lịch hẹn.",
       "submitErrorGeneric": "Không thể gửi đánh giá. Vui lòng thử lại.",
+      "submitErrorConflict": "Không thể gửi đánh giá cho buổi tham vấn sắp diễn ra hoặc đã bị hủy.",
+      "conflictTitle": "Không thể gửi đánh giá",
+      "conflictOkButton": "Đã hiểu",
       "confirmButton": "Xác nhận",
       "feedbackPlaceholder": "Tôi thấy session này rất hiệu quả"
     }

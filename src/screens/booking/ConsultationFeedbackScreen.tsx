@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 import { AppText } from '@/components';
 import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -41,6 +41,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
   const [noteError, setNoteError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>('');
+  const [conflictMessage, setConflictMessage] = useState<string>('');
 
   const {
     appointmentId,
@@ -192,13 +193,28 @@ const ConsultationFeedbackScreen: React.FC = () => {
     } catch (error) {
       const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
       const backendMessage = axiosError.response?.data?.detail ?? axiosError.response?.data?.message;
-      setSubmitError(backendMessage ?? t('booking.consultationFeedback.submitErrorGeneric'));
+
+      if (axiosError.response?.status === 409) {
+        setConflictMessage(
+          backendMessage ?? t('booking.consultationFeedback.submitErrorConflict'),
+        );
+      } else {
+        setSubmitError(backendMessage ?? t('booking.consultationFeedback.submitErrorGeneric'));
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleConflictAcknowledge = (): void => {
+    setConflictMessage('');
+    navigation.dispatch(
+      CommonActions.navigate({ name: 'MainTabs', params: { screen: 'TherapistTab' } }),
+    );
+  };
+
   return (
+    <>
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
@@ -281,6 +297,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
         {noteError ? <AppText style={styles.noteErrorText}>{noteError}</AppText> : null}
       </View>
 
+      {/*
       <View style={styles.card}>
         <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.homeworkTitle')}</AppText>
         <AppText style={styles.subtitleStrong}>{t('booking.consultationFeedback.homeworkSubtitle')}</AppText>
@@ -288,6 +305,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
           {t('booking.consultationFeedback.homeworkDescription')}
         </AppText>
       </View>
+      */}
 
       <View style={styles.card}>
         <AppText style={styles.cardTitle}>{t('booking.consultationFeedback.reasonTitle')}</AppText>
@@ -309,6 +327,40 @@ const ConsultationFeedbackScreen: React.FC = () => {
         </AppText>
       </TouchableOpacity>
     </ScrollView>
+
+    <Modal
+      visible={conflictMessage.length > 0}
+      transparent
+      animationType="fade"
+      onRequestClose={() => undefined}
+      statusBarTranslucent
+    >
+      <View style={styles.modalBackdrop}>
+        <View style={styles.modalCard}>
+          <View style={styles.modalIconWrapper}>
+            <Ionicons
+              name="alert-circle"
+              size={36}
+              color={COLORS.consultationFeedbackPrimary}
+            />
+          </View>
+          <AppText style={styles.modalTitle}>
+            {t('booking.consultationFeedback.conflictTitle')}
+          </AppText>
+          <AppText style={styles.modalMessage}>{conflictMessage}</AppText>
+          <TouchableOpacity
+            style={styles.modalButton}
+            activeOpacity={0.9}
+            onPress={handleConflictAcknowledge}
+          >
+            <AppText style={styles.modalButtonText}>
+              {t('booking.consultationFeedback.conflictOkButton')}
+            </AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+    </>
   );
 };
 
