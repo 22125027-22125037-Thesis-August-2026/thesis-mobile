@@ -286,6 +286,21 @@ export interface UpcomingAppointment {
   startDatetime: string;
 }
 
+export type AppointmentHistoryStatus = 'COMPLETED' | 'CANCELLED';
+
+export interface AppointmentHistoryEntry {
+  appointmentId: string;
+  profileId: string;
+  therapistId: string;
+  therapistName: string;
+  therapistSpecialization: string;
+  location: string;
+  slotId: string;
+  mode: 'VIDEO' | 'CHAT';
+  status: AppointmentHistoryStatus;
+  startDatetime: string;
+}
+
 interface AssignedTherapistResponse {
   assignmentId: string;
   profileId: string;
@@ -435,6 +450,20 @@ export const getActiveAssignedTherapist = async (
       return null;
     }
 
+    throw error;
+  }
+};
+
+export const getAppointmentHistory = async (
+  profileId: string,
+): Promise<AppointmentHistoryEntry[]> => {
+  try {
+    const response = await therapistAxiosClient.get<AppointmentHistoryEntry[]>(
+      `/api/v1/profiles/${profileId}/appointments/history`,
+    );
+
+    return response.data ?? [];
+  } catch (error) {
     throw error;
   }
 };

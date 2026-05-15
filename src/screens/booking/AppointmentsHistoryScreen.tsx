@@ -1,183 +1,99 @@
 // src/screens/booking/AppointmentsHistoryScreen.tsx
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
-  SafeAreaView,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+// import { RouteProp, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import { therapistApi } from '@/api';
+import { AuthContext } from '@/context/AuthContext';
 import { RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
 import styles from '@/screens/booking/AppointmentsHistoryScreen.styles';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'AppointmentsHistory'>;
+// type AppointmentsHistoryRouteProp = RouteProp<RootStackParamList, 'AppointmentsHistory'>;
 
-type AppointmentStatus = 'COMPLETED' | 'CANCELLED';
+type AppointmentStatus = therapistApi.AppointmentHistoryStatus;
 
-type AppointmentHistoryItem = {
-  id: string;
-  therapistName: string;
-  therapistSpecialization: string;
-  location: string;
-  avatarUrl?: string;
-  timeLabel: string;
-  dateLabel: string;
-  status: AppointmentStatus;
-};
+const formatAppointmentTime = (startDatetime: string): string => {
+  const date = new Date(startDatetime);
+  if (Number.isNaN(date.getTime())) {
+    return '--:--';
+  }
 
-const APPOINTMENT_PROFILES: Pick<
-  AppointmentHistoryItem,
-  'therapistName' | 'therapistSpecialization' | 'location'
->[] = [
-  {
-    therapistName: 'Dr. David Patel',
-    therapistSpecialization: 'Chuyên gia tâm lý trẻ em',
-    location: 'Bệnh viện tư nhân HCM',
-  },
-  {
-    therapistName: 'Dr. Mia Nguyen',
-    therapistSpecialization: 'Chuyên gia trị liệu hành vi',
-    location: 'Trung tâm tâm lý Quận 3',
-  },
-  {
-    therapistName: 'Dr. An Tran',
-    therapistSpecialization: 'Chuyên gia lo âu và trầm cảm',
-    location: 'Phòng khám sức khỏe tinh thần',
-  },
-];
-
-const COMPLETED_TIMES: string[] = [
-  '12:33 PM',
-  '09:00 AM',
-  '10:15 AM',
-  '11:40 AM',
-  '01:05 PM',
-  '02:20 PM',
-  '03:45 PM',
-  '04:10 PM',
-  '05:30 PM',
-  '06:55 PM',
-  '07:25 AM',
-  '08:50 AM',
-  '09:35 PM',
-  '10:05 PM',
-  '11:15 AM',
-  '12:10 PM',
-  '01:45 PM',
-  '02:55 PM',
-  '04:40 PM',
-  '08:05 PM',
-];
-
-const COMPLETED_DATES: string[] = [
-  'Ngày 14 Tháng 2, 2025',
-  'Ngày 02 Tháng 1, 2025',
-  'Ngày 27 Tháng 12, 2024',
-  'Ngày 21 Tháng 12, 2024',
-  'Ngày 17 Tháng 12, 2024',
-  'Ngày 09 Tháng 12, 2024',
-  'Ngày 03 Tháng 12, 2024',
-  'Ngày 29 Tháng 11, 2024',
-  'Ngày 24 Tháng 11, 2024',
-  'Ngày 18 Tháng 11, 2024',
-  'Ngày 11 Tháng 11, 2024',
-  'Ngày 06 Tháng 11, 2024',
-  'Ngày 31 Tháng 10, 2024',
-  'Ngày 25 Tháng 10, 2024',
-  'Ngày 19 Tháng 10, 2024',
-  'Ngày 13 Tháng 10, 2024',
-  'Ngày 08 Tháng 10, 2024',
-  'Ngày 02 Tháng 10, 2024',
-  'Ngày 27 Tháng 9, 2024',
-  'Ngày 20 Tháng 9, 2024',
-];
-
-const CANCELLED_TIMES: string[] = [
-  '03:15 PM',
-  '07:40 AM',
-  '08:20 AM',
-  '09:10 AM',
-  '10:50 AM',
-  '12:00 PM',
-  '01:35 PM',
-  '02:05 PM',
-  '03:55 PM',
-  '04:25 PM',
-  '05:10 PM',
-  '06:00 PM',
-  '07:15 PM',
-  '08:45 PM',
-  '09:30 PM',
-  '10:20 PM',
-  '11:05 AM',
-  '12:45 PM',
-  '02:35 PM',
-  '05:50 PM',
-];
-
-const CANCELLED_DATES: string[] = [
-  'Ngày 22 Tháng 12, 2024',
-  'Ngày 15 Tháng 12, 2024',
-  'Ngày 10 Tháng 12, 2024',
-  'Ngày 05 Tháng 12, 2024',
-  'Ngày 30 Tháng 11, 2024',
-  'Ngày 26 Tháng 11, 2024',
-  'Ngày 20 Tháng 11, 2024',
-  'Ngày 14 Tháng 11, 2024',
-  'Ngày 08 Tháng 11, 2024',
-  'Ngày 01 Tháng 11, 2024',
-  'Ngày 26 Tháng 10, 2024',
-  'Ngày 22 Tháng 10, 2024',
-  'Ngày 16 Tháng 10, 2024',
-  'Ngày 10 Tháng 10, 2024',
-  'Ngày 04 Tháng 10, 2024',
-  'Ngày 28 Tháng 9, 2024',
-  'Ngày 22 Tháng 9, 2024',
-  'Ngày 16 Tháng 9, 2024',
-  'Ngày 09 Tháng 9, 2024',
-  'Ngày 03 Tháng 9, 2024',
-];
-
-const buildMockAppointments = (
-  status: AppointmentStatus,
-  times: string[],
-  dates: string[],
-  startId: number,
-): AppointmentHistoryItem[] => {
-  return times.map((timeLabel, index) => {
-    const profile = APPOINTMENT_PROFILES[index % APPOINTMENT_PROFILES.length];
-
-    return {
-      id: `appointment-${startId + index}`,
-      therapistName: profile.therapistName,
-      therapistSpecialization: profile.therapistSpecialization,
-      location: profile.location,
-      timeLabel,
-      dateLabel: dates[index],
-      status,
-    };
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
   });
 };
 
-const MOCK_APPOINTMENTS: AppointmentHistoryItem[] = [
-  ...buildMockAppointments('COMPLETED', COMPLETED_TIMES, COMPLETED_DATES, 1),
-  ...buildMockAppointments('CANCELLED', CANCELLED_TIMES, CANCELLED_DATES, 21),
-];
+const formatAppointmentDate = (startDatetime: string): string => {
+  const date = new Date(startDatetime);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `Ngày ${day} Tháng ${month}, ${year}`;
+};
 
 const AppointmentsHistoryScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  // const route = useRoute<AppointmentsHistoryRouteProp>();
+  // const currentTherapistId = route.params?.currentTherapistId;
+  const auth = useContext(AuthContext);
+  const profileId = auth?.userInfo?.profileId;
+
   const [activeStatus, setActiveStatus] = useState<AppointmentStatus>('COMPLETED');
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(['appointment-1']));
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [appointments, setAppointments] = useState<therapistApi.AppointmentHistoryEntry[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  const fetchHistory = useCallback(async (): Promise<void> => {
+    if (!profileId) {
+      setAppointments([]);
+      setIsLoading(false);
+      setHasError(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setHasError(false);
+
+    try {
+      const result = await therapistApi.getAppointmentHistory(profileId);
+      setAppointments(result);
+    } catch (error) {
+      console.error('[AppointmentsHistory] Failed to load appointment history:', error);
+      setAppointments([]);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [profileId]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   const filteredAppointments = useMemo(() => {
-    return MOCK_APPOINTMENTS.filter(appointment => appointment.status === activeStatus);
-  }, [activeStatus]);
+    return appointments.filter(appointment => appointment.status === activeStatus);
+  }, [appointments, activeStatus]);
 
   const toggleExpanded = (id: string) => {
     setExpandedIds(prev => {
@@ -191,18 +107,17 @@ const AppointmentsHistoryScreen: React.FC = () => {
     });
   };
 
-  const renderAppointmentCard = ({ item }: { item: AppointmentHistoryItem }) => {
-    const isExpanded = expandedIds.has(item.id);
+  const renderAppointmentCard = ({ item }: { item: therapistApi.AppointmentHistoryEntry }) => {
+    const isExpanded = expandedIds.has(item.appointmentId);
+    // const isCurrentTherapist =
+    //   !!currentTherapistId && item.therapistId === currentTherapistId;
+    const isCancelled = item.status === 'CANCELLED';
 
     return (
       <View style={styles.card}>
         <View style={styles.therapistRow}>
           <Image
-            source={
-              item.avatarUrl
-                ? { uri: item.avatarUrl }
-                : require('../../assets/booking/doctor.png')
-            }
+            source={require('../../assets/booking/doctor.png')}
             style={styles.avatar}
             resizeMode="cover"
           />
@@ -220,34 +135,48 @@ const AppointmentsHistoryScreen: React.FC = () => {
         <View style={styles.divider} />
 
         <View style={styles.timeDateRow}>
-          <Text style={styles.timeText}>{item.timeLabel}</Text>
-          <Text style={styles.dateText}>{item.dateLabel}</Text>
+          <Text style={styles.timeText}>{formatAppointmentTime(item.startDatetime)}</Text>
+          <Text style={styles.dateText}>{formatAppointmentDate(item.startDatetime)}</Text>
         </View>
 
-        {isExpanded ? (
+        {isCancelled ? null : isExpanded ? (
           <View style={styles.expandedActions}>
             <TouchableOpacity
               activeOpacity={0.85}
               style={styles.actionButton}
               onPress={() => {
-                console.log('[AppointmentsHistory] Open details for:', item.id);
+                navigation.navigate('ConsultationFeedback', {
+                  appointmentId: item.appointmentId,
+                  therapistId: item.therapistId,
+                  slotId: item.slotId,
+                  slotStartDatetime: item.startDatetime,
+                  method: item.mode === 'CHAT' ? 'Chat' : 'Video',
+                  therapistName: item.therapistName,
+                  therapistSpecialty: item.therapistSpecialization,
+                  therapistAvatarUrl: null,
+                  isReadOnly: true,
+                });
               }}>
               <Text style={styles.actionButtonText}>Chi tiết</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={styles.actionButton}
-              onPress={() => {
-                console.log('[AppointmentsHistory] Reassign old therapist for:', item.id);
-              }}>
-              <Text style={styles.actionButtonText}>Thay đổi về chuyên gia cũ</Text>
-            </TouchableOpacity>
+            {/*
+            {isCurrentTherapist ? null : (
+              <TouchableOpacity
+                activeOpacity={0.85}
+                style={styles.actionButton}
+                onPress={() => {
+                  console.log('[AppointmentsHistory] Reassign old therapist for:', item.appointmentId);
+                }}>
+                <Text style={styles.actionButtonText}>Thay đổi về chuyên gia cũ</Text>
+              </TouchableOpacity>
+            )}
+            */}
 
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.seeMoreButton}
-              onPress={() => toggleExpanded(item.id)}>
+              onPress={() => toggleExpanded(item.appointmentId)}>
               <Ionicons name="chevron-up" size={16} color={COLORS.textSecondary} />
               <Text style={styles.seeMoreText}>Thu gọn</Text>
             </TouchableOpacity>
@@ -256,11 +185,38 @@ const AppointmentsHistoryScreen: React.FC = () => {
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.seeMoreButton}
-            onPress={() => toggleExpanded(item.id)}>
+            onPress={() => toggleExpanded(item.appointmentId)}>
             <Ionicons name="chevron-down" size={16} color={COLORS.textSecondary} />
             <Text style={styles.seeMoreText}>Xem thêm</Text>
           </TouchableOpacity>
         )}
+      </View>
+    );
+  };
+
+  const renderListEmpty = () => {
+    if (isLoading) {
+      return (
+        <View style={styles.emptyState}>
+          <ActivityIndicator size="small" color={COLORS.primary} />
+          <Text style={styles.emptyStateText}>Đang tải lịch sử...</Text>
+        </View>
+      );
+    }
+
+    if (hasError) {
+      return (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>
+            Không thể tải lịch sử ngay bây giờ. Hãy thử lại sau.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.emptyState}>
+        <Text style={styles.emptyStateText}>Không có lịch hẹn trong trạng thái này.</Text>
       </View>
     );
   };
@@ -306,14 +262,18 @@ const AppointmentsHistoryScreen: React.FC = () => {
 
         <FlatList
           data={filteredAppointments}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.appointmentId}
           renderItem={renderAppointmentCard}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>Không có lịch hẹn trong trạng thái này.</Text>
-            </View>
+          ListEmptyComponent={renderListEmpty}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={fetchHistory}
+              tintColor={COLORS.primary}
+              colors={[COLORS.primary]}
+            />
           }
         />
       </View>
