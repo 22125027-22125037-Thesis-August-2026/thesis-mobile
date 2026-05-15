@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native';
 import { COLORS } from '@/theme';
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: COLORS.chipSelected,
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.chipSelected,
@@ -9,7 +13,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 16,
     paddingTop: 20,
-    paddingBottom: 28,
+    paddingBottom: 120,
     gap: 16,
   },
   backButton: {
@@ -119,6 +123,56 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: COLORS.errorText,
   },
+  reminderText: {
+    marginTop: 8,
+    fontSize: 12,
+    lineHeight: 16,
+    color: COLORS.errorText,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  floatingContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 20,
+    backgroundColor: COLORS.chipSelected,
+  },
+  floatingButton: {
+    width: '100%',
+    height: 52,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  floatingButtonPrimary: {
+    backgroundColor: COLORS.warning,
+  },
+  floatingButtonSecondary: {
+    backgroundColor: COLORS.primary,
+  },
+  floatingButtonText: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  floatingButtonTextSecondary: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: COLORS.white,
+  },
   infoTitle: {
     fontSize: 18,
     lineHeight: 24,
@@ -173,6 +227,57 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontSize: 13,
     color: COLORS.textSecondary,
+  },
+  availableSlotsLoadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  availableSlotsLoadingText: {
+    marginTop: 0,
+    marginLeft: 8,
+  },
+  availableSlotsDateGroup: {
+    marginTop: 14,
+  },
+  availableSlotsDateLabel: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 8,
+  },
+  availableSlotsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  availableSlotButton: {
+    width: '31%',
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 11,
+    marginBottom: 10,
+    marginHorizontal: '1.1%',
+  },
+  availableSlotButtonSelected: {
+    backgroundColor: COLORS.buttonPrimary,
+    borderColor: COLORS.buttonPrimary,
+  },
+  availableSlotButtonUnselected: {
+    backgroundColor: COLORS.white,
+    borderColor: COLORS.border,
+  },
+  availableSlotButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  availableSlotButtonTextSelected: {
+    color: COLORS.white,
+  },
+  availableSlotButtonTextUnselected: {
+    color: COLORS.text,
   },
 });
 

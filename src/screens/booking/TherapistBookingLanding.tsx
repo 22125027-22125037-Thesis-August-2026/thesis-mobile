@@ -10,7 +10,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -19,11 +20,13 @@ import { AuthContext } from '@/context/AuthContext';
 import {
   therapistApi,
 } from '@/api';
-import { RootStackParamList } from '@/navigation';
+import { MainTabParamList, RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
 import styles from '@/screens/booking/TherapistBookingLanding.styles';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'TherapistBookingLanding'>;
+type TherapistTabNavigationProp = BottomTabNavigationProp<MainTabParamList, 'TherapistTab'>;
+type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = CompositeNavigationProp<TherapistTabNavigationProp, RootStackNavigationProp>;
 
 const formatRelativeRemaining = (remainingMs: number): string => {
   if (remainingMs <= 0) {

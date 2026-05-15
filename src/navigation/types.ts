@@ -1,3 +1,6 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+import type { MainTabParamList } from './MainTabNavigator';
+
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
@@ -7,7 +10,7 @@ export type RootStackParamList = {
   Home: undefined;
   ParentExperience: undefined;
   AdminExperience: undefined;
-  MainTabs: undefined;
+  MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
 
   // Nâng cấp: Màn hình Chat giờ đây có thể nhận sessionId (phiên cũ) hoặc không có (phiên mới)
   Chat: { sessionId?: string | null } | undefined;
@@ -28,7 +31,6 @@ export type RootStackParamList = {
   // Đăng ký thêm màn hình Tổng quan Lịch sử Chat
   TherapyOverview: undefined;
 
-  TherapistBookingLanding: { matchingSuccess?: boolean } | undefined;
   AppointmentsHistory: undefined;
   MatchingForm: undefined;
   TherapistDetails: { id: string };

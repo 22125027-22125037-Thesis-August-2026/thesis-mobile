@@ -6,6 +6,9 @@
     "good": "VUI VẺ",
     "excellent": "TUYỆT VỜI"
   },
+  "common": {
+    "backToExit": "Nhấn lần nữa để thoát"
+  },
   "entry": {
     "screenTitle": "Hôm nay bạn thế nào?",
     "editTitle": "Chỉnh sửa nhật ký",

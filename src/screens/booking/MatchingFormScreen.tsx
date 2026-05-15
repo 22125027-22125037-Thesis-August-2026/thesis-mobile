@@ -1,7 +1,7 @@
 // src/screens/booking/MatchingFormScreen.tsx
 import React, { useState, useMemo } from 'react';
 import { View, ScrollView, TouchableOpacity, ImageBackground, Alert, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
@@ -262,7 +262,9 @@ const MatchingFormScreen: React.FC = () => {
     setIsSubmitting(true);
     try {
       await saveMatchingData(formData);
-      navigation.navigate('TherapistBookingLanding', { matchingSuccess: true });
+      navigation.dispatch(
+        CommonActions.navigate({ name: 'MainTabs', params: { screen: 'TherapistTab' } }),
+      );
     } catch {
       Alert.alert(t('auth.common.errorTitle'), t('matching.submitError'));
     } finally {
