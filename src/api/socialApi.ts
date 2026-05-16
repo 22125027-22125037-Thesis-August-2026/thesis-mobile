@@ -166,6 +166,22 @@ export const getFriendRequests = async (
     .filter((item): item is SocialFriendRequestSummary => item !== null);
 };
 
+export const sendFriendRequest = async (receiverEmail: string): Promise<void> => {
+  await socialAxiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests`, { receiverEmail });
+};
+
+export const acceptFriendRequest = async (requestId: string): Promise<void> => {
+  await socialAxiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests/${requestId}/accept`);
+};
+
+export const rejectFriendRequest = async (requestId: string): Promise<void> => {
+  await socialAxiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests/${requestId}/reject`);
+};
+
+export const unfriend = async (profileId: string): Promise<void> => {
+  await socialAxiosClient.delete(`${SOCIAL_FRIENDS_BASE_PATH}/${profileId}`);
+};
+
 export const getChannelMessages = async (
   channelId: string,
   pagination: PaginationParams = {},

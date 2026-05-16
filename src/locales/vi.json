@@ -469,7 +469,23 @@
       "friendRequestPreview": "Đã gửi lời mời kết bạn.",
       "noMessagePreview": "Chưa có tin nhắn.",
       "friendsTab": "Bạn bè ({{count}})",
-      "requestsTab": "Lời mời ({{count}})"
+      "requestsTab": "Lời mời ({{count}})",
+      "acceptRequest": "Chấp nhận",
+      "rejectRequest": "Từ chối",
+      "acceptError": "Không thể chấp nhận lời mời. Vui lòng thử lại.",
+      "rejectError": "Không thể từ chối lời mời. Vui lòng thử lại.",
+      "addFriendModalTitle": "Thêm bạn bè",
+      "addFriendModalDescription": "Nhập email tài khoản của người bạn muốn kết bạn.",
+      "addFriendInputLabel": "Email người nhận",
+      "addFriendInputPlaceholder": "email@gmail.com",
+      "addFriendCancel": "Quay lại",
+      "addFriendSubmit": "Gửi lời mời",
+      "addFriendEmptyError": "Vui lòng nhập email.",
+      "addFriendInvalidEmail": "Email không hợp lệ.",
+      "addFriendNotFound": "Không tìm thấy hồ sơ với email này.",
+      "addFriendConflict": "Không thể gửi lời mời. Có thể hai bạn đã là bạn bè, đang có lời mời chờ xử lý hoặc bạn vừa nhập email của chính mình.",
+      "addFriendSendError": "Không thể gửi lời mời. Vui lòng thử lại.",
+      "addFriendSuccess": "Đã gửi lời mời kết bạn."
     }
   },
   "session": {

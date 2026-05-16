@@ -12,7 +12,7 @@ import {
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { dataAccessGrantApi } from '@/api';
+import { dataAccessGrantApi, socialApi } from '@/api';
 import type { GrantStatusResponse } from '@/api/dataAccessGrantApi';
 import { AppText } from '@/components';
 import { DailyLogsSection } from '@/components/tracking';
@@ -36,6 +36,7 @@ const FriendProfileScreen: React.FC = () => {
   const [isConfirmGrantVisible, setIsConfirmGrantVisible] = useState(false);
   const [isGranting, setIsGranting] = useState(false);
   const [isUnfriendModalVisible, setIsUnfriendModalVisible] = useState(false);
+  const [isUnfriending, setIsUnfriending] = useState(false);
 
   const loadGrantStatus = useCallback(async () => {
     setIsStatusLoading(true);
@@ -87,10 +88,23 @@ const FriendProfileScreen: React.FC = () => {
     }
   }, [friendProfileId, friendName, loadGrantStatus]);
 
-  const handleConfirmUnfriend = useCallback(() => {
-    setIsUnfriendModalVisible(false);
-    Alert.alert('Thông báo', 'Tính năng đang được phát triển.');
-  }, []);
+  const handleConfirmUnfriend = useCallback(async () => {
+    setIsUnfriending(true);
+    try {
+      await socialApi.unfriend(friendProfileId);
+      setIsUnfriendModalVisible(false);
+      Alert.alert('Đã hủy kết bạn', `Bạn đã hủy kết bạn với ${friendName}.`);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs', params: { screen: 'ChatRoomTab' } }],
+      });
+    } catch (err) {
+      console.error('[FriendProfileScreen] unfriend failed:', err);
+      Alert.alert('Lỗi', 'Không thể hủy kết bạn. Vui lòng thử lại.');
+    } finally {
+      setIsUnfriending(false);
+    }
+  }, [friendName, friendProfileId, navigation]);
 
   const iGaveAccess = grantStatus?.iGaveThemAccess ?? false;
   const theyGaveAccess = grantStatus?.theyGaveMeAccess ?? false;
@@ -245,13 +259,19 @@ const FriendProfileScreen: React.FC = () => {
             <View style={styles.sheetButtons}>
               <Pressable
                 style={[styles.sheetBtn, styles.sheetBtnCancel]}
-                onPress={() => setIsUnfriendModalVisible(false)}>
+                onPress={() => setIsUnfriendModalVisible(false)}
+                disabled={isUnfriending}>
                 <AppText style={styles.sheetBtnCancelText}>Hủy</AppText>
               </Pressable>
               <Pressable
                 style={[styles.sheetBtn, styles.sheetBtnDestructive]}
-                onPress={handleConfirmUnfriend}>
-                <AppText style={styles.sheetBtnConfirmText}>Xác nhận</AppText>
+                onPress={handleConfirmUnfriend}
+                disabled={isUnfriending}>
+                {isUnfriending ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <AppText style={styles.sheetBtnConfirmText}>Xác nhận</AppText>
+                )}
               </Pressable>
             </View>
           </View>

@@ -469,7 +469,23 @@
       "friendRequestPreview": "Sent you a friend request.",
       "noMessagePreview": "No messages yet.",
       "friendsTab": "Friends ({{count}})",
-      "requestsTab": "Friend requests ({{count}})"
+      "requestsTab": "Friend requests ({{count}})",
+      "acceptRequest": "Accept",
+      "rejectRequest": "Decline",
+      "acceptError": "Unable to accept request. Please try again.",
+      "rejectError": "Unable to decline request. Please try again.",
+      "addFriendModalTitle": "Add Friends",
+      "addFriendModalDescription": "Enter the account email of the person you'd like to befriend.",
+      "addFriendInputLabel": "Receiver email",
+      "addFriendInputPlaceholder": "name@mhsa.local",
+      "addFriendCancel": "Back",
+      "addFriendSubmit": "Send request",
+      "addFriendEmptyError": "Please enter an email.",
+      "addFriendInvalidEmail": "That doesn't look like a valid email.",
+      "addFriendNotFound": "No profile is registered for that email.",
+      "addFriendConflict": "Can't send the request — you may already be friends, have a pending request, or have entered your own email.",
+      "addFriendSendError": "Unable to send friend request. Please try again.",
+      "addFriendSuccess": "Friend request sent."
     }
   },
   "session": {
