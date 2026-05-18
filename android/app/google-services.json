@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "635438266344",
+    "project_id": "umatter-c9875",
+    "storage_bucket": "umatter-c9875.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635438266344:android:83340db35ba6aff12e565d",
+        "android_client_info": {
+          "package_name": "com.thesisapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDavj5xXykO7cI-7KQa12j6LYjUpMy53cM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
