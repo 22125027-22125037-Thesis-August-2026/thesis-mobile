@@ -1,19 +1,27 @@
 /**
- * Mock notification "API".
+ * Notification Service client.
  *
- * Operates on an in-memory store seeded from `mock/notifications.json` so the
- * screens can be wired up before the backend exists.
+ * Talks to the uMatter Notification Service — see
+ * docs/NOTIFICATION_API_CONTROLLER_REFERENCE.md for the full endpoint spec.
  *
- * TODO(backend): replace every function in this file with real HTTP calls
- * (axiosClient). The function signatures intentionally mirror what the eventual
- * REST endpoints will look like:
- *   GET    /notifications              -> getNotifications()
- *   PATCH  /notifications/:id/read     -> markAsRead(id)
- *   PATCH  /notifications/:id/unread   -> markAsUnread(id)
- *   DELETE /notifications/:id          -> deleteNotification(id)
+ * Endpoints used here:
+ *   GET  /api/v1/notifications/{profileId}            -> getNotifications()
+ *   PUT  /api/v1/notifications/{notificationId}/read  -> markAsRead(id)
+ *   PUT  /api/v1/notifications/{profileId}/read-all   -> markAllAsRead()
+ *
+ * Endpoints the backend does NOT (yet) expose, kept as local-only overlays so
+ * the existing UI behaviour still works:
+ *   - markAsUnread(id)        — flips `read=true → false` in the local cache
+ *   - deleteNotification(id)  — hides the row from the local cache
+ *   - getNotificationById(id) — resolved against the locally cached list
+ *
+ * The signatures match the original mock so screens don't need to change.
  */
 
-import mockNotifications from '../../mock/notifications.json';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import notificationAxiosClient from '@/api/notificationAxiosClient';
+
+const PROFILE_ID_KEY = 'profileId';
 
 export type NotificationType =
   | 'CHAT'
@@ -32,12 +40,22 @@ export interface NotificationItem {
   createdAt: string;
 }
 
+// Spring Data Page envelope (only the fields we actually need — see the API
+// reference, section 4.1).
+interface NotificationPage {
+  content: NotificationItem[];
+  totalElements: number;
+  number: number;
+  last: boolean;
+}
+
 type Listener = () => void;
 
-// TODO(backend): drop this store — the server is the source of truth.
-let store: NotificationItem[] = (
-  mockNotifications as { content: NotificationItem[] }
-).content.map(n => ({ ...n }));
+// Cache of the most recent server response, plus local overlays for actions
+// the backend doesn't yet support.
+let cache: NotificationItem[] = [];
+const locallyUnread = new Set<string>();
+const locallyDeleted = new Set<string>();
 
 const listeners = new Set<Listener>();
 const notifyListeners = (): void => {
@@ -51,55 +69,128 @@ export const subscribe = (listener: Listener): (() => void) => {
   };
 };
 
-// Simulated latency so callers don't accidentally rely on synchronous behavior.
-const FAKE_LATENCY_MS = 120;
-const delay = (ms: number): Promise<void> =>
-  new Promise(resolve => setTimeout(resolve, ms));
+const applyOverlays = (items: NotificationItem[]): NotificationItem[] =>
+  items
+    .filter(n => !locallyDeleted.has(n.notificationId))
+    .map(n =>
+      locallyUnread.has(n.notificationId) ? { ...n, read: false } : n,
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+const resolveProfileId = async (): Promise<string | null> => {
+  return AsyncStorage.getItem(PROFILE_ID_KEY);
+};
+
+// Fetch one page; the API caps `size` at 100. For a long inbox we'd paginate
+// — for now a single 100-item page is enough for the screens we render.
+const DEFAULT_PAGE_SIZE = 100;
 
 export const getNotifications = async (): Promise<NotificationItem[]> => {
-  // TODO(backend): GET /notifications  (paginate + sort server-side)
-  await delay(FAKE_LATENCY_MS);
-  return [...store].sort(
-    (a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  const profileId = await resolveProfileId();
+  if (!profileId) {
+    console.log('[notificationApi] No profileId in storage — returning empty inbox.');
+    cache = [];
+    return [];
+  }
+
+  try {
+    const res = await notificationAxiosClient.get<NotificationPage>(
+      `/api/v1/notifications/${profileId}`,
+      { params: { page: 0, size: DEFAULT_PAGE_SIZE } },
+    );
+    cache = res.data?.content ?? [];
+    return applyOverlays(cache);
+  } catch (err) {
+    console.log('[notificationApi] getNotifications failed:', err);
+    return applyOverlays(cache);
+  }
 };
 
 export const getNotificationById = async (
   id: string,
 ): Promise<NotificationItem | undefined> => {
-  // TODO(backend): GET /notifications/:id
-  await delay(FAKE_LATENCY_MS);
-  return store.find(n => n.notificationId === id);
+  // No per-id GET endpoint exists — resolve against the cache, populating it
+  // first if the user deep-linked straight to the detail screen.
+  let item = applyOverlays(cache).find(n => n.notificationId === id);
+  if (item) {
+    return item;
+  }
+
+  await getNotifications();
+  item = applyOverlays(cache).find(n => n.notificationId === id);
+  return item;
 };
 
 export const markAsRead = async (id: string): Promise<void> => {
-  // TODO(backend): PATCH /notifications/:id/read
-  await delay(FAKE_LATENCY_MS);
-  store = store.map(n =>
+  // Optimistic: drop the local-unread overlay (if any) and flip the cache so
+  // listeners see the update immediately.
+  locallyUnread.delete(id);
+  cache = cache.map(n =>
     n.notificationId === id ? { ...n, read: true } : n,
   );
   notifyListeners();
+
+  try {
+    await notificationAxiosClient.put(`/api/v1/notifications/${id}/read`);
+  } catch (err) {
+    console.log('[notificationApi] markAsRead failed:', err);
+    // 404 is treated as "already gone" per the API doc; we already updated
+    // the UI optimistically so there's nothing to roll back.
+  }
 };
 
+export const markAllAsRead = async (): Promise<void> => {
+  const profileId = await resolveProfileId();
+  if (!profileId) return;
+
+  locallyUnread.clear();
+  cache = cache.map(n => ({ ...n, read: true }));
+  notifyListeners();
+
+  try {
+    await notificationAxiosClient.put(
+      `/api/v1/notifications/${profileId}/read-all`,
+    );
+  } catch (err) {
+    console.log('[notificationApi] markAllAsRead failed:', err);
+  }
+};
+
+// TODO(backend): the Notification Service does not expose a "mark as unread"
+// endpoint. We track the override locally so the UI still works; this state
+// is wiped on app reload.
 export const markAsUnread = async (id: string): Promise<void> => {
-  // TODO(backend): PATCH /notifications/:id/unread
-  await delay(FAKE_LATENCY_MS);
-  store = store.map(n =>
+  locallyUnread.add(id);
+  cache = cache.map(n =>
     n.notificationId === id ? { ...n, read: false } : n,
   );
   notifyListeners();
 };
 
+// TODO(backend): the Notification Service does not expose a delete endpoint.
+// We hide the row locally; it will reappear on the next cold start until the
+// backend grows a real DELETE.
 export const deleteNotification = async (id: string): Promise<void> => {
-  // TODO(backend): DELETE /notifications/:id
-  await delay(FAKE_LATENCY_MS);
-  store = store.filter(n => n.notificationId !== id);
+  locallyDeleted.add(id);
+  locallyUnread.delete(id);
   notifyListeners();
 };
 
 export const getUnreadCount = async (): Promise<number> => {
-  // TODO(backend): GET /notifications/unread-count
-  await delay(FAKE_LATENCY_MS);
-  return store.filter(n => !n.read).length;
+  // The API doc recommends deriving this client-side from the inbox until/if
+  // a dedicated endpoint is added.
+  const items = applyOverlays(cache);
+  return items.filter(n => !n.read).length;
+};
+
+// Wipe local caches/overlays — call this on logout to avoid leaking the
+// previous user's state into the next session.
+export const resetNotificationCache = (): void => {
+  cache = [];
+  locallyUnread.clear();
+  locallyDeleted.clear();
+  notifyListeners();
 };

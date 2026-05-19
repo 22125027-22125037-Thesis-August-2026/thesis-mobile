@@ -4,7 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18next from 'i18next';
 import axios from 'axios';
 import { axiosClient, setLogoutHandler } from '@/api';
-import { syncDeviceTokenAfterLogin } from '@/services/notifications';
+import { resetNotificationCache } from '@/api/notificationApi';
+import {
+  syncDeviceTokenAfterLogin,
+  syncDeviceTokenOnLogout,
+} from '@/services/notifications';
 import { AuthResponse, RegisterPayload, User, UserRole } from '@/types';
 
 const AUTH_BASE_PATH = '/api/v1/auth';
@@ -50,6 +54,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const clearAuthSession = async () => {
     setUserToken(null);
     setUserInfo(null);
+    // Best-effort deregister of the FCM token so the user stops receiving
+    // pushes on this device (see Notification API doc section 5.5). Awaited
+    // so we don't race the userToken removal — the DELETE still wants the
+    // bearer header for when JWT auth lands.
+    try {
+      await syncDeviceTokenOnLogout();
+    } catch (err) {
+      console.log('[FCM] syncDeviceTokenOnLogout failed:', err);
+    }
+    resetNotificationCache();
     await AsyncStorage.multiRemove(AUTH_STORAGE_KEYS);
   };
 
@@ -92,9 +106,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         profileId,
       });
 
-      // Fire-and-forget: fetch the FCM token and forward it to the Auth
-      // service (currently mocked — see src/services/notifications.ts).
-      syncDeviceTokenAfterLogin().catch(err =>
+      // Fire-and-forget: fetch the FCM token and POST /api/v1/devices.
+      syncDeviceTokenAfterLogin(profileId).catch(err =>
         console.log('[FCM] syncDeviceTokenAfterLogin failed:', err),
       );
     } catch (error) {
@@ -180,9 +193,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
           // Existing session restored — re-register the FCM token so the
           // backend always has the latest one for this device.
-          syncDeviceTokenAfterLogin().catch(err =>
-            console.log('[FCM] syncDeviceTokenAfterLogin failed:', err),
-          );
+          const effectiveProfileId = profileId || profilePayload.profileId;
+          if (effectiveProfileId) {
+            syncDeviceTokenAfterLogin(effectiveProfileId).catch(err =>
+              console.log('[FCM] syncDeviceTokenAfterLogin failed:', err),
+            );
+          }
         } catch (err: any) {
           if (isOrphanTokenError(err)) {
             await clearAuthSession();

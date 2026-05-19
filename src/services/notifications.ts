@@ -1,13 +1,16 @@
 import { Platform } from 'react-native';
-import { axiosClient } from '@/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { notificationAxiosClient } from '@/api';
 
 // ============================================================================
 // Firebase Cloud Messaging (FCM) integration
 // ----------------------------------------------------------------------------
-// Producer services (Booking, Tracking, Social) publish notification events
-// that need to be delivered to the user's device. To target a device we need
-// its FCM registration token, which the mobile app obtains from the Firebase
-// SDK at runtime and forwards to the Auth/User service.
+// The Notification Service stores each user's FCM device tokens so producer
+// services (Booking, Tracking, Social) can target the right device(s) when
+// publishing notification events.
+//
+// See docs/NOTIFICATION_API_CONTROLLER_REFERENCE.md sections 4.4 and 4.5 for
+// the endpoint contract.
 //
 // REQUIRED NATIVE SETUP (do this before the token will be non-null):
 //   1. `npm install @react-native-firebase/app @react-native-firebase/messaging`
@@ -20,6 +23,10 @@ import { axiosClient } from '@/api';
 // Until step 1 is done this module loads with a graceful fallback: token
 // retrieval simply returns null and login still succeeds.
 // ============================================================================
+
+const DEVICE_TOKEN_STORAGE_KEY = 'fcmDeviceToken';
+
+type DevicePlatform = 'ANDROID' | 'IOS' | 'WEB';
 
 type FirebaseMessagingModule = {
   (): {
@@ -47,6 +54,12 @@ try {
 }
 
 const isFirebaseAvailable = (): boolean => messagingModule !== null;
+
+const currentPlatform = (): DevicePlatform => {
+  if (Platform.OS === 'ios') return 'IOS';
+  if (Platform.OS === 'android') return 'ANDROID';
+  return 'WEB';
+};
 
 const ensureNotificationPermission = async (): Promise<boolean> => {
   if (!messagingModule) {
@@ -90,52 +103,63 @@ export const getFcmToken = async (): Promise<string | null> => {
   }
 };
 
-// ---------------------------------------------------------------------------
-// MOCK: forward the FCM token to the Auth service.
-// ---------------------------------------------------------------------------
-// The Auth service does not yet have a column to persist the device token,
-// so this call is intentionally stubbed. The token is logged so it can be
-// copied into the backend manually during development.
-//
-// When the backend endpoint lands, delete the mock log block and uncomment
-// the real POST below. The expected contract (adjust as the backend defines):
-//
-//   POST /api/v1/auth/device-tokens
-//   Body: { token: string, platform: 'ios' | 'android' | 'other' }
-//   Auth: bearer token (already attached by axiosClient interceptor)
-// ---------------------------------------------------------------------------
-export const registerDeviceTokenWithAuthService = async (
+// POST /api/v1/devices — register/refresh the FCM token for this user/device.
+// Idempotent: re-posting the same token just refreshes lastSeenAt.
+export const registerDeviceTokenWithNotificationService = async (
+  profileId: string,
   token: string,
 ): Promise<void> => {
-  const platform: 'ios' | 'android' | 'other' =
-    Platform.OS === 'ios' || Platform.OS === 'android' ? Platform.OS : 'other';
+  const platform = currentPlatform();
 
-  // ---- MOCK START ----------------------------------------------------------
-  console.log('[FCM] Device token ready (mock — not yet sent to Auth service):');
-  console.log(`[FCM]   platform=${platform}`);
-  console.log(`[FCM]   token=${token}`);
   console.log(
-    '[FCM] TODO: wire POST /api/v1/auth/device-tokens once the Auth service column exists.',
+    `[FCM] Registering device token (platform=${platform}, profileId=${profileId}).`,
   );
-  // ---- MOCK END ------------------------------------------------------------
 
-  // ---- REAL CALL (enable when Auth service is ready) -----------------------
-  // try {
-  //   await axiosClient.post('/api/v1/auth/device-tokens', { token, platform });
-  // } catch (err) {
-  //   console.log('[FCM] Failed to register device token with Auth service:', err);
-  // }
-  // --------------------------------------------------------------------------
-
-  // Reference axiosClient so the import survives lint until the real call is
-  // enabled. Remove this line when uncommenting the POST above.
-  void axiosClient;
+  try {
+    await notificationAxiosClient.post('/api/v1/devices', {
+      profileId,
+      deviceToken: token,
+      platform,
+    });
+    await AsyncStorage.setItem(DEVICE_TOKEN_STORAGE_KEY, token);
+  } catch (err) {
+    console.log('[FCM] Failed to register device token:', err);
+  }
 };
 
-export const syncDeviceTokenAfterLogin = async (): Promise<void> => {
+// DELETE /api/v1/devices/{deviceToken} — call on logout so the user stops
+// receiving pushes on this device.
+export const deregisterDeviceTokenWithNotificationService = async (): Promise<void> => {
+  const token = await AsyncStorage.getItem(DEVICE_TOKEN_STORAGE_KEY);
+  if (!token) {
+    return;
+  }
+
+  try {
+    await notificationAxiosClient.delete(
+      `/api/v1/devices/${encodeURIComponent(token)}`,
+    );
+  } catch (err) {
+    // 404 = already gone; nothing to clean up.
+    console.log('[FCM] Failed to deregister device token:', err);
+  } finally {
+    await AsyncStorage.removeItem(DEVICE_TOKEN_STORAGE_KEY);
+  }
+};
+
+export const syncDeviceTokenAfterLogin = async (
+  profileId: string,
+): Promise<void> => {
+  if (!profileId) {
+    return;
+  }
   const token = await getFcmToken();
   if (!token) {
     return;
   }
-  await registerDeviceTokenWithAuthService(token);
+  await registerDeviceTokenWithNotificationService(profileId, token);
+};
+
+export const syncDeviceTokenOnLogout = async (): Promise<void> => {
+  await deregisterDeviceTokenWithNotificationService();
 };
