@@ -457,6 +457,8 @@
       "cardTitle": "How you feel now",
       "cardSubtitle": "How are you feeling today?",
       "savedBadge": "Saved",
+      "lastEntry": "Last: {{mood}}",
+      "savedSuccess": "Logged {{mood}}!",
       "quickInputPlaceholder": "A few words about \"{{mood}}\"...",
       "chipLabels": {
         "TERRIBLE": "Awful",

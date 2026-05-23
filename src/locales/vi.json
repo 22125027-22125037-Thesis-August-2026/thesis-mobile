@@ -457,11 +457,13 @@
       "cardTitle": "Cảm xúc lúc này",
       "cardSubtitle": "Hôm nay bạn cảm thấy thế nào?",
       "savedBadge": "Đã ghi",
+      "lastEntry": "Lần cuối: {{mood}}",
+      "savedSuccess": "Đã ghi nhận {{mood}}!",
       "quickInputPlaceholder": "Vài dòng về \"{{mood}}\"...",
       "chipLabels": {
         "TERRIBLE": "Tệ",
         "BAD": "Buồn",
-        "NEUTRAL": "Bình",
+        "NEUTRAL": "Bình thường",
         "GOOD": "Vui",
         "EXCELLENT": "Tuyệt"
       }

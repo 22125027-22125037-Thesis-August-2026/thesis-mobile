@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,7 +8,6 @@ import { AppText } from '@/components';
 import { diaryApi } from '@/api';
 import { AuthContext } from '@/context/AuthContext';
 import {
-  MoodSelectorOption,
   MoodTag,
   MOOD_SELECTOR_OPTIONS,
   getMoodScore,
@@ -43,24 +42,21 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
   const [currentMood, setCurrentMood] = useState<MoodTag | null>(null);
   const [pendingMood, setPendingMood] = useState<MoodTag | null>(null);
   const [quickContent, setQuickContent] = useState<string>('');
-  const [todayDiaryId, setTodayDiaryId] = useState<string | null>(null);
+  const [lastMood, setLastMood] = useState<MoodTag | null>(null);
+  const [successMood, setSuccessMood] = useState<MoodTag | null>(null);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchTodayMood = useCallback(async (): Promise<void> => {
+  const fetchLastMood = useCallback(async (): Promise<void> => {
     if (!userInfo?.profileId) return;
     try {
       const entries = await diaryApi.getDiaryEntries(userInfo.profileId);
-      const now = new Date();
-      const todayStr = `${now.getFullYear()}-${`${now.getMonth() + 1}`.padStart(2, '0')}-${`${now.getDate()}`.padStart(2, '0')}`;
-      const todayEntries = entries.filter(e => e.entryDate === todayStr);
-      if (todayEntries.length > 0) {
-        const latest = todayEntries.sort(
+      if (entries.length > 0) {
+        const latest = entries.sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )[0];
-        setCurrentMood((latest.moodTag as MoodTag) ?? null);
-        setTodayDiaryId(latest.id);
+        setLastMood((latest.moodTag as MoodTag) ?? null);
       } else {
-        setCurrentMood(null);
-        setTodayDiaryId(null);
+        setLastMood(null);
       }
     } catch {
       // silently keep current state on error
@@ -69,16 +65,17 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
 
   useFocusEffect(
     useCallback(() => {
-      void fetchTodayMood();
-    }, [fetchTodayMood]),
+      void fetchLastMood();
+    }, [fetchLastMood]),
   );
 
   useEffect(() => {
-    void fetchTodayMood();
-  }, [fetchTodayMood]);
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    };
+  }, []);
 
   const handleMoodSelect = (mood: MoodTag): void => {
-    if (todayDiaryId) return;
     setCurrentMood(mood);
     setPendingMood(mood);
     setQuickContent('');
@@ -86,19 +83,24 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
 
   const handleQuickSave = async (): Promise<void> => {
     if (!pendingMood) return;
-    const content = quickContent.trim() || t(MOOD_CONTENT_KEY[pendingMood]);
+    const savedMood = pendingMood;
+    const content = quickContent.trim() || t(MOOD_CONTENT_KEY[savedMood]);
     try {
       const now = new Date();
       const todayStr = `${now.getFullYear()}-${`${now.getMonth() + 1}`.padStart(2, '0')}-${`${now.getDate()}`.padStart(2, '0')}`;
-      const created = await diaryApi.createDiaryEntry({
+      await diaryApi.createDiaryEntry({
         content,
-        moodTag: pendingMood,
-        positivityScore: getMoodScore(pendingMood),
+        moodTag: savedMood,
+        positivityScore: getMoodScore(savedMood),
         entryDate: todayStr,
       });
-      setTodayDiaryId(created.id);
+      setCurrentMood(null);
       setPendingMood(null);
       setQuickContent('');
+      setLastMood(savedMood);
+      setSuccessMood(savedMood);
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+      successTimerRef.current = setTimeout(() => setSuccessMood(null), 2500);
       onMoodSaved?.();
     } catch {
       setCurrentMood(null);
@@ -106,10 +108,8 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
     }
   };
 
-  const activeOption: MoodSelectorOption | undefined = currentMood
-    ? MOOD_SELECTOR_OPTIONS.find(o => o.value === currentMood)
-    : undefined;
-  const isSaved = todayDiaryId !== null;
+  const lastMoodOption = lastMood ? MOOD_SELECTOR_OPTIONS.find(o => o.value === lastMood) : undefined;
+  const successMoodOption = successMood ? MOOD_SELECTOR_OPTIONS.find(o => o.value === successMood) : undefined;
 
   return (
     <View style={styles.card}>
@@ -118,20 +118,20 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
           <AppText style={styles.title}>{t('home.mood.cardTitle')}</AppText>
           <AppText style={styles.subtitle}>{t('home.mood.cardSubtitle')}</AppText>
         </View>
-        {isSaved && activeOption && (
+        {lastMoodOption && !successMood && (
           <View
             style={[
-              styles.savedBadge,
-              { backgroundColor: hexWithAlpha(activeOption.color, '1A') },
+              styles.lastMoodBadge,
+              { backgroundColor: hexWithAlpha(lastMoodOption.color, '1A') },
             ]}
           >
             <MaterialCommunityIcons
-              name="check-circle"
-              size={14}
-              color={activeOption.color}
+              name={lastMoodOption.activeIcon}
+              size={13}
+              color={lastMoodOption.color}
             />
-            <AppText style={[styles.savedBadgeText, { color: activeOption.color }]}>
-              {t('home.mood.savedBadge')}
+            <AppText style={[styles.lastMoodText, { color: lastMoodOption.color }]}>
+              {t('home.mood.lastEntry', { mood: t(MOOD_LABEL_KEY[lastMood!]) })}
             </AppText>
           </View>
         )}
@@ -140,19 +140,16 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
       <View style={styles.chipsRow}>
         {MOOD_SELECTOR_OPTIONS.map(opt => {
           const isActive = currentMood === opt.value;
-          const isLocked = isSaved && !isActive;
           return (
             <Pressable
               key={opt.value}
               onPress={() => handleMoodSelect(opt.value)}
-              disabled={isSaved}
               style={[
                 styles.chip,
                 isActive && {
                   backgroundColor: hexWithAlpha(opt.color, '1A'),
                   borderColor: opt.color,
                 },
-                isLocked && styles.chipLocked,
               ]}
             >
               <MaterialCommunityIcons
@@ -173,7 +170,21 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
         })}
       </View>
 
-      {pendingMood && !isSaved && (
+      {successMoodOption && (
+        <View
+          style={[
+            styles.successBanner,
+            { backgroundColor: hexWithAlpha(successMoodOption.color, '15') },
+          ]}
+        >
+          <MaterialCommunityIcons name="check-circle" size={15} color={successMoodOption.color} />
+          <AppText style={[styles.successText, { color: successMoodOption.color }]}>
+            {t('home.mood.savedSuccess', { mood: t(MOOD_LABEL_KEY[successMood!]).toLowerCase() })}
+          </AppText>
+        </View>
+      )}
+
+      {pendingMood && (
         <View style={styles.inputRow}>
           <TextInput
             style={styles.input}
@@ -228,15 +239,15 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: 2,
   },
-  savedBadge: {
+  lastMoodBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
     borderRadius: BORDER_RADIUS.pill,
-    paddingHorizontal: 10,
+    paddingHorizontal: 9,
     paddingVertical: 4,
   },
-  savedBadgeText: {
+  lastMoodText: {
     fontSize: 11,
     fontWeight: '700',
   },
@@ -256,13 +267,23 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: 'transparent',
   },
-  chipLocked: {
-    opacity: 0.4,
-  },
   chipLabel: {
     fontSize: 10,
     fontWeight: '700',
     textAlign: 'center',
+  },
+  successBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 12,
+    borderRadius: BORDER_RADIUS.md,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  successText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
   },
   inputRow: {
     flexDirection: 'row',
