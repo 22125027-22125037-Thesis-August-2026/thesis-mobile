@@ -1,10 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components';
-import { RootStackParamList } from '@/navigation';
 import { HomeDashboardData } from '@/hooks/useHomeDashboardData';
 import { COLORS, FONT_SIZES, SPACING } from '@/theme';
 
@@ -18,7 +16,6 @@ interface MiniDashboardsSectionProps {
 
 const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) => {
   const { t } = useTranslation();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <View style={styles.section}>
@@ -26,9 +23,6 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
         <AppText style={styles.sectionTitle}>
           {t('home.dashboards.sectionTitle')}
         </AppText>
-        <Pressable onPress={() => navigation.navigate('DiaryOverview')}>
-          <AppText style={styles.seeAll}>{t('home.dashboards.seeAll')}</AppText>
-        </Pressable>
       </View>
 
       <SleepMiniDashboard hours={data.sleep.hours} avg={data.sleep.avg} />
@@ -59,11 +53,6 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
-  },
-  seeAll: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.primary,
-    fontWeight: '600',
   },
 });
 
