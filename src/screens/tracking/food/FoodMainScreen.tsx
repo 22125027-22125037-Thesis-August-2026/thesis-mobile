@@ -328,7 +328,7 @@ const FoodMainScreen: React.FC = () => {
     );
   }, [weeklyLogs]);
   const chartWidth = Math.max(
-    screenWidth - SPACING.screenHorizontal * 2 - 16,
+    screenWidth - SPACING.screenHorizontal * 2 - SPACING.md * 2,
     280,
   );
 
@@ -338,6 +338,26 @@ const FoodMainScreen: React.FC = () => {
       backgroundGradientFrom: COLORS.surface,
       backgroundGradientTo: COLORS.surface,
       decimalPlaces: 0,
+      color: (opacity = 1): string => toRgba(COLORS.foodHeaderOrange, opacity),
+      labelColor: (opacity = 1): string =>
+        toRgba(COLORS.textSecondary, opacity),
+      propsForBackgroundLines: {
+        stroke: COLORS.borderSubtle,
+      },
+      propsForLabels: {
+        fontSize: 10,
+      },
+    }),
+    [],
+  );
+
+  const barChartConfig = useMemo(
+    () => ({
+      backgroundColor: COLORS.surface,
+      backgroundGradientFrom: COLORS.surface,
+      backgroundGradientTo: COLORS.surface,
+      decimalPlaces: 0,
+      barPercentage: 0.65,
       color: (opacity = 1): string => toRgba(COLORS.foodHeaderOrange, opacity),
       labelColor: (opacity = 1): string =>
         toRgba(COLORS.textSecondary, opacity),
@@ -578,7 +598,7 @@ const FoodMainScreen: React.FC = () => {
                   yAxisSuffix=""
                   showValuesOnTopOfBars
                   withInnerLines={false}
-                  chartConfig={chartConfig}
+                  chartConfig={barChartConfig}
                   style={styles.chart}
                 />
               )}
