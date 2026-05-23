@@ -356,23 +356,27 @@ const RegisterScreen = ({ navigation }: any) => {
             {renderRoleSpecificFields()}
 
             {/* Checkbox Điều khoản */}
-            <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => setAgreeTerm(!agreeTerm)}
-              activeOpacity={0.8}
-            >
-              <Ionicons
-                name={agreeTerm ? 'radio-button-on' : 'radio-button-off'}
-                size={22}
-                color={COLORS.text}
-              />
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity
+                onPress={() => setAgreeTerm(!agreeTerm)}
+                activeOpacity={0.8}
+              >
+                <Ionicons
+                  name={agreeTerm ? 'radio-button-on' : 'radio-button-off'}
+                  size={22}
+                  color={COLORS.text}
+                />
+              </TouchableOpacity>
               <AppText style={styles.checkboxText}>
                 {t('auth.register.agreePrefix')}
-                <AppText style={styles.linkText}>
+                <AppText
+                  style={styles.linkText}
+                  onPress={() => navigation.navigate('Terms')}
+                >
                   {t('auth.register.agreeTermsLink')}
                 </AppText>
               </AppText>
-            </TouchableOpacity>
+            </View>
 
             {/* Link đã có tài khoản */}
             <View style={{ flexDirection: 'row', marginBottom: 20 }}>

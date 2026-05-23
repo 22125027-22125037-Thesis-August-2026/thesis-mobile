@@ -24,6 +24,7 @@ import {
   FriendProfileScreen,
   HomeScreen,
   LoginScreen,
+  TermsScreen,
   MatchingFormScreen,
   MessageListScreen,
   NotificationScreen,
@@ -267,11 +268,13 @@ const AppNav: React.FC = () => {
             </Stack.Screen>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Terms" component={TermsScreen} />
           </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Terms" component={TermsScreen} />
           </>
         )}
       </Stack.Navigator>

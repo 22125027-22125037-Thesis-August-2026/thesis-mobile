@@ -680,5 +680,39 @@
       "actionCancel": "Huỷ",
       "actionTitle": "Tin nhắn"
     }
+  },
+  "terms": {
+    "title": "Điều khoản & Điều kiện",
+    "lastUpdated": "Cập nhật lần cuối: tháng 5 năm 2025",
+    "intro": "Vui lòng đọc kỹ các điều khoản và điều kiện dưới đây trước khi sử dụng ứng dụng uMatter. Bằng cách tạo tài khoản, bạn đồng ý với tất cả các điều khoản được liệt kê.",
+    "section1": {
+      "title": "1. Chấp nhận điều khoản",
+      "body": "Khi truy cập và sử dụng ứng dụng uMatter, bạn xác nhận rằng bạn đã đọc, hiểu và đồng ý bị ràng buộc bởi các điều khoản và điều kiện này. Nếu bạn không đồng ý với bất kỳ phần nào, bạn không được phép sử dụng ứng dụng."
+    },
+    "section2": {
+      "title": "2. Mô tả dịch vụ",
+      "body": "uMatter là nền tảng hỗ trợ sức khỏe tâm thần dành cho học sinh, sinh viên, phụ huynh và các nhà trị liệu tâm lý. Chúng tôi cung cấp các công cụ theo dõi tâm trạng, nhật ký cảm xúc, tư vấn trực tuyến và tài nguyên hỗ trợ sức khỏe tinh thần."
+    },
+    "section3": {
+      "title": "3. Tài khoản người dùng",
+      "body": "Bạn có trách nhiệm duy trì tính bảo mật của thông tin tài khoản và mật khẩu. Bạn đồng ý thông báo ngay cho chúng tôi về bất kỳ hành vi sử dụng trái phép nào đối với tài khoản của bạn. uMatter không chịu trách nhiệm về bất kỳ tổn thất nào phát sinh từ việc không bảo vệ thông tin đăng nhập."
+    },
+    "section4": {
+      "title": "4. Quyền riêng tư & Bảo mật dữ liệu",
+      "body": "Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn. Dữ liệu sức khỏe tâm thần của bạn được mã hóa và lưu trữ an toàn. Chúng tôi không bán hoặc chia sẻ thông tin cá nhân của bạn với bên thứ ba mà không có sự đồng ý rõ ràng của bạn, ngoại trừ các trường hợp được pháp luật yêu cầu."
+    },
+    "section5": {
+      "title": "5. Giới hạn trách nhiệm",
+      "body": "uMatter không phải là dịch vụ cấp cứu y tế. Nội dung trong ứng dụng chỉ mang tính hỗ trợ và không thay thế cho lời khuyên, chẩn đoán hoặc điều trị y tế chuyên nghiệp. Trong trường hợp khẩn cấp, hãy gọi cho cơ quan y tế địa phương hoặc đường dây hỗ trợ khủng hoảng ngay lập tức."
+    },
+    "section6": {
+      "title": "6. Hành vi người dùng",
+      "body": "Bạn đồng ý không sử dụng ứng dụng cho các mục đích bất hợp pháp, không quấy rối hoặc làm hại người dùng khác, không chia sẻ nội dung có hại hoặc gây tổn thương, và không cố gắng truy cập trái phép vào hệ thống của chúng tôi."
+    },
+    "section7": {
+      "title": "7. Thay đổi điều khoản",
+      "body": "uMatter có quyền sửa đổi các điều khoản này bất kỳ lúc nào. Chúng tôi sẽ thông báo cho bạn về những thay đổi quan trọng qua email hoặc thông báo trong ứng dụng. Việc tiếp tục sử dụng ứng dụng sau khi thay đổi được áp dụng đồng nghĩa với việc bạn chấp nhận điều khoản mới."
+    },
+    "contact": "Nếu bạn có câu hỏi về các điều khoản này, vui lòng liên hệ với chúng tôi qua email: support@umatter.app"
   }
 }
