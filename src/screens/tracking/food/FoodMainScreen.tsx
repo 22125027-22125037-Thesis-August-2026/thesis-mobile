@@ -26,7 +26,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { RootStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { FoodLogRequest, FoodLogResponse } from '@/types';
-import { isSameDate, startOfWeekMonday } from '@/utils';
+import { endOfWeekSunday, isSameDate, startOfWeekMonday } from '@/utils';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './FoodMainScreen.styles';
 
@@ -142,18 +142,6 @@ const clampToToday = (date: Date): Date => {
   return next > now ? now : next;
 };
 
-const getWeekDateKeys = (selectedDate: Date): string[] => {
-  const dates: string[] = [];
-
-  for (let index = 6; index >= 0; index -= 1) {
-    const date = new Date(selectedDate);
-    date.setDate(selectedDate.getDate() - index);
-    date.setHours(0, 0, 0, 0);
-    dates.push(formatDateKey(date));
-  }
-
-  return dates;
-};
 
 const foodLogSortValue = (log: FoodLogResponse): number => {
   return new Date(log.createdAt).getTime();
@@ -210,20 +198,30 @@ const FoodMainScreen: React.FC = () => {
     () => formatDateKey(selectedDate),
     [selectedDate],
   );
-  const weekDateKeys = useMemo(
-    () => getWeekDateKeys(selectedDate),
+  const selectedWeekStart = useMemo(
+    () => startOfWeekMonday(selectedDate),
     [selectedDate],
+  );
+  const selectedWeekEnd = useMemo(
+    () => endOfWeekSunday(selectedWeekStart),
+    [selectedWeekStart],
+  );
+  const weekDateKeys = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(selectedWeekStart);
+        date.setDate(selectedWeekStart.getDate() + index);
+        date.setHours(0, 0, 0, 0);
+        return formatDateKey(date);
+      }),
+    [selectedWeekStart],
   );
 
   const loadLogs = useCallback(async (): Promise<void> => {
     setIsLoading(true);
 
-    const requestStart = new Date(selectedDate);
-    requestStart.setDate(selectedDate.getDate() - 7);
-    requestStart.setHours(0, 0, 0, 0);
-
-    const startDate = formatDateKey(requestStart);
-    const endDate = weekDateKeys[weekDateKeys.length - 1];
+    const startDate = formatDateKey(selectedWeekStart);
+    const endDate = formatDateKey(selectedWeekEnd);
 
     try {
       const logs = await foodApi.getFoodLogs(viewProfileId ?? userInfo?.profileId ?? '', startDate, endDate);
@@ -255,7 +253,7 @@ const FoodMainScreen: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedDateKey, t, weekDateKeys]);
+  }, [selectedDateKey, t, selectedWeekStart, selectedWeekEnd]);
 
   useEffect(() => {
     void loadLogs();
@@ -288,11 +286,6 @@ const FoodMainScreen: React.FC = () => {
   const foodLogDate = (log: FoodLogResponse): Date => {
     return parseDateKey(foodLogDateKey(log));
   };
-
-  const selectedWeekStart = useMemo(
-    () => startOfWeekMonday(selectedDate),
-    [selectedDate],
-  );
 
   const weekTrend = useMemo<FoodDayTrend[]>(() => {
     return Array.from({ length: 7 }, (_, index) => {
