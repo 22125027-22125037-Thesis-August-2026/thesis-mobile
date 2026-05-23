@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const THERAPIST_API_BASE_URL = 'http://161.118.252.10:8082';
+const THERAPIST_API_BASE_URL = 'http://161.118.252.10:8085';
 const HARDCODED_TEST_TOKEN = '';
 const HAS_HARDCODED_TEST_TOKEN = HARDCODED_TEST_TOKEN.trim().length > 0;
 const IS_DEV = __DEV__;
