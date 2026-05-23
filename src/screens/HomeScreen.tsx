@@ -1,15 +1,13 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Animated,
+  Image,
+  Pressable,
   RefreshControl,
   ScrollView,
   View,
-  Image,
-  Pressable,
-  TextInput,
 } from 'react-native';
-import { AppText } from '@/components';
 import {
   NavigationProp,
   useFocusEffect,
@@ -19,22 +17,19 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 
-import { trackingApi, diaryApi } from '@/api';
-import { DailyLogsSection } from '@/components/tracking';
+import { AppText } from '@/components';
+import {
+  FindTherapistCta,
+  MeditationCarousel,
+  MiniDashboardsSection,
+  MoodCheckInCard,
+} from '@/components/home';
 import { AuthContext } from '@/context/AuthContext';
+import { useHomeDashboardData } from '@/hooks/useHomeDashboardData';
 import { COLORS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
-import { MOOD_SELECTOR_OPTIONS, MoodTag, getMoodScore } from '@/constants/moods';
 import LogoMark from '@/assets/logo/LogoMark';
 import { styles } from './HomeScreen.styles';
-
-const MOOD_CONTENT_KEY: Record<MoodTag, string> = {
-  TERRIBLE: 'home.overview.moodDefaultTerrible',
-  BAD: 'home.overview.moodDefaultBad',
-  NEUTRAL: 'home.overview.moodDefaultNeutral',
-  GOOD: 'home.overview.moodDefaultGood',
-  EXCELLENT: 'home.overview.moodDefaultExcellent',
-};
 
 type NavigationPropType = NavigationProp<RootStackParamList>;
 
@@ -85,82 +80,13 @@ const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationPropType>();
   const { userInfo } = useContext(AuthContext)!;
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentMood, setCurrentMood] = useState<MoodTag | null>(null);
-  const [pendingMood, setPendingMood] = useState<MoodTag | null>(null);
-  const [quickContent, setQuickContent] = useState<string>('');
-  const [todayDiaryId, setTodayDiaryId] = useState<string | null>(null);
-
-  const fetchSummary = useCallback(async (): Promise<void> => {
-    try {
-      await trackingApi.getDashboardSummary();
-    } catch (error) {
-      console.error('[HomeScreen] Failed to load dashboard summary:', error);
-    }
-  }, []);
-
-  const fetchTodayMood = useCallback(async (): Promise<void> => {
-    if (!userInfo?.profileId) return;
-    try {
-      const entries = await diaryApi.getDiaryEntries(userInfo.profileId);
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const todayEntries = entries.filter(e => e.entryDate === todayStr);
-      if (todayEntries.length > 0) {
-        const latest = todayEntries.sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        )[0];
-        setCurrentMood((latest.moodTag as MoodTag) ?? null);
-        setTodayDiaryId(latest.id);
-      } else {
-        setCurrentMood(null);
-        setTodayDiaryId(null);
-      }
-    } catch {
-      // silently keep current mood on error
-    }
-  }, [userInfo?.profileId]);
-
-  const fetchAll = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      await Promise.all([fetchSummary(), fetchTodayMood()]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchSummary, fetchTodayMood]);
+  const dashboard = useHomeDashboardData(userInfo?.profileId);
 
   useFocusEffect(
     useCallback(() => {
-      fetchAll();
-    }, [fetchAll]),
+      void dashboard.refetch();
+    }, [dashboard.refetch]),
   );
-
-  const handleMoodSelect = (mood: MoodTag): void => {
-    if (todayDiaryId) return;
-    setCurrentMood(mood);
-    setPendingMood(mood);
-    setQuickContent('');
-  };
-
-  const handleQuickSave = async (): Promise<void> => {
-    if (!pendingMood) return;
-    const content = quickContent.trim() || t(MOOD_CONTENT_KEY[pendingMood]);
-    try {
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const created = await diaryApi.createDiaryEntry({
-        content,
-        moodTag: pendingMood,
-        positivityScore: getMoodScore(pendingMood),
-        entryDate: todayStr,
-      });
-      setTodayDiaryId(created.id);
-      setPendingMood(null);
-      setQuickContent('');
-    } catch {
-      setCurrentMood(null);
-      setPendingMood(null);
-    }
-  };
 
   const handleNavigateChatbot = (): void => {
     navigation.navigate('Chat');
@@ -182,7 +108,10 @@ const HomeScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={fetchAll} />
+          <RefreshControl
+            refreshing={dashboard.isLoading}
+            onRefresh={dashboard.refetch}
+          />
         }
         contentContainerStyle={styles.scrollContent}
       >
@@ -226,139 +155,30 @@ const HomeScreen: React.FC = () => {
               </AppText>
             </View>
           </View>
+        </View>
 
-          {/* Quick mood check-in */}
-          <View style={styles.moodSection}>
-            <AppText style={styles.moodLabel}>{t('home.overview.moodPrompt')}</AppText>
-            <View style={styles.moodChips}>
-              {MOOD_SELECTOR_OPTIONS.map(opt => {
-                const isActive = currentMood === opt.value;
-                const isLocked = todayDiaryId !== null;
-                return (
-                  <Pressable
-                    key={opt.value}
-                    style={[
-                      styles.moodChip,
-                      isActive && { backgroundColor: `${opt.color}40`, borderColor: opt.color },
-                      isLocked && !isActive && { opacity: 0.35 },
-                    ]}
-                    onPress={() => handleMoodSelect(opt.value)}
-                    disabled={isLocked}
-                  >
-                    <MaterialCommunityIcons
-                      name={isActive ? opt.activeIcon : opt.icon}
-                      size={26}
-                      color={isActive ? opt.color : COLORS.whiteAlpha55}
-                    />
-                  </Pressable>
-                );
-              })}
-            </View>
-
-            {pendingMood && !todayDiaryId && (
-              <View style={styles.quickInputRow}>
-                <TextInput
-                  style={styles.quickInput}
-                  placeholder={t(MOOD_CONTENT_KEY[pendingMood])}
-                  placeholderTextColor={COLORS.whiteAlpha40}
-                  value={quickContent}
-                  onChangeText={setQuickContent}
-                  onSubmitEditing={handleQuickSave}
-                  returnKeyType="send"
-                  maxLength={200}
-                />
-                <Pressable style={styles.quickSendBtn} onPress={handleQuickSave}>
-                  <MaterialCommunityIcons name="send" size={18} color={COLORS.white} />
-                </Pressable>
-              </View>
-            )}
-          </View>
+        {/* ===== MOOD CHECK-IN — overlaps hero ===== */}
+        <View style={styles.moodOverlap}>
+          <MoodCheckInCard onMoodSaved={() => void dashboard.refetch()} />
         </View>
 
         {/* ===== MAIN CONTENT ===== */}
         <View style={styles.paddedContent}>
-          {/* Daily Logs */}
-          <DailyLogsSection
-            targetProfileId={userInfo?.profileId ?? ''}
-            isOwnProfile={true}
-          />
+          <MiniDashboardsSection data={dashboard} />
+        </View>
 
+        <MeditationCarousel />
+
+        <View style={styles.paddedContent}>
           {/* AI COMPANION */}
-          <View style={styles.section}>
+          <View style={styles.companionSection}>
             <AppText style={styles.sectionTitle}>
               {t('home.overview.aiChatbotTitle')}
             </AppText>
             <CompanionCard onPress={handleNavigateChatbot} />
           </View>
 
-          {/* Group Sessions */}
-          {/*
-          <View style={styles.section}>
-            <AppText style={styles.sectionTitle}>
-              {t('home.overview.groupSessionsTitle')}
-            </AppText>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              scrollEventThrottle={16}
-              contentContainerStyle={styles.sessionsCarousel}
-            >
-              <Pressable
-                style={styles.sessionCard}
-                onPress={handleNavigateTherapistLanding}
-              >
-                <Image
-                  source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=200&fit=crop' }}
-                  style={styles.sessionImage}
-                />
-                <View style={styles.sessionOverlay} />
-                <View style={styles.sessionContent}>
-                  <AppText style={styles.sessionTitle}>Anxiety & Stress</AppText>
-                  <AppText style={styles.sessionSubtitle}>Management</AppText>
-                </View>
-              </Pressable>
-
-              <Pressable
-                style={styles.sessionCard}
-                onPress={handleNavigateTherapistLanding}
-              >
-                <Image
-                  source={{ uri: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop' }}
-                  style={styles.sessionImage}
-                />
-                <View style={styles.sessionOverlay} />
-                <View style={styles.sessionContent}>
-                  <AppText style={styles.sessionTitle}>Trauma & PTSD</AppText>
-                  <AppText style={styles.sessionSubtitle}>Recovery</AppText>
-                </View>
-              </Pressable>
-
-              <Pressable style={styles.sessionCard}>
-                <Image
-                  source={{ uri: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300&h=200&fit=crop' }}
-                  style={styles.sessionImage}
-                />
-                <View style={styles.sessionOverlay} />
-                <View style={styles.sessionContent}>
-                  <AppText style={styles.sessionTitle}>Family Dynamics &</AppText>
-                  <AppText style={styles.sessionSubtitle}>Healing</AppText>
-                </View>
-              </Pressable>
-
-              <Pressable style={styles.sessionCard}>
-                <Image
-                  source={{ uri: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop' }}
-                  style={styles.sessionImage}
-                />
-                <View style={styles.sessionOverlay} />
-                <View style={styles.sessionContent}>
-                  <AppText style={styles.sessionTitle}>Social Anxiety &</AppText>
-                  <AppText style={styles.sessionSubtitle}>Building Confidence</AppText>
-                </View>
-              </Pressable>
-            </ScrollView>
-          </View>
-          */}
+          <FindTherapistCta />
 
           <View style={styles.bottomSpacer} />
         </View>

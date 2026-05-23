@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryDeeper,
     paddingTop: SPACING.screenTop,
     paddingHorizontal: SPACING.screenHorizontal,
-    paddingBottom: SPACING.xl,
+    paddingBottom: 28,
     borderBottomLeftRadius: 36,
     borderBottomRightRadius: 36,
     overflow: 'hidden',
@@ -105,15 +105,21 @@ export const styles = StyleSheet.create({
     marginTop: 3,
   },
 
+  /* ==== MOOD OVERLAP WRAPPER ==== */
+  moodOverlap: {
+    paddingHorizontal: SPACING.screenHorizontal,
+    marginTop: -16,
+    zIndex: 2,
+  },
+
   /* ==== PADDED CONTENT ==== */
   paddedContent: {
     paddingHorizontal: SPACING.screenHorizontal,
-    paddingTop: SPACING.lg,
   },
 
   /* ==== SECTIONS ==== */
-  section: {
-    marginBottom: SPACING.sectionGap,
+  companionSection: {
+    marginTop: SPACING.xl,
   },
   sectionTitle: {
     fontSize: FONT_SIZES.xs,
@@ -237,101 +243,6 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontWeight: '700',
     color: COLORS.white,
-  },
-
-  /* ==== SESSION CARDS ==== */
-  sessionsCarousel: {
-    gap: SPACING.md,
-    paddingRight: SPACING.screenHorizontal,
-  },
-  sessionCard: {
-    width: 185,
-    height: 140,
-    borderRadius: BORDER_RADIUS.xl,
-    overflow: 'hidden',
-    shadowColor: COLORS.shadowBase,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.14,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sessionImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  sessionOverlay: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: COLORS.overlayDark45,
-  },
-  sessionContent: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: SPACING.md,
-  },
-  sessionTitle: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
-    color: COLORS.white,
-  },
-  sessionSubtitle: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.whiteAlpha80,
-    marginTop: 2,
-  },
-
-  /* ==== MOOD CHECK-IN ==== */
-  moodSection: {
-    marginTop: SPACING.lg,
-  },
-  moodLabel: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.whiteAlpha70,
-    marginBottom: SPACING.sm,
-    fontWeight: '500',
-  },
-  moodChips: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-  },
-  moodChip: {
-    flex: 1,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: COLORS.whiteAlpha10,
-    borderWidth: 1.5,
-    borderColor: COLORS.whiteAlpha15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  quickInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: SPACING.sm,
-    gap: SPACING.sm,
-  },
-  quickInput: {
-    flex: 1,
-    height: 42,
-    borderRadius: 12,
-    backgroundColor: COLORS.whiteAlpha12,
-    borderWidth: 1,
-    borderColor: COLORS.whiteAlpha20,
-    paddingHorizontal: SPACING.md,
-    color: COLORS.white,
-    fontSize: FONT_SIZES.sm,
-  },
-  quickSendBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
-    backgroundColor: COLORS.whiteAlpha20,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 
   /* ==== BOTTOM SPACER ==== */

@@ -29,6 +29,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { DiaryEntryResponse } from '@/types';
+import { calculateStreakFromCreatedAt } from '@/utils';
 import { styles } from './DiaryOverviewScreen.styles';
 
 // ===== UTILITY FUNCTIONS =====
@@ -68,35 +69,6 @@ const isDateInRange = (
   return true;
 };
 
-const calculateStreak = (entries: DiaryEntryResponse[]): number => {
-  if (entries.length === 0) return 0;
-
-  const sortedEntries = [...entries].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-
-  let streak = 0;
-  let currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-
-  for (const entry of sortedEntries) {
-    const entryDate = new Date(entry.createdAt);
-    entryDate.setHours(0, 0, 0, 0);
-
-    const diffTime = currentDate.getTime() - entryDate.getTime();
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-
-    if (diffDays === streak) {
-      streak++;
-      currentDate = new Date(entryDate);
-    } else if (diffDays > streak) {
-      break;
-    }
-  }
-
-  return streak;
-};
-
 // ===== MAIN COMPONENT =====
 
 const DiaryOverviewScreen: React.FC = () => {
@@ -132,7 +104,7 @@ const DiaryOverviewScreen: React.FC = () => {
     }, [fetchEntries]),
   );
 
-  const streak = useMemo(() => calculateStreak(entries), [entries]);
+  const streak = useMemo(() => calculateStreakFromCreatedAt(entries), [entries]);
 
   const filteredEntries = useMemo(() => {
     let filtered = entries;

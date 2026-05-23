@@ -452,6 +452,58 @@
       "anxious": "Anxious",
       "angry": "Angry",
       "neutral": "Okay"
+    },
+    "mood": {
+      "cardTitle": "How you feel now",
+      "cardSubtitle": "How are you feeling today?",
+      "savedBadge": "Saved",
+      "quickInputPlaceholder": "A few words about \"{{mood}}\"...",
+      "chipLabels": {
+        "TERRIBLE": "Awful",
+        "BAD": "Down",
+        "NEUTRAL": "Okay",
+        "GOOD": "Good",
+        "EXCELLENT": "Great"
+      }
+    },
+    "dashboards": {
+      "sectionTitle": "Today's logs",
+      "seeAll": "See all ›",
+      "sleep": {
+        "title": "Sleep",
+        "subtitle": "Avg {{avg}}h · last 7 days"
+      },
+      "diary": {
+        "title": "Mind Corner",
+        "subtitle": "Moods in the last 7 days",
+        "streak": "🔥 {{count}} days"
+      },
+      "nutrition": {
+        "title": "Nutrition",
+        "water": "{{cups}}/{{goal}} glasses today",
+        "weekScore": "Week score",
+        "status": "Status",
+        "statusTot": "Good",
+        "statusBinhThuong": "Average",
+        "statusCanCaiThien": "Needs work"
+      }
+    },
+    "meditation": {
+      "sectionTitle": "Meditation & relaxation",
+      "sectionSubtitle": "Short exercises picked for you",
+      "seeAll": "See all ›",
+      "minutesShort": "{{n}}m",
+      "items": {
+        "breath478": { "title": "4-7-8 Breathing", "category": "Breathwork" },
+        "bodyScan": { "title": "Body Scan", "category": "Mindfulness" },
+        "morning": { "title": "Sunrise", "category": "Morning" },
+        "sleep": { "title": "Sleep Well", "category": "Bedtime" },
+        "calmAnxiety": { "title": "Calm Anxiety", "category": "Calming" }
+      }
+    },
+    "findTherapist": {
+      "title": "Connect with a specialist",
+      "subtitle": "Book a consultation today"
     }
   },
   "social": {

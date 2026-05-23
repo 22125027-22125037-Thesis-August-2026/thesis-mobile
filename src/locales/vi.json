@@ -452,6 +452,58 @@
       "anxious": "Lo âu",
       "angry": "Giận",
       "neutral": "Ổn"
+    },
+    "mood": {
+      "cardTitle": "Cảm xúc lúc này",
+      "cardSubtitle": "Hôm nay bạn cảm thấy thế nào?",
+      "savedBadge": "Đã ghi",
+      "quickInputPlaceholder": "Vài dòng về \"{{mood}}\"...",
+      "chipLabels": {
+        "TERRIBLE": "Tệ",
+        "BAD": "Buồn",
+        "NEUTRAL": "Bình",
+        "GOOD": "Vui",
+        "EXCELLENT": "Tuyệt"
+      }
+    },
+    "dashboards": {
+      "sectionTitle": "Nhật ký hôm nay",
+      "seeAll": "Xem tất cả ›",
+      "sleep": {
+        "title": "Giấc ngủ",
+        "subtitle": "Trung bình {{avg}}h · 7 ngày qua"
+      },
+      "diary": {
+        "title": "Tâm tư",
+        "subtitle": "Cảm xúc 7 ngày qua",
+        "streak": "🔥 {{count}} ngày"
+      },
+      "nutrition": {
+        "title": "Dinh dưỡng",
+        "water": "Đã uống {{cups}}/{{goal}} ly nước hôm nay",
+        "weekScore": "Điểm tuần",
+        "status": "Trạng thái",
+        "statusTot": "Tốt",
+        "statusBinhThuong": "Bình thường",
+        "statusCanCaiThien": "Cần cải thiện"
+      }
+    },
+    "meditation": {
+      "sectionTitle": "Thiền & thư giãn",
+      "sectionSubtitle": "Bài tập ngắn dành riêng cho bạn",
+      "seeAll": "Xem tất cả ›",
+      "minutesShort": "{{n}}p",
+      "items": {
+        "breath478": { "title": "Thở 4-7-8", "category": "Hô hấp" },
+        "bodyScan": { "title": "Quét cơ thể", "category": "Chánh niệm" },
+        "morning": { "title": "Bình minh", "category": "Khởi đầu" },
+        "sleep": { "title": "Ngủ ngon", "category": "Trước khi ngủ" },
+        "calmAnxiety": { "title": "Giảm lo âu", "category": "Bình tĩnh" }
+      }
+    },
+    "findTherapist": {
+      "title": "Kết nối với chuyên gia",
+      "subtitle": "Đặt lịch tư vấn ngay hôm nay"
     }
   },
   "social": {
