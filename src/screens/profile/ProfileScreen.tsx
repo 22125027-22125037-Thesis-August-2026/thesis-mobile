@@ -96,19 +96,19 @@ const ProfileScreen: React.FC = () => {
       icon: 'lifebuoy',
       title: t('profile.menuHelp'),
       subtitle: t('profile.menuHelpSub'),
-      onPress: wip,
+      onPress: () => navigation.navigate('FAQ'),
     },
     {
       icon: 'email-outline',
       title: t('profile.menuContact'),
       subtitle: t('profile.menuContactSub'),
-      onPress: wip,
+      onPress: () => navigation.navigate('Contact'),
     },
     {
       icon: 'information-outline',
       title: t('profile.menuAbout'),
       subtitle: t('profile.menuAboutSub'),
-      onPress: wip,
+      onPress: () => navigation.navigate('About'),
     },
   ];
 

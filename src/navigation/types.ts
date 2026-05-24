@@ -77,6 +77,10 @@ export type RootStackParamList = {
     endedAt?: string;
     isReadOnly?: boolean;
   };
+  FAQ: undefined;
+  About: undefined;
+  Contact: undefined;
+
   // Resolved from main
   SleepMain: { viewProfileId?: string } | undefined;
   DiaryOverview: { viewProfileId?: string } | undefined;
