@@ -8,7 +8,9 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "build:android": "cd android && gradlew assembleRelease",
+    "build:android:arm64": "cd android && gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
