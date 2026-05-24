@@ -10,6 +10,7 @@ import '@/locales/i18n';
 
 import { AppText } from '@/components';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
+import { listenForForegroundNotifications } from '@/services/notifications';
 import { COLORS } from '@/theme';
 import { applyGlobalTypographyDefaults } from '@/theme/applyGlobalTypography';
 import {
@@ -206,6 +207,15 @@ const AppNav: React.FC = () => {
     AsyncStorage.getItem(ONBOARDING_KEY).then(val => {
       setHasSeenOnboarding(val === 'true');
     });
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = listenForForegroundNotifications();
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const markOnboardingDone = async () => {

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Notification Service — see docs/NOTIFICATION_API_CONTROLLER_REFERENCE.md.
 // Host port may vary per .env; adjust here if it doesn't match your backend.
-const NOTIFICATION_API_BASE_URL = 'http://161.118.252.10:8084';
+const NOTIFICATION_API_BASE_URL = 'http://161.118.252.10:8082';
 
 const HARDCODED_TEST_TOKEN = '';
 const HAS_HARDCODED_TEST_TOKEN = HARDCODED_TEST_TOKEN.trim().length > 0;
