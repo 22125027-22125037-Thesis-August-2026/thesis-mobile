@@ -40,6 +40,9 @@ import {
   WaitingRoomScreen,
 } from '@/screens';
 import ProfileEditScreen from '@/screens/profile/ProfileEditScreen';
+import FAQScreen from '@/screens/profile/FAQScreen';
+import AboutScreen from '@/screens/profile/AboutScreen';
+import ContactScreen from '@/screens/profile/ContactScreen';
 
 const ONBOARDING_KEY = 'hasSeenOnboarding';
 
@@ -244,6 +247,9 @@ const AppNav: React.FC = () => {
           <>
             {renderRoleBasedRoutes(userInfo?.role)}
             <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
+            <Stack.Screen name="FAQ" component={FAQScreen} />
+            <Stack.Screen name="About" component={AboutScreen} />
+            <Stack.Screen name="Contact" component={ContactScreen} />
           </>
         ) : !hasSeenOnboarding ? (
           <>
