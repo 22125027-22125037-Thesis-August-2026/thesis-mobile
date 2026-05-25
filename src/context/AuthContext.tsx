@@ -148,7 +148,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await axiosClient.patch(`${AUTH_BASE_PATH}/profile`, data);
       const userRes = await axiosClient.get<User | ApiResponse<User>>(`${AUTH_BASE_PATH}/me`);
       const profilePayload = unwrapApiData<User>(userRes.data);
-      setUserInfo(prev => prev ? { ...prev, ...profilePayload } : profilePayload);
+      setUserInfo(prev => {
+        if (!prev) { return prev; }
+        return {
+          ...prev,
+          fullName: profilePayload.fullName ?? prev.fullName,
+          email: profilePayload.email ?? prev.email,
+          phoneNumber: profilePayload.phoneNumber ?? prev.phoneNumber,
+          dob: profilePayload.dob ?? prev.dob,
+          role: profilePayload.role ?? prev.role,
+          avatarUrl: data.avatarUrl ?? prev.avatarUrl,
+        };
+      });
     } catch (error) {
       console.log('Update profile error:', error);
       throw error;
