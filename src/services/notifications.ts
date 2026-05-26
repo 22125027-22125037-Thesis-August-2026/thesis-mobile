@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { notificationAxiosClient } from '@/api';
+import { axiosClient } from '@/api';
 
 // ============================================================================
 // Firebase Cloud Messaging (FCM) integration
@@ -202,7 +202,7 @@ export const getFcmToken = async (): Promise<string | null> => {
   }
 };
 
-// POST /api/v1/devices — register/refresh the FCM token for this user/device.
+// POST /api/v1/notification/devices — register/refresh the FCM token for this user/device.
 // Idempotent: re-posting the same token just refreshes lastSeenAt.
 export const registerDeviceTokenWithNotificationService = async (
   profileId: string,
@@ -215,7 +215,7 @@ export const registerDeviceTokenWithNotificationService = async (
   );
 
   try {
-    await notificationAxiosClient.post('/api/v1/devices', {
+    await axiosClient.post('/api/v1/notification/devices', {
       profileId,
       deviceToken: token,
       platform,
@@ -226,7 +226,7 @@ export const registerDeviceTokenWithNotificationService = async (
   }
 };
 
-// DELETE /api/v1/devices/{deviceToken} — call on logout so the user stops
+// DELETE /api/v1/notification/devices/{deviceToken} — call on logout so the user stops
 // receiving pushes on this device.
 export const deregisterDeviceTokenWithNotificationService = async (): Promise<void> => {
   const token = await AsyncStorage.getItem(DEVICE_TOKEN_STORAGE_KEY);
@@ -235,8 +235,8 @@ export const deregisterDeviceTokenWithNotificationService = async (): Promise<vo
   }
 
   try {
-    await notificationAxiosClient.delete(
-      `/api/v1/devices/${encodeURIComponent(token)}`,
+    await axiosClient.delete(
+      `/api/v1/notification/devices/${encodeURIComponent(token)}`,
     );
   } catch (err) {
     // 404 = already gone; nothing to clean up.

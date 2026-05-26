@@ -1,4 +1,4 @@
-import socialAxiosClient from '@/api/socialAxiosClient';
+import axiosClient from '@/api/axiosClient';
 import {
   FriendRequestDirection,
   SocialChannelMessage,
@@ -11,8 +11,8 @@ interface PaginationParams {
   size?: number;
 }
 
-const SOCIAL_FRIENDS_BASE_PATH = '/api/v1/friends';
-const SOCIAL_CHATS_BASE_PATH = '/api/v1/chats';
+const SOCIAL_FRIENDS_BASE_PATH = '/api/v1/social/friends';
+const SOCIAL_CHATS_BASE_PATH = '/api/v1/social/chats';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
@@ -142,7 +142,7 @@ const toChannelMessage = (item: unknown): SocialChannelMessage | null => {
 };
 
 export const getChatChannels = async (): Promise<SocialChannelSummary[]> => {
-  const response = await socialAxiosClient.get<unknown>(`${SOCIAL_CHATS_BASE_PATH}/channels`);
+  const response = await axiosClient.get<unknown>(`${SOCIAL_CHATS_BASE_PATH}/channels`);
 
   return extractListPayload<unknown>(response.data)
     .map(toSocialChannelSummary)
@@ -153,7 +153,7 @@ export const getFriendRequests = async (
   direction: FriendRequestDirection,
   pagination: PaginationParams = {},
 ): Promise<SocialFriendRequestSummary[]> => {
-  const response = await socialAxiosClient.get<unknown>(`${SOCIAL_FRIENDS_BASE_PATH}/requests`, {
+  const response = await axiosClient.get<unknown>(`${SOCIAL_FRIENDS_BASE_PATH}/requests`, {
     params: {
       direction,
       page: pagination.page ?? 0,
@@ -167,26 +167,26 @@ export const getFriendRequests = async (
 };
 
 export const sendFriendRequest = async (receiverEmail: string): Promise<void> => {
-  await socialAxiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests`, { receiverEmail });
+  await axiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests`, { receiverEmail });
 };
 
 export const acceptFriendRequest = async (requestId: string): Promise<void> => {
-  await socialAxiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests/${requestId}/accept`);
+  await axiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests/${requestId}/accept`);
 };
 
 export const rejectFriendRequest = async (requestId: string): Promise<void> => {
-  await socialAxiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests/${requestId}/reject`);
+  await axiosClient.post(`${SOCIAL_FRIENDS_BASE_PATH}/requests/${requestId}/reject`);
 };
 
 export const unfriend = async (profileId: string): Promise<void> => {
-  await socialAxiosClient.delete(`${SOCIAL_FRIENDS_BASE_PATH}/${profileId}`);
+  await axiosClient.delete(`${SOCIAL_FRIENDS_BASE_PATH}/${profileId}`);
 };
 
 export const getChannelMessages = async (
   channelId: string,
   pagination: PaginationParams = {},
 ): Promise<SocialChannelMessage[]> => {
-  const response = await socialAxiosClient.get<unknown>(
+  const response = await axiosClient.get<unknown>(
     `${SOCIAL_CHATS_BASE_PATH}/channels/${channelId}/messages`,
     {
       params: {
