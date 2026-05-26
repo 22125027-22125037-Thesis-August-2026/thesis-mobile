@@ -37,6 +37,7 @@ import {
 import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { AttachmentFile } from '@/types';
+import { WidgetBridge } from '@/native/WidgetBridge';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
 
 const MAX_CONTENT_LENGTH = 500;
@@ -253,6 +254,9 @@ const DiaryEntryScreen: React.FC = () => {
       const response = entryId
         ? await diaryApi.updateDiaryEntry(entryId, diaryPayload, imageUris)
         : await diaryApi.createDiaryEntry(diaryPayload, imageUris);
+
+      void WidgetBridge.cacheLastMood(moodTag, new Date().toISOString());
+      void WidgetBridge.requestRefresh();
 
       Alert.alert(
         t('entry.successTitle'),

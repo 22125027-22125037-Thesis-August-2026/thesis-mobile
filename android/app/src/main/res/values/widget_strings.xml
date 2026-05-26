@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_mood_label">uMatter Mood</string>
+    <string name="widget_mood_description">See your mood streak and last entry</string>
+
+    <!-- Streak -->
+    <string name="widget_streak_active">🔥 %1$d</string>
+    <string name="widget_streak_inactive">%1$d</string>
+    <string name="widget_streak_none">No streak yet</string>
+
+    <!-- Last mood -->
+    <string name="widget_no_entry_yet">No entry yet</string>
+    <string name="widget_mood_terrible">Terrible</string>
+    <string name="widget_mood_bad">Bad</string>
+    <string name="widget_mood_neutral">Neutral</string>
+    <string name="widget_mood_good">Good</string>
+    <string name="widget_mood_excellent">Excellent</string>
+
+    <!-- Motivational / CTA messages -->
+    <string name="widget_cta_first">Start logging your mood today!</string>
+    <string name="widget_cta_streak">🔥 %1$d-day streak! You\'re doing great!</string>
+    <string name="widget_cta_logged_today">You logged today. Keep it up!</string>
+    <string name="widget_cta_good_yesterday">Yesterday felt great. Keep the momentum!</string>
+    <string name="widget_cta_neutral_yesterday">How are you feeling today? Log it!</string>
+    <string name="widget_cta_bad_yesterday">Every day is a fresh start. You\'ve got this!</string>
+    <string name="widget_not_authed">Tap to log in</string>
+</resources>

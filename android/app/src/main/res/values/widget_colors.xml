@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_bg">#FFFFFFFF</color>
+    <color name="widget_text_primary">#FF1F2937</color>
+    <color name="widget_text_secondary">#FF6B7280</color>
+    <color name="widget_text_muted">#FF9CA3AF</color>
+    <color name="widget_status_success">#FF16A34A</color>
+    <color name="widget_status_error">#FFDC2626</color>
+    <color name="widget_status_info">#FF2563EB</color>
+    <color name="widget_overlay_scrim">#80FFFFFF</color>
+
+    <color name="widget_emoji_tint_terrible">#FFD32F2F</color>
+    <color name="widget_emoji_tint_bad">#FFE64A19</color>
+    <color name="widget_emoji_tint_neutral">#FFF9A825</color>
+    <color name="widget_emoji_tint_good">#FF43A047</color>
+    <color name="widget_emoji_tint_excellent">#FF00897B</color>
+
+    <color name="widget_streak_active">#FFFF6D00</color>
+    <color name="widget_emoji_dimmed">#FFD1D5DB</color>
+    <color name="widget_add_note_bg">#FFEEF2FF</color>
+    <color name="widget_add_note_icon">#FF4F46E5</color>
+</resources>

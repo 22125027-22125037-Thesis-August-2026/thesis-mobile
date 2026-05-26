@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_mood_label">uMatter Cảm xúc</string>
+    <string name="widget_mood_description">Xem chuỗi ngày và cảm xúc gần nhất</string>
+
+    <!-- Streak -->
+    <string name="widget_streak_active">🔥 %1$d</string>
+    <string name="widget_streak_inactive">%1$d</string>
+    <string name="widget_streak_none">Chưa có chuỗi</string>
+
+    <!-- Last mood -->
+    <string name="widget_no_entry_yet">Chưa có nhật ký</string>
+    <string name="widget_mood_terrible">Tệ</string>
+    <string name="widget_mood_bad">Buồn</string>
+    <string name="widget_mood_neutral">Bình thường</string>
+    <string name="widget_mood_good">Tốt</string>
+    <string name="widget_mood_excellent">Tuyệt</string>
+
+    <!-- Motivational / CTA messages -->
+    <string name="widget_cta_first">Bắt đầu ghi cảm xúc của bạn hôm nay!</string>
+    <string name="widget_cta_streak">🔥 Chuỗi %1$d ngày! Bạn đang làm rất tốt!</string>
+    <string name="widget_cta_logged_today">Bạn đã ghi hôm nay. Tiếp tục nhé!</string>
+    <string name="widget_cta_good_yesterday">Hôm qua bạn ổn lắm. Duy trì tinh thần nào!</string>
+    <string name="widget_cta_neutral_yesterday">Hôm nay bạn cảm thấy thế nào? Ghi lại nhé.</string>
+    <string name="widget_cta_bad_yesterday">Mỗi ngày là cơ hội mới. Bạn làm được!</string>
+    <string name="widget_not_authed">Chạm để đăng nhập</string>
+</resources>
