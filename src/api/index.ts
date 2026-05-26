@@ -1,7 +1,5 @@
 export { aiApi } from '@/api/aiApi';
 export { default as axiosClient, setLogoutHandler } from '@/api/axiosClient';
-export { default as socialAxiosClient } from '@/api/socialAxiosClient';
-export { default as notificationAxiosClient } from '@/api/notificationAxiosClient';
 import * as dataAccessGrantApi from '@/api/dataAccessGrantApi';
 import * as diaryApi from '@/api/diaryApi';
 import * as foodApi from '@/api/foodApi';

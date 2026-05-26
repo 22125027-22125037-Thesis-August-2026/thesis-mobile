@@ -1,6 +1,6 @@
 // src/api/__tests__/therapistApi.test.ts
 
-import therapistAxiosClient from '@/api/therapistAxiosClient';
+import axiosClient from '@/api/axiosClient';
 import {
   getTherapists,
   getTherapistDetails,
@@ -18,7 +18,7 @@ import {
 } from '@/api/therapistApi';
 import { MatchingFormData } from '@/types';
 
-jest.mock('@/api/therapistAxiosClient', () => ({
+jest.mock('@/api/axiosClient', () => ({
   __esModule: true,
   default: {
     get: jest.fn(),
@@ -26,7 +26,7 @@ jest.mock('@/api/therapistAxiosClient', () => ({
   },
 }));
 
-const mockedAxios = therapistAxiosClient as jest.Mocked<typeof therapistAxiosClient>;
+const mockedAxios = axiosClient as jest.Mocked<typeof axiosClient>;
 
 describe('therapistApi', () => {
   afterEach(() => {
@@ -51,7 +51,7 @@ describe('therapistApi', () => {
     const result = await getTherapists();
 
     expect(result).toEqual(therapists);
-    expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapists');
+    expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapist/therapists');
   });
 
   it('getTherapistDetails returns therapist details', async () => {
@@ -91,7 +91,7 @@ describe('therapistApi', () => {
     const result = await getTherapistDetails('1');
 
     expect(result).toEqual(therapist);
-    expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapists/1');
+    expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapist/therapists/1');
   });
 
   it('getTherapistAvailableSlots returns paginated slot content', async () => {
@@ -107,7 +107,7 @@ describe('therapistApi', () => {
     const result = await getTherapistAvailableSlots('therapist-1');
 
     expect(result).toEqual(slots);
-    expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapists/therapist-1/slots', {
+    expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/therapist/therapists/therapist-1/slots', {
       params: {
         page: 0,
         size: 200,
@@ -131,7 +131,7 @@ describe('therapistApi', () => {
     const result = await bookSession(bookingData);
 
     expect(result).toEqual(bookingResponse);
-    expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/bookings', bookingData);
+    expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/therapist/bookings', bookingData);
   });
 
   it('saveMatchingData posts documented matching payload', async () => {
@@ -154,7 +154,7 @@ describe('therapistApi', () => {
     mockedAxios.post.mockResolvedValueOnce({ status: 204, data: undefined });
     await saveMatchingData(formData);
 
-    expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/matching/preferences', {
+    expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/therapist/matching/preferences', {
       has_prior_counseling: 'ineffective',
       gender: 'female',
       age: '22',
@@ -191,7 +191,7 @@ describe('therapistApi', () => {
     const result = await getActiveAssignedTherapist(profileId);
 
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      '/api/v1/profiles/profile-123/assigned-therapist',
+      '/api/v1/therapist/profiles/profile-123/assigned-therapist',
     );
     expect(result).toEqual({
       assignmentId: 'assign-1',
@@ -233,7 +233,7 @@ describe('therapistApi', () => {
     const result = await getUpcomingAppointment(profileId);
 
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      '/api/v1/profiles/profile-upcoming/appointments/upcoming',
+      '/api/v1/therapist/profiles/profile-upcoming/appointments/upcoming',
     );
     expect(result).toEqual(appointment);
   });

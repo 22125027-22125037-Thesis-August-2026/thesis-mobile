@@ -2,7 +2,7 @@
 
 // ✅ Correct
 import axios from 'axios';
-import therapistAxiosClient from '@/api/therapistAxiosClient';
+import axiosClient from '@/api/axiosClient';
 import { MatchingFormData } from '@/types';
 
 type MatchingChoice = string;
@@ -331,7 +331,7 @@ interface AssignedTherapistResponse {
 
 export const getTherapists = async (): Promise<Therapist[]> => {
   try {
-    const response = await therapistAxiosClient.get<Therapist[]>('/api/v1/therapists');
+    const response = await axiosClient.get<Therapist[]>('/api/v1/therapist/therapists');
     return response.data;
   } catch (error) {
     // Handle or rethrow error
@@ -341,8 +341,8 @@ export const getTherapists = async (): Promise<Therapist[]> => {
 
 export const getTherapistDetails = async (id: string): Promise<TherapistDetail> => {
   try {
-    const response = await therapistAxiosClient.get<TherapistDetail>(
-      `/api/v1/therapists/${id}`,
+    const response = await axiosClient.get<TherapistDetail>(
+      `/api/v1/therapist/therapists/${id}`,
     );
     return response.data;
   } catch (error) {
@@ -354,8 +354,8 @@ export const getTherapistReviews = async (
   therapistId: string,
 ): Promise<TherapistReview[]> => {
   try {
-    const response = await therapistAxiosClient.get<TherapistReview[]>(
-      `/api/v1/therapists/${therapistId}/reviews`,
+    const response = await axiosClient.get<TherapistReview[]>(
+      `/api/v1/therapist/therapists/${therapistId}/reviews`,
     );
 
     return response.data ?? [];
@@ -368,8 +368,8 @@ export const getTherapistAvailableSlots = async (
   therapistId: string,
 ): Promise<TherapistAvailableSlot[]> => {
   try {
-    const response = await therapistAxiosClient.get<TherapistAvailableSlotsResponse>(
-      `/api/v1/therapists/${therapistId}/slots`,
+    const response = await axiosClient.get<TherapistAvailableSlotsResponse>(
+      `/api/v1/therapist/therapists/${therapistId}/slots`,
       {
         params: {
           page: 0,
@@ -389,7 +389,10 @@ export const bookSession = async (
   data: CreateBookingPayload,
 ): Promise<BookingResponse> => {
   try {
-    const response = await therapistAxiosClient.post<BookingResponse>('/api/v1/bookings', data);
+    const response = await axiosClient.post<BookingResponse>(
+      '/api/v1/therapist/bookings',
+      data,
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -398,8 +401,8 @@ export const bookSession = async (
 
 export const joinVideoSession = async (appointmentId: string): Promise<boolean> => {
   try {
-    const response = await therapistAxiosClient.get(
-      `/api/v1/bookings/${appointmentId}/join`,
+    const response = await axiosClient.get(
+      `/api/v1/therapist/bookings/${appointmentId}/join`,
     );
     return response.status === 200;
   } catch (error) {
@@ -415,7 +418,10 @@ export const submitReview = async (
   data: SubmitReviewPayload,
 ): Promise<SubmitReviewResponse> => {
   try {
-    const response = await therapistAxiosClient.post<SubmitReviewResponse>('/api/v1/reviews', data);
+    const response = await axiosClient.post<SubmitReviewResponse>(
+      '/api/v1/therapist/reviews',
+      data,
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -426,8 +432,8 @@ export const getClinicalNoteByAppointment = async (
   appointmentId: string,
 ): Promise<ClinicalNote | null> => {
   try {
-    const response = await therapistAxiosClient.get<ClinicalNote>(
-      `/api/v1/notes/appointments/${appointmentId}`,
+    const response = await axiosClient.get<ClinicalNote>(
+      `/api/v1/therapist/notes/appointments/${appointmentId}`,
     );
     return response.data;
   } catch (error) {
@@ -444,7 +450,7 @@ export const saveMatchingData = async (
 ): Promise<void> => {
   try {
     const payload = toMatchingPreferencesPayload(data);
-    await therapistAxiosClient.post('/api/v1/matching/preferences', payload);
+    await axiosClient.post('/api/v1/therapist/matching/preferences', payload);
   } catch (error) {
     throw error;
   }
@@ -454,8 +460,8 @@ export const getActiveAssignedTherapist = async (
   profileId: string,
 ): Promise<ActiveAssignedTherapist | null> => {
   try {
-    const response = await therapistAxiosClient.get<AssignedTherapistResponse>(
-      `/api/v1/profiles/${profileId}/assigned-therapist`,
+    const response = await axiosClient.get<AssignedTherapistResponse>(
+      `/api/v1/therapist/profiles/${profileId}/assigned-therapist`,
     );
     const assigned = response.data;
 
@@ -485,8 +491,8 @@ export const getAppointmentHistory = async (
   profileId: string,
 ): Promise<AppointmentHistoryEntry[]> => {
   try {
-    const response = await therapistAxiosClient.get<AppointmentHistoryEntry[]>(
-      `/api/v1/profiles/${profileId}/appointments/history`,
+    const response = await axiosClient.get<AppointmentHistoryEntry[]>(
+      `/api/v1/therapist/profiles/${profileId}/appointments/history`,
     );
 
     return response.data ?? [];
@@ -499,8 +505,8 @@ export const getUnreviewedAppointments = async (
   profileId: string,
 ): Promise<UnreviewedAppointment[]> => {
   try {
-    const response = await therapistAxiosClient.get<UnreviewedAppointment[]>(
-      `/api/v1/profiles/${profileId}/appointments/unreviewed`,
+    const response = await axiosClient.get<UnreviewedAppointment[]>(
+      `/api/v1/therapist/profiles/${profileId}/appointments/unreviewed`,
     );
 
     return response.data ?? [];
@@ -513,8 +519,8 @@ export const getUpcomingAppointment = async (
   profileId: string,
 ): Promise<UpcomingAppointment | null> => {
   try {
-    const response = await therapistAxiosClient.get<UpcomingAppointment>(
-      `/api/v1/profiles/${profileId}/appointments/upcoming`,
+    const response = await axiosClient.get<UpcomingAppointment>(
+      `/api/v1/therapist/profiles/${profileId}/appointments/upcoming`,
     );
 
     return response.data;

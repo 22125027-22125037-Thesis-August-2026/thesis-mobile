@@ -5,9 +5,9 @@
  * docs/NOTIFICATION_API_CONTROLLER_REFERENCE.md for the full endpoint spec.
  *
  * Endpoints used here:
- *   GET  /api/v1/notifications/{profileId}            -> getNotifications()
- *   PUT  /api/v1/notifications/{notificationId}/read  -> markAsRead(id)
- *   PUT  /api/v1/notifications/{profileId}/read-all   -> markAllAsRead()
+ *   GET  /api/v1/notification/notifications/{profileId}            -> getNotifications()
+ *   PUT  /api/v1/notification/notifications/{notificationId}/read  -> markAsRead(id)
+ *   PUT  /api/v1/notification/notifications/{profileId}/read-all   -> markAllAsRead()
  *
  * Endpoints the backend does NOT (yet) expose, kept as local-only overlays so
  * the existing UI behaviour still works:
@@ -19,7 +19,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import notificationAxiosClient from '@/api/notificationAxiosClient';
+import axiosClient from '@/api/axiosClient';
 
 const PROFILE_ID_KEY = 'profileId';
 
@@ -97,8 +97,8 @@ export const getNotifications = async (): Promise<NotificationItem[]> => {
   }
 
   try {
-    const res = await notificationAxiosClient.get<NotificationPage>(
-      `/api/v1/notifications/${profileId}`,
+    const res = await axiosClient.get<NotificationPage>(
+      `/api/v1/notification/notifications/${profileId}`,
       { params: { page: 0, size: DEFAULT_PAGE_SIZE } },
     );
     cache = res.data?.content ?? [];
@@ -134,7 +134,7 @@ export const markAsRead = async (id: string): Promise<void> => {
   notifyListeners();
 
   try {
-    await notificationAxiosClient.put(`/api/v1/notifications/${id}/read`);
+    await axiosClient.put(`/api/v1/notification/notifications/${id}/read`);
   } catch (err) {
     console.log('[notificationApi] markAsRead failed:', err);
     // 404 is treated as "already gone" per the API doc; we already updated
@@ -151,8 +151,8 @@ export const markAllAsRead = async (): Promise<void> => {
   notifyListeners();
 
   try {
-    await notificationAxiosClient.put(
-      `/api/v1/notifications/${profileId}/read-all`,
+    await axiosClient.put(
+      `/api/v1/notification/notifications/${profileId}/read-all`,
     );
   } catch (err) {
     console.log('[notificationApi] markAllAsRead failed:', err);
