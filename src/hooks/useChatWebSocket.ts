@@ -81,9 +81,15 @@ export const useChatWebSocket = ({
 
   useEffect(() => {
     if (!token) {
+      console.warn('WebSocket: No token available, skipping connection');
       setIsConnected(false);
       return;
     }
+
+    console.log('WebSocket: Attempting connection', {
+      brokerURL: brokerUrl,
+      hasToken: !!token,
+    });
 
     const client = new Client({
       brokerURL: brokerUrl,
@@ -97,6 +103,7 @@ export const useChatWebSocket = ({
         console.log('[STOMP DEBUG]:', str); // <--- ADD THIS LINE
       },
       onConnect: () => {
+        console.log('STOMP connected successfully', { brokerURL: brokerUrl });
         setIsConnected(true);
 
         subscriptionRef.current?.unsubscribe();
@@ -111,16 +118,33 @@ export const useChatWebSocket = ({
         );
       },
       onDisconnect: () => {
+        console.log('STOMP disconnected', { brokerURL: brokerUrl });
         setIsConnected(false);
       },
       onStompError: frame => {
-        console.error('STOMP broker error:', frame.headers['message'], frame.body);
+        console.error('STOMP broker error:', {
+          message: frame.headers['message'],
+          body: frame.body,
+          headers: frame.headers,
+          brokerURL: brokerUrl,
+        });
       },
       onWebSocketClose: () => {
+        console.log('WebSocket closed - will attempt reconnection', {
+          brokerURL: brokerUrl,
+          reconnectDelay: 5000,
+        });
         setIsConnected(false);
       },
       onWebSocketError: error => {
-        console.error('WebSocket error:', error);
+        const errorDetails = {
+          brokerURL: brokerUrl,
+          type: typeof error,
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+          errorString: JSON.stringify(error),
+        };
+        console.error('WebSocket connection error:', errorDetails);
       },
     });
 
