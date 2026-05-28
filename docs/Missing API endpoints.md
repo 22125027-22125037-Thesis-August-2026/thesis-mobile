@@ -9,11 +9,11 @@ web UI to real backend data. Each entry names:
 
 Service references in this document:
 
-- `THERAPIST_API_CONTROLLER_REFERENCE.md` — `therapist-api`, base `http://localhost:8082`
-- `Authentication Service API controller.md` — `auth-service`, base `http://localhost:8081`
-- `Tracking Service API controller.md` — `tracking-service`, base `http://localhost:8085`
-- `SOCIAL_API_CONTROLLER_REFERENCE.md` — `social-service`, base `http://localhost:8083`
-- `NOTIFICATION_API_CONTROLLER_REFERENCE.md` — `notification-service`, base `http://localhost:8084`
+- `THERAPIST_API_CONTROLLER_REFERENCE.md` — `therapist-api`
+- `Authentication Service API controller.md` — `auth-service`
+- `Tracking Service API controller.md` — `tracking-service`
+- `SOCIAL_API_CONTROLLER_REFERENCE.md` — `social-service`
+- `NOTIFICATION_API_CONTROLLER_REFERENCE.md` — `notification-service`
 
 Status legend:
 
