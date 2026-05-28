@@ -406,9 +406,25 @@ const SleepMainScreen: React.FC = () => {
       if (pickerTarget === 'date') {
         setSelectedDate(nextDate);
       } else if (pickerTarget === 'bedTime') {
-        setBedTime(nextDate);
+        // Apply only the picked time to selectedDate, then determine the correct day.
+        // If bedTime on selectedDate >= wakeTime, it means the user went to bed
+        // the previous evening, so shift back one day.
+        const newBedTime = new Date(selectedDate);
+        newBedTime.setHours(nextDate.getHours(), nextDate.getMinutes(), 0, 0);
+
+        const wakeOnSameDay = new Date(selectedDate);
+        wakeOnSameDay.setHours(wakeTime.getHours(), wakeTime.getMinutes(), 0, 0);
+
+        if (newBedTime >= wakeOnSameDay) {
+          newBedTime.setDate(newBedTime.getDate() - 1);
+        }
+
+        setBedTime(newBedTime);
       } else if (pickerTarget === 'wakeTime') {
-        setWakeTime(nextDate);
+        // Apply only the picked time to selectedDate.
+        const newWakeTime = new Date(selectedDate);
+        newWakeTime.setHours(nextDate.getHours(), nextDate.getMinutes(), 0, 0);
+        setWakeTime(newWakeTime);
       }
     }
 
@@ -721,7 +737,7 @@ const SleepMainScreen: React.FC = () => {
                 title={saveButtonLabel}
                 onPress={handleSave}
                 isLoading={isSaving}
-                icon="check"
+                icon="checkmark"
               />
             </View>
 

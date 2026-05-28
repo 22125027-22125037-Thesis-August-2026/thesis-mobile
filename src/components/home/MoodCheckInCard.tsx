@@ -12,6 +12,7 @@ import {
   MOOD_SELECTOR_OPTIONS,
   getMoodScore,
 } from '@/constants/moods';
+import { WidgetBridge } from '@/native/WidgetBridge';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 
 const MOOD_CONTENT_KEY: Record<MoodTag, string> = {
@@ -99,6 +100,8 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
       setQuickContent('');
       setLastMood(savedMood);
       setSuccessMood(savedMood);
+      void WidgetBridge.cacheLastMood(savedMood, new Date().toISOString());
+      void WidgetBridge.requestRefresh();
       if (successTimerRef.current) clearTimeout(successTimerRef.current);
       successTimerRef.current = setTimeout(() => setSuccessMood(null), 2500);
       onMoodSaved?.();
