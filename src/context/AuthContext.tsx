@@ -9,6 +9,7 @@ import {
   syncDeviceTokenAfterLogin,
   syncDeviceTokenOnLogout,
 } from '@/services/notifications';
+import { WidgetBridge } from '@/native/WidgetBridge';
 import { AuthResponse, RegisterPayload, User, UserRole } from '@/types';
 
 const AUTH_BASE_PATH = '/api/v1/auth';
@@ -64,6 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('[FCM] syncDeviceTokenOnLogout failed:', err);
     }
     resetNotificationCache();
+    void WidgetBridge.clearAuth();
     await AsyncStorage.multiRemove(AUTH_STORAGE_KEYS);
   };
 
@@ -95,6 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         [USER_ROLE_KEY, role],
         [PROFILE_ID_KEY, profileId],
       ]);
+      void WidgetBridge.setAuth(token, profileId);
 
       const userRes = await axiosClient.get<User | ApiResponse<User>>(
         `${AUTH_BASE_PATH}/me`,
@@ -148,7 +151,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await axiosClient.patch(`${AUTH_BASE_PATH}/profile`, data);
       const userRes = await axiosClient.get<User | ApiResponse<User>>(`${AUTH_BASE_PATH}/me`);
       const profilePayload = unwrapApiData<User>(userRes.data);
-      setUserInfo(prev => prev ? { ...prev, ...profilePayload } : profilePayload);
+      setUserInfo(prev => {
+        if (!prev) { return prev; }
+        return {
+          ...prev,
+          fullName: profilePayload.fullName ?? prev.fullName,
+          email: profilePayload.email ?? prev.email,
+          phoneNumber: profilePayload.phoneNumber ?? prev.phoneNumber,
+          dob: profilePayload.dob ?? prev.dob,
+          role: profilePayload.role ?? prev.role,
+          avatarUrl: data.avatarUrl ?? prev.avatarUrl,
+        };
+      });
     } catch (error) {
       console.log('Update profile error:', error);
       throw error;
@@ -178,6 +192,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             fullName: '',
             avatarUrl: undefined,
           });
+          void WidgetBridge.setAuth(token, profileId);
         }
 
         try {

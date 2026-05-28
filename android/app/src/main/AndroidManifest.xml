@@ -34,5 +34,25 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+
+      <receiver
+        android:name=".widget.MoodWidgetProvider"
+        android:label="@string/widget_mood_label"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/mood_widget_info" />
+      </receiver>
+
+      <receiver
+        android:name=".widget.MoodWidgetReceiver"
+        android:exported="false">
+        <intent-filter>
+          <action android:name="com.thesisapp.widget.ACTION_REFRESH" />
+        </intent-filter>
+      </receiver>
     </application>
 </manifest>

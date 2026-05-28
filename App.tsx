@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, View } from 'react-native';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -11,6 +11,11 @@ import '@/locales/i18n';
 import { AppText } from '@/components';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
 import { listenForForegroundNotifications } from '@/services/notifications';
+import {
+  WidgetBridge,
+  WIDGET_DEEP_LINK_EVENT,
+  WidgetDeepLinkPayload,
+} from '@/native/WidgetBridge';
 import { COLORS } from '@/theme';
 import { applyGlobalTypographyDefaults } from '@/theme/applyGlobalTypography';
 import {
@@ -217,6 +222,29 @@ const AppNav: React.FC = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const handleTarget = (target: string | null | undefined): void => {
+      if (!target) return;
+      if (!navigationRef.isReady()) return;
+      if ((target === 'diary-new' || target === 'mood-add') && auth?.userToken) {
+        navigationRef.navigate('DiaryEntry' as never);
+      } else if (target === 'login' && !auth?.userToken) {
+        navigationRef.navigate('Login' as never);
+      }
+    };
+
+    const subscription = DeviceEventEmitter.addListener(
+      WIDGET_DEEP_LINK_EVENT,
+      (payload: WidgetDeepLinkPayload) => handleTarget(payload?.target),
+    );
+
+    void WidgetBridge.consumePendingDeepLink().then(handleTarget);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [auth?.userToken, navigationRef]);
 
   const markOnboardingDone = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');

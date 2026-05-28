@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import i18next from 'i18next';
 
-const BASE_URL = 'http://161.118.252.10:8080';
+export const BASE_URL = 'http://161.118.252.10:8080';
 
 // TODO: REMOVE HARDCODED TOKEN AFTER UI TESTING
 const HARDCODED_TEST_TOKEN = '';

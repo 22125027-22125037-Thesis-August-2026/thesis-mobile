@@ -7,6 +7,8 @@ export interface User {
   fullName: string;
   avatarUrl?: string;
   email?: string;
+  phoneNumber?: string;
+  dob?: string;
 }
 
 // Dữ liệu trả về khi Login thành công
