@@ -296,6 +296,38 @@
     }
   },
   "booking": {
+    "status": {
+      "requested": "Awaiting therapist approval",
+      "upcoming": "Confirmed",
+      "inProgress": "In session",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "appointmentDetail": {
+      "awaitingBannerTitle": "Therapist hasn't confirmed yet",
+      "awaitingBannerBody": "We've sent your request. You'll be notified as soon as the therapist confirms or declines.",
+      "cancelledBannerTitle": "This appointment was cancelled",
+      "cancelledReasonLabel": "Reason",
+      "cancelledAtLabel": "Cancelled at",
+      "endTimeLabel": "Ends at",
+      "viewRequestCta": "View request",
+      "cancelButton": "Cancel appointment",
+      "cancelDialogTitle": "Cancel appointment?",
+      "cancelDialogBody": "Please share a short reason so the therapist understands your situation.",
+      "cancelDialogPlaceholder": "Reason (required)",
+      "cancelDialogSubmit": "Cancel appointment",
+      "cancelDialogDismiss": "Keep appointment",
+      "cancelErrorRequired": "A reason is required to cancel.",
+      "cancelErrorTooLong": "Reason must be 1000 characters or fewer.",
+      "cancelErrorConflict": "This appointment can no longer be cancelled.",
+      "cancelErrorGeneric": "Couldn't cancel right now. Please try again."
+    },
+    "bookingSuccess": {
+      "title": "Request sent",
+      "subtitle": "Awaiting therapist confirmation",
+      "viewRequest": "View request",
+      "backToTherapists": "Back to therapists"
+    },
     "therapistFilter": {
       "changeTherapist": "I want to change therapist",
       "customizationTitle": "Customize your therapist preferences",

@@ -10,12 +10,12 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import { CompositeNavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { AppText } from '@/components';
+import { AppText, AppointmentStatusBadge } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import {
   therapistApi,
@@ -23,6 +23,9 @@ import {
 import { MainTabParamList, RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
 import styles from '@/screens/booking/TherapistBookingLanding.styles';
+import { useTranslation } from 'react-i18next';
+
+const STATUSES_THAT_CAN_JOIN: therapistApi.AppointmentStatus[] = ['UPCOMING', 'IN_PROGRESS'];
 
 type TherapistTabNavigationProp = BottomTabNavigationProp<MainTabParamList, 'TherapistTab'>;
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -91,6 +94,7 @@ const TherapistBookingLanding: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const auth = useContext(AuthContext);
   const profileId = auth?.userInfo?.profileId;
+  const { t } = useTranslation();
 
   const [activeTherapist, setActiveTherapist] = useState<therapistApi.ActiveAssignedTherapist | null>(null);
   const [upcomingAppointment, setUpcomingAppointment] = useState<therapistApi.UpcomingAppointment | null>(null);
@@ -151,6 +155,12 @@ const TherapistBookingLanding: React.FC = () => {
     fetchLandingData();
   }, [fetchLandingData]);
 
+  useFocusEffect(
+    useCallback(() => {
+      void fetchLandingData();
+    }, [fetchLandingData]),
+  );
+
   const handleNavigateMatchingForm = () => {
     navigation.navigate('MatchingForm');
   };
@@ -179,7 +189,10 @@ const TherapistBookingLanding: React.FC = () => {
         therapistId: upcomingAppointment.therapistId,
         slotId: upcomingAppointment.slotId,
         slotStartDatetime: upcomingAppointment.startDatetime,
-        method: upcomingAppointment.mode === 'CHAT' ? 'Chat' : 'Video',
+        method:
+          upcomingAppointment.mode === 'CHAT' || upcomingAppointment.mode === 'TEXT'
+            ? 'Chat'
+            : 'Video',
         isBooked: true,
       });
       return;
@@ -199,7 +212,7 @@ const TherapistBookingLanding: React.FC = () => {
       therapistId: appointment.therapistId,
       slotId: appointment.slotId,
       slotStartDatetime: appointment.startDatetime,
-      method: appointment.mode === 'CHAT' ? 'Chat' : 'Video',
+      method: appointment.mode === 'CHAT' || appointment.mode === 'TEXT' ? 'Chat' : 'Video',
       therapistName: appointment.therapistName,
       therapistSpecialty: appointment.therapistSpecialization,
       therapistAvatarUrl: null,
@@ -217,12 +230,18 @@ const TherapistBookingLanding: React.FC = () => {
       therapistId: upcomingAppointment.therapistId,
       slotId: upcomingAppointment.slotId,
       slotStartDatetime: upcomingAppointment.startDatetime,
-      method: upcomingAppointment.mode === 'CHAT' ? 'Chat' : 'Video',
+      method:
+        upcomingAppointment.mode === 'CHAT' || upcomingAppointment.mode === 'TEXT'
+          ? 'Chat'
+          : 'Video',
       isBooked: true,
     });
   };
 
-  const upcomingAppointmentMethod = upcomingAppointment?.mode === 'CHAT' ? 'Chat' : 'Video';
+  const upcomingAppointmentMethod =
+    upcomingAppointment?.mode === 'CHAT' || upcomingAppointment?.mode === 'TEXT'
+      ? 'Chat'
+      : 'Video';
   const upcomingAppointmentTime = upcomingAppointment
     ? formatAppointmentTime(upcomingAppointment.startDatetime)
     : '--:--';
@@ -232,12 +251,22 @@ const TherapistBookingLanding: React.FC = () => {
   const remainingText = upcomingAppointment
     ? formatRelativeRemaining(new Date(upcomingAppointment.startDatetime).getTime() - now.getTime())
     : 'không xác định';
-  const upcomingStatusMessage =
-    remainingText === 'không xác định'
+  const upcomingStatus = upcomingAppointment?.status as
+    | therapistApi.AppointmentStatus
+    | undefined;
+  const canJoinUpcoming = upcomingStatus
+    ? STATUSES_THAT_CAN_JOIN.includes(upcomingStatus)
+    : false;
+  const upcomingStatusMessage = upcomingStatus === 'REQUESTED'
+    ? t('booking.appointmentDetail.awaitingBannerBody')
+    : remainingText === 'không xác định'
       ? 'Không thể xác định thời gian bắt đầu buổi tham vấn'
       : remainingText === 'đã bắt đầu'
         ? 'Buổi tham vấn đã bắt đầu'
         : `Buổi tham vấn sẽ diễn ra ${remainingText}`;
+  const upcomingCardCtaLabel = canJoinUpcoming
+    ? 'Vào phòng chờ'
+    : t('booking.appointmentDetail.viewRequestCta');
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -325,6 +354,12 @@ const TherapistBookingLanding: React.FC = () => {
               <AppText style={styles.upcomingCardTitle}>Tham vấn chuyên gia</AppText>
               <AppText style={styles.upcomingCardSubtitle}>{upcomingAppointmentMethod}</AppText>
 
+              {upcomingStatus ? (
+                <View style={{ marginTop: 10, flexDirection: 'row' }}>
+                  <AppointmentStatusBadge status={upcomingStatus} />
+                </View>
+              ) : null}
+
               <View style={styles.upcomingTimeDateRow}>
                 <AppText style={styles.upcomingTimeText}>{upcomingAppointmentTime}</AppText>
                 <AppText style={styles.upcomingDateText}>{upcomingAppointmentDate}</AppText>
@@ -336,7 +371,7 @@ const TherapistBookingLanding: React.FC = () => {
               </View>
 
               <View style={styles.upcomingCardActionRow}>
-                <AppText style={styles.upcomingCardActionText}>Vào phòng chờ</AppText>
+                <AppText style={styles.upcomingCardActionText}>{upcomingCardCtaLabel}</AppText>
                 <Ionicons
                   name="chevron-forward"
                   size={16}
@@ -355,7 +390,7 @@ const TherapistBookingLanding: React.FC = () => {
               </AppText>
 
               {unreviewedAppointments.map(appointment => {
-                const cardMethod = appointment.mode === 'CHAT' ? 'Chat' : 'Video';
+                const cardMethod = appointment.mode === 'CHAT' || appointment.mode === 'TEXT' ? 'Chat' : 'Video';
                 const cardTime = formatAppointmentTime(appointment.startDatetime);
                 const cardDate = formatAppointmentDate(appointment.startDatetime);
 

@@ -296,6 +296,38 @@
     }
   },
   "booking": {
+    "status": {
+      "requested": "Chờ chuyên gia xác nhận",
+      "upcoming": "Đã xác nhận",
+      "inProgress": "Đang diễn ra",
+      "completed": "Đã hoàn thành",
+      "cancelled": "Đã hủy"
+    },
+    "appointmentDetail": {
+      "awaitingBannerTitle": "Chuyên gia chưa xác nhận",
+      "awaitingBannerBody": "Yêu cầu của bạn đã được gửi. Bạn sẽ được thông báo ngay khi chuyên gia xác nhận hoặc từ chối.",
+      "cancelledBannerTitle": "Buổi hẹn này đã bị hủy",
+      "cancelledReasonLabel": "Lí do",
+      "cancelledAtLabel": "Thời gian hủy",
+      "endTimeLabel": "Kết thúc lúc",
+      "viewRequestCta": "Xem yêu cầu",
+      "cancelButton": "Hủy buổi hẹn",
+      "cancelDialogTitle": "Hủy buổi hẹn?",
+      "cancelDialogBody": "Vui lòng cho biết lí do để chuyên gia hiểu rõ tình huống của bạn.",
+      "cancelDialogPlaceholder": "Lí do (bắt buộc)",
+      "cancelDialogSubmit": "Hủy buổi hẹn",
+      "cancelDialogDismiss": "Giữ lịch hẹn",
+      "cancelErrorRequired": "Bắt buộc nhập lí do để hủy.",
+      "cancelErrorTooLong": "Lí do không được vượt quá 1000 ký tự.",
+      "cancelErrorConflict": "Không thể hủy buổi hẹn này nữa.",
+      "cancelErrorGeneric": "Hiện chưa thể hủy. Vui lòng thử lại."
+    },
+    "bookingSuccess": {
+      "title": "Đã gửi yêu cầu",
+      "subtitle": "Đang chờ chuyên gia xác nhận",
+      "viewRequest": "Xem yêu cầu",
+      "backToTherapists": "Quay lại danh sách chuyên gia"
+    },
     "therapistFilter": {
       "changeTherapist": "Tôi muốn đổi chuyên gia",
       "customizationTitle": "Tùy chỉnh mong muốn về chuyên gia của bạn",

@@ -227,15 +227,48 @@ interface TherapistAvailableSlotsResponse {
   content: TherapistAvailableSlot[];
 }
 
+export type AppointmentStatus =
+  | 'REQUESTED'
+  | 'UPCOMING'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
+export type AppointmentMode = 'VIDEO' | 'TEXT' | 'CHAT';
+
 export interface CreateBookingPayload {
   slotId: string;
+  reason?: string;
+  mode?: 'VIDEO' | 'TEXT';
 }
 
 export interface BookingResponse {
   appointmentId: string;
   slotId: string;
-  status: string;
+  status: AppointmentStatus;
   message: string;
+}
+
+export interface AppointmentDetail {
+  appointmentId: string;
+  profileId: string;
+  patientName?: string;
+  therapistId: string;
+  therapistName?: string;
+  therapistSpecialization?: string;
+  slotId: string;
+  mode: AppointmentMode;
+  status: AppointmentStatus;
+  startDatetime: string;
+  endDatetime?: string;
+  reason?: string;
+  cancellationReason?: string;
+  cancelledAt?: string;
+  createdAt?: string;
+}
+
+export interface CancelAppointmentPayload {
+  reason: string;
 }
 
 export interface SubmitReviewPayload {
@@ -281,9 +314,11 @@ export interface UpcomingAppointment {
   profileId: string;
   therapistId: string;
   slotId: string;
-  mode: 'VIDEO' | 'CHAT';
-  status: string;
+  mode: AppointmentMode;
+  status: AppointmentStatus;
   startDatetime: string;
+  endDatetime?: string;
+  reason?: string;
 }
 
 export type AppointmentHistoryStatus = 'COMPLETED' | 'CANCELLED';
@@ -296,9 +331,12 @@ export interface AppointmentHistoryEntry {
   therapistSpecialization: string;
   location: string;
   slotId: string;
-  mode: 'VIDEO' | 'CHAT';
+  mode: AppointmentMode;
   status: AppointmentHistoryStatus;
   startDatetime: string;
+  endDatetime?: string;
+  cancellationReason?: string;
+  cancelledAt?: string;
 }
 
 export interface UnreviewedAppointment {
@@ -309,7 +347,7 @@ export interface UnreviewedAppointment {
   therapistSpecialization: string;
   location: string;
   slotId: string;
-  mode: 'VIDEO' | 'CHAT';
+  mode: AppointmentMode;
   status: 'COMPLETED';
   startDatetime: string;
 }
@@ -397,6 +435,33 @@ export const bookSession = async (
   } catch (error) {
     throw error;
   }
+};
+
+export const getAppointmentDetail = async (
+  appointmentId: string,
+): Promise<AppointmentDetail | null> => {
+  try {
+    const response = await axiosClient.get<AppointmentDetail>(
+      `/api/v1/therapist/bookings/${appointmentId}`,
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+};
+
+export const cancelAppointment = async (
+  appointmentId: string,
+  payload: CancelAppointmentPayload,
+): Promise<AppointmentDetail> => {
+  const response = await axiosClient.post<AppointmentDetail>(
+    `/api/v1/therapist/bookings/${appointmentId}/cancel`,
+    payload,
+  );
+  return response.data;
 };
 
 export const joinVideoSession = async (appointmentId: string): Promise<boolean> => {
