@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components';
 import { RootStackParamList } from '@/navigation';
-import { MoodTag, MOOD_SELECTOR_OPTIONS } from '@/constants/moods';
+import { MoodTag, emotionConfigFromRaw } from '@/constants';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 
 // Sunday=0 in JS getDay(); map to Vietnamese short labels
@@ -23,21 +23,28 @@ const getLast7DayLabels = (): string[] => {
   return labels;
 };
 
-const hexWithAlpha = (hex: string, alphaHex: string): string => `${hex}${alphaHex}`;
+const hexWithAlpha = (hex: string, alphaHex: string): string =>
+  `${hex}${alphaHex}`;
 
 interface DiaryMiniDashboardProps {
   moods: (MoodTag | null)[];
   streak: number;
 }
 
-const DiaryMiniDashboard: React.FC<DiaryMiniDashboardProps> = ({ moods, streak }) => {
+const DiaryMiniDashboard: React.FC<DiaryMiniDashboardProps> = ({
+  moods,
+  streak,
+}) => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const safeMoods = moods.length === 7 ? moods : Array(7).fill(null);
   const dayLabels = getLast7DayLabels();
 
   return (
-    <Pressable style={styles.card} onPress={() => navigation.navigate('DiaryOverview')}>
+    <Pressable
+      style={styles.card}
+      onPress={() => navigation.navigate('DiaryOverview')}
+    >
       <View style={styles.headerRow}>
         <View style={styles.iconBox}>
           <MaterialCommunityIcons
@@ -48,7 +55,9 @@ const DiaryMiniDashboard: React.FC<DiaryMiniDashboardProps> = ({ moods, streak }
         </View>
         <View style={styles.headerText}>
           <View style={styles.titleRow}>
-            <AppText style={styles.title}>{t('home.dashboards.diary.title')}</AppText>
+            <AppText style={styles.title}>
+              {t('home.dashboards.diary.title')}
+            </AppText>
             {streak > 0 && (
               <View style={styles.streakChip}>
                 <AppText style={styles.streakText}>
@@ -57,26 +66,31 @@ const DiaryMiniDashboard: React.FC<DiaryMiniDashboardProps> = ({ moods, streak }
               </View>
             )}
           </View>
-          <AppText style={styles.subtitle}>{t('home.dashboards.diary.subtitle')}</AppText>
+          <AppText style={styles.subtitle}>
+            {t('home.dashboards.diary.subtitle')}
+          </AppText>
         </View>
-        <MaterialCommunityIcons name="chevron-right" size={20} color={COLORS.textTertiary} />
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={20}
+          color={COLORS.textTertiary}
+        />
       </View>
 
       <View style={styles.dotsRow}>
         {safeMoods.map((mood, i) => {
-          const opt = mood ? MOOD_SELECTOR_OPTIONS.find(o => o.value === mood) : null;
-          const iconName = opt?.icon ?? 'emoticon-neutral-outline';
-          const iconColor = opt?.color ?? COLORS.textTertiary;
-          const bg = opt ? hexWithAlpha(opt.color, '1A') : COLORS.background;
-          const borderColor = opt?.color ?? COLORS.borderSubtle;
+          const emotionConfig = mood ? emotionConfigFromRaw(mood) : null;
+          const iconName =
+            emotionConfig?.icon ?? 'emoticon-neutral-outline';
+          const iconColor = emotionConfig?.color ?? COLORS.textTertiary;
+          const bg = emotionConfig
+            ? hexWithAlpha(emotionConfig.color, '1A')
+            : COLORS.background;
+          const borderColor = emotionConfig?.color ?? COLORS.borderSubtle;
+
           return (
             <View key={i} style={styles.dotColumn}>
-              <View
-                style={[
-                  styles.dot,
-                  { backgroundColor: bg, borderColor },
-                ]}
-              >
+              <View style={[styles.dot, { backgroundColor: bg, borderColor }]}>
                 <MaterialCommunityIcons
                   name={iconName}
                   size={18}

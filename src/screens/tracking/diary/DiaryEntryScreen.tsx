@@ -1,16 +1,19 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
   Alert,
+  Animated,
+  Easing,
   Image,
   KeyboardAvoidingView,
-  Pressable,
+  Modal,
   Platform,
+  Pressable,
   ScrollView,
+  StyleSheet,
   TextInput,
   View,
-  Modal,
 } from 'react-native';
 import DatePicker from '@react-native-community/datetimepicker';
 import { AppText } from '@/components';
@@ -22,16 +25,18 @@ import {
 } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 import { diaryApi } from '@/api';
 import { AuthContext } from '@/context/AuthContext';
 import {
-  MOOD_SELECTOR_OPTIONS,
-  MoodTag,
-  getMoodScore,
+  ALL_DIARY_TAGS,
+  DIARY_TAG_CATEGORIES,
+  PlutchikEmotion,
+  PLUTCHIK_EMOTION_LIST,
+  PLUTCHIK_EMOTIONS,
+  getEmotionFromMoodTag,
   getMoodTag,
 } from '@/constants';
 import { COLORS, FONTS } from '@/theme';
@@ -40,94 +45,144 @@ import { AttachmentFile } from '@/types';
 import { WidgetBridge } from '@/native/WidgetBridge';
 import { playSoftHaptic } from '@/utils';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
+import TagSelector from './TagSelector';
 
-const MAX_CONTENT_LENGTH = 500;
+const MAX_QUICK_NOTE_LENGTH = 100;
 const MAX_ATTACHMENTS = 5;
+
+// Emotion grid layout: 2 rows × 4 columns (Plutchik order)
+const EMOTION_ROWS = [
+  PLUTCHIK_EMOTION_LIST.slice(0, 4), // JOY, TRUST, ANTICIPATION, SURPRISE
+  PLUTCHIK_EMOTION_LIST.slice(4, 8), // FEAR, SADNESS, DISGUST, ANGER
+];
+
+// Background palette — soft tinted washes matching each Plutchik color
+const EMOTION_BACKGROUNDS: Record<PlutchikEmotion, string> = {
+  JOY:          '#FFFDE7',
+  TRUST:        '#E8F5E9',
+  ANTICIPATION: '#FBE9E7',
+  SURPRISE:     '#FFF8E1',
+  FEAR:         '#E0F2F1',
+  SADNESS:      '#E3F2FD',
+  DISGUST:      '#F3E5F5',
+  ANGER:        '#FFEBEE',
+};
+
+
+const parseContent = (raw: string): { tags: string[]; note: string } => {
+  const full = raw.match(/^Tags: (.*?) \| Note: ([\s\S]*)$/);
+  if (full) {
+    return { tags: full[1].split(', ').filter(Boolean), note: full[2] };
+  }
+  const tagsOnly = raw.match(/^Tags: (.*)$/);
+  if (tagsOnly) {
+    return { tags: tagsOnly[1].split(', ').filter(Boolean), note: '' };
+  }
+  return { tags: [], note: raw };
+};
 
 const DiaryEntryScreen: React.FC = () => {
   const { t } = useTranslation();
   const { userInfo } = useContext(AuthContext)!;
-  type PickerAsset = {
-    uri?: string;
-    fileName?: string;
-    type?: string;
-  };
+  type PickerAsset = { uri?: string; fileName?: string; type?: string };
 
   const route = useRoute<RouteProp<RootStackParamList, 'DiaryEntry'>>();
   const entryId = route.params?.entryId;
   const navigation = useContext(NavigationContext) as
     | NavigationProp<RootStackParamList>
     | undefined;
+
   const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
-  const [moodTag, setMoodTag] = useState<MoodTag>('TERRIBLE');
-  const [positivityScore, setPositivityScore] = useState<number>(8);
+  const [selectedEmotion, setSelectedEmotion] = useState<PlutchikEmotion>('JOY');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [quickNote, setQuickNote] = useState<string>('');
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoadingEntry, setIsLoadingEntry] = useState<boolean>(false);
   const [entryDate, setEntryDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
+  // Cross-fade: two stacked Views, animate opacity of incoming layer.
+  // useNativeDriver:true → runs on UI thread, no JS-bridge color sweep.
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const currentBgRef = useRef(EMOTION_BACKGROUNDS.JOY);
+  const [prevBgColor, setPrevBgColor] = useState(EMOTION_BACKGROUNDS.JOY);
+  const [currentBgColor, setCurrentBgColor] = useState(EMOTION_BACKGROUNDS.JOY);
+
+  useEffect(() => {
+    const nextColor = EMOTION_BACKGROUNDS[selectedEmotion];
+    if (nextColor === currentBgRef.current) return;
+
+    const fromColor = currentBgRef.current;
+    currentBgRef.current = nextColor;
+
+    setPrevBgColor(fromColor);
+    setCurrentBgColor(nextColor);
+    fadeAnim.setValue(0);
+
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 420,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true,
+    }).start();
+  }, [selectedEmotion]);
+
   const canSubmit = useMemo(
-    () => content.trim().length > 0 && !isSubmitting && !isLoadingEntry,
-    [content, isSubmitting, isLoadingEntry],
+    () => !isSubmitting && !isLoadingEntry,
+    [isSubmitting, isLoadingEntry],
   );
 
   useEffect(() => {
     let isMounted = true;
 
     const hydrateEntry = async (): Promise<void> => {
-      if (!entryId) {
-        return;
-      }
-
+      if (!entryId) return;
       setIsLoadingEntry(true);
 
       try {
-        const entry = await diaryApi.getDiaryEntryById(userInfo?.profileId ?? '', entryId);
-
-        if (!isMounted) {
-          return;
-        }
+        const entry = await diaryApi.getDiaryEntryById(
+          userInfo?.profileId ?? '',
+          entryId,
+        );
+        if (!isMounted) return;
 
         setTitle(entry.title ?? '');
-        setContent(entry.content ?? '');
 
-        const resolvedMood = getMoodTag(entry.moodTag);
-        setMoodTag(resolvedMood);
-        setPositivityScore(getMoodScore(resolvedMood));
+        const resolvedMoodTag = getMoodTag(entry.moodTag);
+        setSelectedEmotion(getEmotionFromMoodTag(resolvedMoodTag));
 
-        // Initialize entryDate from the entry or default to today
         if (entry.entryDate) {
           setEntryDate(new Date(entry.entryDate));
-        } else {
-          setEntryDate(new Date());
         }
 
-        const mappedAttachments: AttachmentFile[] = (
-          entry.attachments ?? []
-        ).map(attachment => ({
-          uri: attachment.fileUrl,
-          name: attachment.fileName,
-          type: 'image/jpeg',
-        }));
+        const { tags, note } = parseContent(entry.content ?? '');
+        setSelectedTags(tags.filter(tag => ALL_DIARY_TAGS.includes(tag)));
+        setQuickNote(note);
 
+        const mappedAttachments: AttachmentFile[] = (entry.attachments ?? []).map(
+          a => ({ uri: a.fileUrl, name: a.fileName, type: 'image/jpeg' }),
+        );
         setAttachments(mappedAttachments);
       } catch (error) {
         console.error('[DiaryEntry] Failed to fetch entry detail:', error);
       } finally {
-        if (isMounted) {
-          setIsLoadingEntry(false);
-        }
+        if (isMounted) setIsLoadingEntry(false);
       }
     };
 
     hydrateEntry();
-
     return () => {
       isMounted = false;
     };
   }, [entryId]);
+
+  const handleToggleTag = (tag: string): void => {
+    playSoftHaptic();
+    setSelectedTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag],
+    );
+  };
 
   const handlePickImage = async (): Promise<void> => {
     const response = await launchImageLibrary({
@@ -145,21 +200,18 @@ const DiaryEntryScreen: React.FC = () => {
     }
 
     const pickerAssets = response.assets as PickerAsset[];
-
     const mappedFiles: AttachmentFile[] = pickerAssets
-      .filter(asset => typeof asset.uri === 'string' && asset.uri.length > 0)
-      .map((asset, index) => ({
-        uri: asset.uri as string,
+      .filter(a => typeof a.uri === 'string' && a.uri.length > 0)
+      .map((a, i) => ({
+        uri: a.uri as string,
         name:
-          asset.fileName && asset.fileName.length > 0
-            ? asset.fileName
-            : `attachment-${Date.now()}-${index}.jpg`,
-        type: asset.type && asset.type.length > 0 ? asset.type : 'image/jpeg',
+          a.fileName && a.fileName.length > 0
+            ? a.fileName
+            : `attachment-${Date.now()}-${i}.jpg`,
+        type: a.type && a.type.length > 0 ? a.type : 'image/jpeg',
       }));
 
-    if (mappedFiles.length === 0) {
-      return;
-    }
+    if (mappedFiles.length === 0) return;
 
     if (attachments.length >= MAX_ATTACHMENTS) {
       Alert.alert(
@@ -169,26 +221,22 @@ const DiaryEntryScreen: React.FC = () => {
       return;
     }
 
-    const availableSlots = MAX_ATTACHMENTS - attachments.length;
-    const filesToAppend = mappedFiles.slice(0, availableSlots);
+    const available = MAX_ATTACHMENTS - attachments.length;
+    const toAppend = mappedFiles.slice(0, available);
 
-    if (filesToAppend.length < mappedFiles.length) {
+    if (toAppend.length < mappedFiles.length) {
       Alert.alert(
         t('entry.selectionLimitTitle'),
         t('entry.selectionLimitTruncatedMessage'),
       );
     }
 
-    setAttachments(previous => [...previous, ...filesToAppend]);
+    setAttachments(prev => [...prev, ...toAppend]);
   };
 
   const handleDateChange = (event: any, selectedDate?: Date): void => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-
+    if (Platform.OS === 'android') setShowDatePicker(false);
     if (selectedDate) {
-      // Disable future dates
       if (selectedDate > new Date()) {
         Alert.alert(
           t('entry.validationTitle'),
@@ -204,16 +252,11 @@ const DiaryEntryScreen: React.FC = () => {
     const day = entryDate.getDate();
     const month = entryDate.getMonth() + 1;
     const year = entryDate.getFullYear();
-
-    // For Vietnamese, format as "Ngày 15 tháng 4, 2026"
-    const locale =
-      t('entry.dateFormat') === '{{day}}/{{month}}/{{year}}' ? 'en' : 'vi';
-
-    if (locale === 'vi') {
-      return `Ngày ${day} tháng ${month}, ${year}`;
-    } else {
-      return `${day}/${month}/${year}`;
-    }
+    const isVietnamese =
+      t('entry.dateFormat') !== '{{day}}/{{month}}/{{year}}';
+    return isVietnamese
+      ? `Ngày ${day} tháng ${month}, ${year}`
+      : `${day}/${month}/${year}`;
   };
 
   const formatDateForAPI = (): string => {
@@ -223,52 +266,49 @@ const DiaryEntryScreen: React.FC = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const handleSubmit = async (): Promise<void> => {
-    if (!content.trim()) {
-      Alert.alert(
-        t('entry.validationTitle'),
-        t('entry.validationContentRequired'),
-      );
-      return;
+  const buildContent = (): string => {
+    const parts: string[] = [];
+    if (selectedTags.length > 0) {
+      parts.push(`Tags: ${selectedTags.join(', ')}`);
     }
+    if (quickNote.trim()) {
+      parts.push(`Note: ${quickNote.trim()}`);
+    }
+    return parts.join(' | ');
+  };
 
+  const handleSubmit = async (): Promise<void> => {
     playSoftHaptic();
     setIsSubmitting(true);
-    const mappedScore = getMoodScore(moodTag);
-    setPositivityScore(mappedScore);
 
+    const emotion = PLUTCHIK_EMOTIONS[selectedEmotion];
     const diaryPayload = {
       title,
-      content,
-      moodTag,
-      positivityScore: mappedScore,
+      content: buildContent(),
+      moodTag: emotion.moodTag,
+      positivityScore: emotion.score,
       entryDate: formatDateForAPI(),
     };
-    const imageUris = attachments.map(attachment => attachment.uri);
-    console.log(
-      'Submitting diary entry with payload:',
-      diaryPayload,
-      'and images:',
-      imageUris,
-    );
+    const imageUris = attachments.map(a => a.uri);
 
     try {
       const response = entryId
         ? await diaryApi.updateDiaryEntry(entryId, diaryPayload, imageUris)
         : await diaryApi.createDiaryEntry(diaryPayload, imageUris);
 
-      void WidgetBridge.cacheLastMood(moodTag, new Date().toISOString());
+      void WidgetBridge.cacheLastMood(emotion.moodTag, new Date().toISOString());
       void WidgetBridge.requestRefresh();
 
       Alert.alert(
         t('entry.successTitle'),
         t('entry.successDiaryId', { id: response.id }),
       );
+
       setTitle('');
-      setContent('');
+      setSelectedEmotion('JOY');
+      setSelectedTags([]);
+      setQuickNote('');
       setAttachments([]);
-      setMoodTag('TERRIBLE');
-      setPositivityScore(8);
       setEntryDate(new Date());
       navigation?.goBack();
     } catch {
@@ -279,7 +319,18 @@ const DiaryEntryScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.rootContainer}>
+      {/* Layer 1 — outgoing colour (solid, no animation) */}
+      <View
+        style={[StyleSheet.absoluteFillObject, { backgroundColor: prevBgColor }]}
+        pointerEvents="none"
+      />
+      {/* Layer 2 — incoming colour (fades in via opacity, native driver) */}
+      <Animated.View
+        style={[StyleSheet.absoluteFillObject, { backgroundColor: currentBgColor, opacity: fadeAnim }]}
+        pointerEvents="none"
+      />
+      <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -289,6 +340,7 @@ const DiaryEntryScreen: React.FC = () => {
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           >
+            {/* Header */}
             <View style={styles.headerRow}>
               <Pressable
                 style={styles.headerBackButton}
@@ -306,43 +358,68 @@ const DiaryEntryScreen: React.FC = () => {
               </AppText>
             </View>
 
+            {/* Emotion Grid */}
             <View style={styles.section}>
               <AppText style={styles.sectionLabel}>
                 {t('entry.moodLabel')}
               </AppText>
-              <View style={styles.moodRow}>
-                {MOOD_SELECTOR_OPTIONS.map(mood => {
-                  const isSelected = mood.value === moodTag;
-
-                  return (
-                    <Pressable
-                      key={mood.value}
-                      style={[
-                        styles.moodOuter,
-                        isSelected && styles.moodOuterSelected,
-                      ]}
-                      onPress={() => setMoodTag(mood.value)}
-                      disabled={isSubmitting}
-                    >
-                      <View
-                        style={[
-                          styles.moodInner,
-                          { backgroundColor: mood.color },
-                        ]}
-                      >
-                        <MaterialCommunityIcons
-                          name={isSelected ? mood.activeIcon : mood.icon}
-                          size={28}
-                          color={COLORS.journalMoodFace}
-                        />
-                      </View>
-                    </Pressable>
-                  );
-                })}
-              </View>
+              {isLoadingEntry ? (
+                <ActivityIndicator color={COLORS.primary} />
+              ) : (
+                <View style={styles.emotionGrid}>
+                  {EMOTION_ROWS.map((row, rowIdx) => (
+                    <View key={rowIdx} style={styles.emotionRow}>
+                      {row.map(emotion => {
+                        const isSelected = emotion.key === selectedEmotion;
+                        return (
+                          <Pressable
+                            key={emotion.key}
+                            style={[
+                              styles.emotionCell,
+                              isSelected && styles.emotionCellSelected,
+                            ]}
+                            onPress={() => {
+                              playSoftHaptic();
+                              setSelectedEmotion(emotion.key);
+                            }}
+                            disabled={isSubmitting}
+                          >
+                            <View
+                              style={[
+                                styles.emotionCircle,
+                                { backgroundColor: emotion.color },
+                                isSelected && styles.emotionCircleSelected,
+                              ]}
+                            >
+                              <MaterialCommunityIcons
+                                name={
+                                  isSelected
+                                    ? emotion.activeIcon
+                                    : emotion.icon
+                                }
+                                size={26}
+                                color={COLORS.journalMoodFace}
+                              />
+                            </View>
+                            <AppText
+                              style={[
+                                styles.emotionLabel,
+                                isSelected && styles.emotionLabelSelected,
+                              ]}
+                              numberOfLines={1}
+                            >
+                              {emotion.label}
+                            </AppText>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
 
-            {/* Date Picker Section */}
+            {/* Date Picker */}
             <View style={styles.section}>
               <AppText style={styles.sectionLabel}>
                 {t('entry.dateLabel')}
@@ -359,7 +436,6 @@ const DiaryEntryScreen: React.FC = () => {
               </Pressable>
             </View>
 
-            {/* Date Picker Modal */}
             {showDatePicker &&
               (Platform.OS === 'ios' ? (
                 <Modal
@@ -405,6 +481,7 @@ const DiaryEntryScreen: React.FC = () => {
                 />
               ))}
 
+            {/* Title */}
             <View style={styles.section}>
               <AppText style={styles.sectionLabel}>
                 {t('entry.titleLabel')}
@@ -423,23 +500,56 @@ const DiaryEntryScreen: React.FC = () => {
               </View>
             </View>
 
+            {/* Tag Categories */}
             <View style={styles.section}>
               <AppText style={styles.sectionLabel}>
-                {t('entry.contentLabel')}
+                Hôm nay của bạn
               </AppText>
-              <View style={styles.contentCard}>
+              <View style={styles.tagCard}>
+                {DIARY_TAG_CATEGORIES.map((category, idx) => (
+                  <React.Fragment key={category.id}>
+                    {idx > 0 && <View style={styles.categorySeparator} />}
+                    <View style={styles.categorySection}>
+                      <View style={styles.categoryHeader}>
+                        <MaterialCommunityIcons
+                          name={category.icon}
+                          size={14}
+                          color={COLORS.primary}
+                        />
+                        <AppText style={styles.categoryLabel}>
+                          {category.label}
+                        </AppText>
+                      </View>
+                      <TagSelector
+                        tags={category.tags}
+                        selected={selectedTags}
+                        onToggle={handleToggleTag}
+                        disabled={isSubmitting}
+                      />
+                    </View>
+                  </React.Fragment>
+                ))}
+              </View>
+            </View>
+
+            {/* Quick Note — tuỳ chọn, tối giản */}
+            <View style={styles.section}>
+              <AppText style={styles.sectionLabel}>
+                Thêm ghi chú{' '}
+                <AppText style={styles.categoryLabel}>(tuỳ chọn)</AppText>
+              </AppText>
+              <View style={styles.quickNoteCard}>
                 <TextInput
-                  style={[styles.contentInput, { fontFamily: FONTS.regular }]}
+                  style={[styles.quickNoteInput, { fontFamily: FONTS.regular }]}
                   multiline
-                  value={content}
-                  onChangeText={setContent}
-                  placeholder={t('entry.contentPlaceholder')}
+                  value={quickNote}
+                  onChangeText={setQuickNote}
+                  placeholder="Một vài từ về hôm nay..."
                   placeholderTextColor={COLORS.placeholder}
                   textAlignVertical="top"
                   editable={!isSubmitting}
-                  maxLength={MAX_CONTENT_LENGTH}
+                  maxLength={MAX_QUICK_NOTE_LENGTH}
                 />
-
                 <View style={styles.toolbarRow}>
                   <Pressable
                     style={styles.addPhotoButton}
@@ -455,20 +565,11 @@ const DiaryEntryScreen: React.FC = () => {
                       {t('entry.addPhoto')}
                     </AppText>
                   </Pressable>
-
-                  <View style={styles.counterRow}>
-                    <Feather
-                      name="file-text"
-                      size={14}
-                      color={COLORS.journalCounter}
-                    />
-                    <AppText style={styles.counterText}>
-                      {t('entry.counter', { count: content.length })}
-                    </AppText>
-                  </View>
+                  <AppText style={styles.counterText}>
+                    {quickNote.length}/{MAX_QUICK_NOTE_LENGTH}
+                  </AppText>
                 </View>
-
-                {attachments.length > 0 ? (
+                {attachments.length > 0 && (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -482,7 +583,7 @@ const DiaryEntryScreen: React.FC = () => {
                       />
                     ))}
                   </ScrollView>
-                ) : null}
+                )}
               </View>
             </View>
           </ScrollView>
@@ -515,6 +616,7 @@ const DiaryEntryScreen: React.FC = () => {
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </View>
   );
 };
 

@@ -272,6 +272,15 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.xs,
   },
+  emotionBadge: {
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.chip,
+  },
+  emotionBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
   separator: {
     fontSize: FONT_SIZES.xs,
     color: COLORS.border,

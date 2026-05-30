@@ -4,9 +4,12 @@ import { COLORS } from '@/theme';
 import { BORDER_RADIUS, FONT_SIZES, SPACING } from '@/theme';
 
 export const styles = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.journalBackground,
+    backgroundColor: 'transparent',
   },
   flex: {
     flex: 1,
@@ -63,66 +66,106 @@ export const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     paddingVertical: SPACING.sm,
   },
-  moodRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  moodOuter: {
-    width: 60,
-    height: 60,
-    borderRadius: BORDER_RADIUS.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moodOuterSelected: {
-    backgroundColor: COLORS.journalMoodActive,
-  },
-  moodInner: {
-    width: 50,
-    height: 50,
-    borderRadius: BORDER_RADIUS.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  contentCard: {
-    borderWidth: 2,
-    borderColor: COLORS.journalContentBorder,
+
+  // ── Tag category card ─────────────────────────────────────────────────────────
+  tagCard: {
+    borderWidth: 1.5,
+    borderColor: COLORS.borderSubtle,
     borderRadius: BORDER_RADIUS.card,
     backgroundColor: COLORS.journalPillBackground,
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.md,
     paddingBottom: SPACING.sm,
-    minHeight: 250,
+    rowGap: SPACING.sm,
   },
-  contentInput: {
+  categorySection: {
+    rowGap: SPACING.xs,
+  },
+  categorySeparator: {
+    height: 1,
+    backgroundColor: COLORS.borderSubtle,
+    marginVertical: SPACING.xs,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: SPACING.xs,
+  },
+  categoryLabel: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+
+  // ── Emotion Grid ─────────────────────────────────────────────────────────────
+  emotionGrid: {
+    rowGap: SPACING.xs,
+  },
+  emotionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  emotionCell: {
     flex: 1,
-    minHeight: 130,
-    fontSize: 38,
-    lineHeight: 46,
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.card,
+    rowGap: 6,
+  },
+  emotionCellSelected: {
+    backgroundColor: COLORS.journalMoodActive,
+  },
+  emotionCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: BORDER_RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emotionCircleSelected: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  emotionLabel: {
+    fontSize: FONT_SIZES.xs,
     fontWeight: '600',
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  emotionLabelSelected: {
+    color: COLORS.textPrimary,
+    fontWeight: '700',
+  },
+
+  // ── Quick Note card ───────────────────────────────────────────────────────────
+  quickNoteCard: {
+    borderWidth: 1.5,
+    borderColor: COLORS.borderSubtle,
+    borderRadius: BORDER_RADIUS.card,
+    backgroundColor: COLORS.journalPillBackground,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.xs,
+    minHeight: 80,
+  },
+  quickNoteInput: {
+    minHeight: 44,
+    fontSize: FONT_SIZES.sm,
+    lineHeight: 20,
     color: COLORS.textPrimary,
     textAlignVertical: 'top',
   },
+
+  // ── Toolbar shared by note card ───────────────────────────────────────────────
   toolbarRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: SPACING.sm,
     columnGap: SPACING.xs,
-  },
-  toolbarLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: SPACING.xs,
-  },
-  iconPillButton: {
-    width: 42,
-    height: 42,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.journalToolbarPill,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   addPhotoButton: {
     flexDirection: 'row',
@@ -158,6 +201,8 @@ export const styles = StyleSheet.create({
     borderWidth: SPACING.borderWidth,
     borderColor: COLORS.borderSubtle,
   },
+
+  // ── Submit ────────────────────────────────────────────────────────────────────
   submitArea: {
     paddingHorizontal: SPACING.screenHorizontal,
     paddingBottom: SPACING.lg,
@@ -183,6 +228,8 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.buttonPrimaryText,
   },
+
+  // ── Date picker ───────────────────────────────────────────────────────────────
   datePickerButton: {
     minHeight: 56,
     backgroundColor: COLORS.journalPillBackground,

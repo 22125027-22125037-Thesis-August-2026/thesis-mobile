@@ -23,7 +23,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { diaryApi } from '@/api';
-import { getMoodCardUi } from '@/constants';
+import { emotionConfigFromRaw } from '@/constants';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
@@ -67,6 +67,15 @@ const isDateInRange = (
   }
 
   return true;
+};
+
+const formatContentForDisplay = (content: string | null | undefined): string => {
+  if (!content) return '';
+  const full = content.match(/^Tags: (.*?) \| Note: ([\s\S]*)$/);
+  if (full) return `${full[1]} · ${full[2]}`;
+  const tagsOnly = content.match(/^Tags: (.*)$/);
+  if (tagsOnly) return tagsOnly[1];
+  return content;
 };
 
 // ===== MAIN COMPONENT =====
@@ -176,7 +185,7 @@ const DiaryOverviewScreen: React.FC = () => {
     item: DiaryEntryResponse;
     index: number;
   }) => {
-    const moodUi = getMoodCardUi(item.moodTag);
+    const emotionConfig = emotionConfigFromRaw(item.moodTag);
     const isLastItem = index === filteredEntries.length - 1;
 
     return (
@@ -186,21 +195,21 @@ const DiaryOverviewScreen: React.FC = () => {
           style={[styles.timelineLine, isLastItem && styles.timelineLineHidden]}
         />
 
-        {/* Timeline Dot with Mood Icon */}
+        {/* Timeline Dot with Plutchik Emotion Icon */}
         <View
           style={[
             styles.timelineDot,
-            { borderColor: moodUi.iconBackgroundColor },
+            { borderColor: emotionConfig.color },
           ]}
         >
           <MaterialCommunityIcons
-            name={moodUi.moodIcon}
+            name={emotionConfig.activeIcon}
             size={28}
-            color={moodUi.iconBackgroundColor}
+            color={emotionConfig.color}
           />
         </View>
 
-        {/* Card Content - Full Width */}
+        {/* Card Content */}
         <Pressable
           style={styles.entryCard}
           onPress={() => handleEntryPress(item.id)}
@@ -211,6 +220,22 @@ const DiaryOverviewScreen: React.FC = () => {
                 <AppText style={styles.entryDate}>
                   {formatDate(item.entryDate)}
                 </AppText>
+                {/* Emotion badge */}
+                <View
+                  style={[
+                    styles.emotionBadge,
+                    { backgroundColor: `${emotionConfig.color}22` },
+                  ]}
+                >
+                  <AppText
+                    style={[
+                      styles.emotionBadgeText,
+                      { color: emotionConfig.color },
+                    ]}
+                  >
+                    {emotionConfig.label}
+                  </AppText>
+                </View>
               </View>
               {item.title?.trim() && (
                 <AppText style={styles.entryTitle}>{item.title}</AppText>
@@ -218,7 +243,9 @@ const DiaryOverviewScreen: React.FC = () => {
             </View>
           </View>
 
-          <AppText style={styles.entryContent}>{item.content}</AppText>
+          <AppText style={styles.entryContent} numberOfLines={2}>
+            {formatContentForDisplay(item.content)}
+          </AppText>
         </Pressable>
       </View>
     );
