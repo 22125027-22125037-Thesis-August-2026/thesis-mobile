@@ -14,7 +14,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 // import { RouteProp, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 
+import { AppointmentStatusBadge } from '@/components';
 import { therapistApi } from '@/api';
 import { AuthContext } from '@/context/AuthContext';
 import { RootStackParamList } from '@/navigation';
@@ -57,6 +59,7 @@ const AppointmentsHistoryScreen: React.FC = () => {
   // const currentTherapistId = route.params?.currentTherapistId;
   const auth = useContext(AuthContext);
   const profileId = auth?.userInfo?.profileId;
+  const { t } = useTranslation();
 
   const [activeStatus, setActiveStatus] = useState<AppointmentStatus>('COMPLETED');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -139,6 +142,32 @@ const AppointmentsHistoryScreen: React.FC = () => {
           <Text style={styles.dateText}>{formatAppointmentDate(item.startDatetime)}</Text>
         </View>
 
+        <View style={{ marginTop: 10, flexDirection: 'row' }}>
+          <AppointmentStatusBadge status={item.status} />
+        </View>
+
+        {isCancelled && (item.cancellationReason || item.cancelledAt) ? (
+          <View style={{ marginTop: 10 }}>
+            {item.cancellationReason ? (
+              <Text style={styles.dateText}>
+                {t('booking.appointmentDetail.cancelledReasonLabel')}: {item.cancellationReason}
+              </Text>
+            ) : null}
+            {item.cancelledAt ? (
+              <Text style={styles.dateText}>
+                {t('booking.appointmentDetail.cancelledAtLabel')}: {new Date(item.cancelledAt).toLocaleString('vi-VN', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                })}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
+
         {isCancelled ? null : isExpanded ? (
           <View style={styles.expandedActions}>
             <TouchableOpacity
@@ -150,7 +179,7 @@ const AppointmentsHistoryScreen: React.FC = () => {
                   therapistId: item.therapistId,
                   slotId: item.slotId,
                   slotStartDatetime: item.startDatetime,
-                  method: item.mode === 'CHAT' ? 'Chat' : 'Video',
+                  method: item.mode === 'CHAT' || item.mode === 'TEXT' ? 'Chat' : 'Video',
                   therapistName: item.therapistName,
                   therapistSpecialty: item.therapistSpecialization,
                   therapistAvatarUrl: null,

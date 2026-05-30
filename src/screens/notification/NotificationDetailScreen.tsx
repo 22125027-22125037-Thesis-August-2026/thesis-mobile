@@ -132,13 +132,15 @@ const NotificationDetailScreen: React.FC = () => {
   const copy = TYPE_COPY[notification.type];
 
   const handleCta = (): void => {
+    if (notification.type === 'BOOKING') {
+      navigation.navigate('MainTabs', { screen: 'TherapistTab' });
+      return;
+    }
     // TODO(design): each type should deep-link to the matching feature.
     //   STREAK   → DiaryOverview / streak screen
-    //   BOOKING  → ConsultationDetail / AppointmentsHistory
     //   INSIGHT  → analytics screen for the topic
     //   CHAT     → Chat (sessionId-aware) / MessageList
     //   REMINDER → the activity being reminded (meditation, mood update, …)
-    // For now just go back.
     navigation.goBack();
   };
 

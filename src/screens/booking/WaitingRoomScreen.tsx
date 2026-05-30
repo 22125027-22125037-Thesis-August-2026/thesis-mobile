@@ -1,20 +1,45 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, BackHandler, Image, ScrollView, TouchableOpacity, View } from 'react-native';
-import { AppText } from '@/components';
+import {
+  ActivityIndicator,
+  Alert,
+  BackHandler,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { AppText, AppointmentStatusBadge } from '@/components';
 import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
 import {
+  AppointmentDetail,
+  AppointmentStatus,
   bookSession,
+  cancelAppointment,
+  getAppointmentDetail,
   getTherapistAvailableSlots,
   getTherapistDetails,
   TherapistAvailableSlot,
   TherapistDetail,
 } from '@/api';
 import { RootStackParamList } from '@/navigation';
-import { COLORS } from '@/theme';
+import { COLORS, FONTS } from '@/theme';
 import styles from '@/screens/booking/WaitingRoomScreen.styles';
+
+const CANCEL_REASON_MAX_LENGTH = 1000;
+const APPOINTMENT_REFRESH_INTERVAL_MS = 30000;
+const STATUSES_THAT_CAN_CANCEL: AppointmentStatus[] = [
+  'REQUESTED',
+  'UPCOMING',
+  'IN_PROGRESS',
+];
+const STATUSES_THAT_CAN_JOIN: AppointmentStatus[] = ['UPCOMING', 'IN_PROGRESS'];
 
 type WaitingRoomRouteProp = RouteProp<RootStackParamList, 'WaitingRoom'>;
 type WaitingRoomNavigationProp = NativeStackNavigationProp<RootStackParamList, 'WaitingRoom'>;
@@ -113,6 +138,7 @@ const formatRelativeRemaining = (remainingMs: number): string => {
 };
 
 const WaitingRoomScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<WaitingRoomNavigationProp>();
   const route = useRoute<WaitingRoomRouteProp>();
   const {
@@ -121,7 +147,7 @@ const WaitingRoomScreen: React.FC = () => {
     slotId: routeSlotId,
     slotStartDatetime: routeSlotStartDatetime,
     method,
-    reason = FALLBACK_REASON,
+    reason: routeReason = FALLBACK_REASON,
     isBooked: routeIsBooked = false,
   } = route.params;
 
@@ -132,6 +158,7 @@ const WaitingRoomScreen: React.FC = () => {
   const [isBooking, setIsBooking] = useState<boolean>(false);
   const [isBooked, setIsBooked] = useState<boolean>(routeIsBooked);
   const [appointmentId, setAppointmentId] = useState<string | undefined>(routeAppointmentId);
+  const [appointmentDetail, setAppointmentDetail] = useState<AppointmentDetail | null>(null);
   const [bookingError, setBookingError] = useState<string>('');
   const [currentSlotId, setCurrentSlotId] = useState<string>(routeSlotId);
   const [currentSlotStartDatetime, setCurrentSlotStartDatetime] = useState<string>(routeSlotStartDatetime);
@@ -139,7 +166,15 @@ const WaitingRoomScreen: React.FC = () => {
   const [isLoadingAvailableSlots, setIsLoadingAvailableSlots] = useState<boolean>(false);
   const [availableSlotsError, setAvailableSlotsError] = useState<string>('');
   const [showAvailableSlots, setShowAvailableSlots] = useState<boolean>(false);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false);
+  const [cancelReason, setCancelReason] = useState<string>('');
+  const [isCancelling, setIsCancelling] = useState<boolean>(false);
+  const [cancelError, setCancelError] = useState<string>('');
   const leaveAlertVisibleRef = useRef<boolean>(false);
+
+  const status: AppointmentStatus | null = appointmentDetail?.status
+    ?? (isBooked ? 'REQUESTED' : null);
+  const reason = appointmentDetail?.reason || routeReason;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -179,10 +214,90 @@ const WaitingRoomScreen: React.FC = () => {
     };
   }, [therapistId]);
 
+  const refreshAppointmentDetail = useCallback(async (): Promise<void> => {
+    if (!appointmentId) {
+      return;
+    }
+    try {
+      const detail = await getAppointmentDetail(appointmentId);
+      if (detail) {
+        setAppointmentDetail(detail);
+        if (detail.startDatetime) {
+          setCurrentSlotStartDatetime(detail.startDatetime);
+        }
+        if (detail.slotId) {
+          setCurrentSlotId(detail.slotId);
+        }
+      }
+    } catch (error) {
+      console.warn('[WaitingRoom] Failed to refresh appointment detail:', error);
+    }
+  }, [appointmentId]);
+
+  useEffect(() => {
+    void refreshAppointmentDetail();
+  }, [refreshAppointmentDetail]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshAppointmentDetail();
+    }, [refreshAppointmentDetail]),
+  );
+
+  useEffect(() => {
+    if (!appointmentId) {
+      return;
+    }
+    if (status === 'COMPLETED' || status === 'CANCELLED') {
+      return;
+    }
+    const timer = setInterval(() => {
+      void refreshAppointmentDetail();
+    }, APPOINTMENT_REFRESH_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [appointmentId, refreshAppointmentDetail, status]);
+
   const appointmentStart = useMemo(
     () => parseAppointmentStart(currentSlotStartDatetime),
     [currentSlotStartDatetime],
   );
+
+  const appointmentEnd = useMemo(
+    () =>
+      appointmentDetail?.endDatetime
+        ? parseAppointmentStart(appointmentDetail.endDatetime)
+        : null,
+    [appointmentDetail?.endDatetime],
+  );
+
+  const displayEndTime = useMemo(() => {
+    if (!appointmentEnd) {
+      return '';
+    }
+    return appointmentEnd.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  }, [appointmentEnd]);
+
+  const cancelledAtLabel = useMemo(() => {
+    if (!appointmentDetail?.cancelledAt) {
+      return '';
+    }
+    const parsed = new Date(appointmentDetail.cancelledAt);
+    if (Number.isNaN(parsed.getTime())) {
+      return '';
+    }
+    return parsed.toLocaleString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  }, [appointmentDetail?.cancelledAt]);
 
   const displayTime = useMemo(() => {
     if (!appointmentStart) {
@@ -224,7 +339,16 @@ const WaitingRoomScreen: React.FC = () => {
     return formatRelativeRemaining(remainingMs);
   }, [remainingMs]);
 
-  const canJoin = isBooked && remainingMs !== null && remainingMs <= TEN_MINUTES_IN_MS;
+  const isAwaitingApproval = status === 'REQUESTED';
+  const isCancelledStatus = status === 'CANCELLED';
+  const isCompletedStatus = status === 'COMPLETED';
+  const statusAllowsJoin = status ? STATUSES_THAT_CAN_JOIN.includes(status) : false;
+  const statusAllowsCancel = status ? STATUSES_THAT_CAN_CANCEL.includes(status) : false;
+  const canJoin =
+    isBooked
+    && statusAllowsJoin
+    && remainingMs !== null
+    && remainingMs <= TEN_MINUTES_IN_MS;
   const shouldDisableJoinButton = isBooked && !canJoin;
   const isPrimaryDisabled = isBooking || shouldDisableJoinButton;
 
@@ -262,11 +386,19 @@ const WaitingRoomScreen: React.FC = () => {
     setBookingError('');
 
     try {
-      const bookingResponse = await bookSession({ slotId: currentSlotId });
+      const trimmedReason = routeReason && routeReason !== FALLBACK_REASON
+        ? routeReason.trim()
+        : '';
+      const bookingResponse = await bookSession({
+        slotId: currentSlotId,
+        reason: trimmedReason.length > 0 ? trimmedReason : undefined,
+        mode: method === 'Chat' ? 'TEXT' : 'VIDEO',
+      });
       setAppointmentId(bookingResponse.appointmentId);
       setIsBooked(true);
       setShowAvailableSlots(false);
       setAvailableSlots([]);
+      void refreshAppointmentDetail();
     } catch (error) {
       const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
       const backendMessage = axiosError.response?.data?.detail ?? axiosError.response?.data?.message;
@@ -278,7 +410,72 @@ const WaitingRoomScreen: React.FC = () => {
     } finally {
       setIsBooking(false);
     }
-  }, [isBooking, isBooked, currentSlotId, loadAvailableSlots]);
+  }, [
+    isBooking,
+    isBooked,
+    currentSlotId,
+    loadAvailableSlots,
+    method,
+    refreshAppointmentDetail,
+    routeReason,
+  ]);
+
+  const openCancelDialog = useCallback(() => {
+    setCancelReason('');
+    setCancelError('');
+    setIsCancelDialogOpen(true);
+  }, []);
+
+  const closeCancelDialog = useCallback(() => {
+    if (isCancelling) {
+      return;
+    }
+    setIsCancelDialogOpen(false);
+  }, [isCancelling]);
+
+  const submitCancellation = useCallback(async () => {
+    if (!appointmentId) {
+      return;
+    }
+    const trimmed = cancelReason.trim();
+    if (trimmed.length === 0) {
+      setCancelError(t('booking.appointmentDetail.cancelErrorRequired'));
+      return;
+    }
+    if (trimmed.length > CANCEL_REASON_MAX_LENGTH) {
+      setCancelError(t('booking.appointmentDetail.cancelErrorTooLong'));
+      return;
+    }
+
+    setIsCancelling(true);
+    setCancelError('');
+
+    try {
+      const updated = await cancelAppointment(appointmentId, { reason: trimmed });
+      setAppointmentDetail(updated);
+      setIsCancelDialogOpen(false);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
+      const backendMessage =
+        axiosError.response?.data?.detail ?? axiosError.response?.data?.message;
+      if (axiosError.response?.status === 409) {
+        setCancelError(
+          backendMessage ?? t('booking.appointmentDetail.cancelErrorConflict'),
+        );
+        void refreshAppointmentDetail();
+      } else if (axiosError.response?.status === 400) {
+        setCancelError(
+          backendMessage ?? t('booking.appointmentDetail.cancelErrorRequired'),
+        );
+      } else {
+        setCancelError(
+          backendMessage ?? t('booking.appointmentDetail.cancelErrorGeneric'),
+        );
+      }
+    } finally {
+      setIsCancelling(false);
+    }
+  }, [appointmentId, cancelReason, refreshAppointmentDetail, t]);
 
   const handleSelectAlternativeSlot = useCallback((slot: TherapistAvailableSlot) => {
     setCurrentSlotId(slot.slotId);
@@ -390,12 +587,15 @@ const WaitingRoomScreen: React.FC = () => {
   );
 
   const primaryButtonText = isBooked ? 'Tham gia' : 'Xác nhận đặt lịch với chuyên gia';
-  const statusMessage =
-    remainingText === 'không xác định'
-      ? 'Không thể xác định thời gian bắt đầu buổi tham vấn'
-      : remainingText === 'đã bắt đầu'
-        ? 'Buổi tham vấn đã bắt đầu'
-        : `Buổi tham vấn sẽ bắt đầu ${remainingText}`;
+  const statusMessage = isAwaitingApproval
+    ? t('booking.appointmentDetail.awaitingBannerBody')
+    : isCancelledStatus
+      ? t('booking.appointmentDetail.cancelledBannerTitle')
+      : remainingText === 'không xác định'
+        ? 'Không thể xác định thời gian bắt đầu buổi tham vấn'
+        : remainingText === 'đã bắt đầu'
+          ? 'Buổi tham vấn đã bắt đầu'
+          : `Buổi tham vấn sẽ bắt đầu ${remainingText}`;
 
   const floatingButtonLabel = isBooked
     ? 'Quay về trang chủ'
@@ -422,27 +622,73 @@ const WaitingRoomScreen: React.FC = () => {
           <AppText style={styles.cardTitle}>Tham vấn chuyên gia</AppText>
           <AppText style={styles.cardSubtitle}>{method}</AppText>
 
+          {status ? (
+            <View style={waitingExtraStyles.badgeRow}>
+              <AppointmentStatusBadge status={status} />
+            </View>
+          ) : null}
+
           <View style={styles.timeDateRow}>
             <AppText style={styles.timeText}>{displayTime}</AppText>
             <AppText style={styles.dateText}>{displayDate}</AppText>
           </View>
+          {displayEndTime ? (
+            <AppText style={styles.helperText}>
+              {t('booking.appointmentDetail.endTimeLabel')}: {displayEndTime}
+            </AppText>
+          ) : null}
 
-          <View style={styles.statusBadge}>
-            <Ionicons name="time-outline" size={14} color={COLORS.consultationFeedbackPrimary} />
-            <AppText style={styles.statusText}>{statusMessage}</AppText>
-          </View>
+          {isAwaitingApproval ? (
+            <View style={waitingExtraStyles.awaitingBanner}>
+              <Ionicons name="hourglass-outline" size={16} color="#856404" />
+              <View style={waitingExtraStyles.bannerTextBlock}>
+                <AppText style={waitingExtraStyles.awaitingBannerTitle}>
+                  {t('booking.appointmentDetail.awaitingBannerTitle')}
+                </AppText>
+                <AppText style={waitingExtraStyles.awaitingBannerBody}>
+                  {t('booking.appointmentDetail.awaitingBannerBody')}
+                </AppText>
+              </View>
+            </View>
+          ) : isCancelledStatus ? (
+            <View style={waitingExtraStyles.cancelledBanner}>
+              <Ionicons name="close-circle-outline" size={16} color="#721C24" />
+              <View style={waitingExtraStyles.bannerTextBlock}>
+                <AppText style={waitingExtraStyles.cancelledBannerTitle}>
+                  {t('booking.appointmentDetail.cancelledBannerTitle')}
+                </AppText>
+                {appointmentDetail?.cancellationReason ? (
+                  <AppText style={waitingExtraStyles.cancelledBannerBody}>
+                    {t('booking.appointmentDetail.cancelledReasonLabel')}: {appointmentDetail.cancellationReason}
+                  </AppText>
+                ) : null}
+                {cancelledAtLabel ? (
+                  <AppText style={waitingExtraStyles.cancelledBannerBody}>
+                    {t('booking.appointmentDetail.cancelledAtLabel')}: {cancelledAtLabel}
+                  </AppText>
+                ) : null}
+              </View>
+            </View>
+          ) : (
+            <View style={styles.statusBadge}>
+              <Ionicons name="time-outline" size={14} color={COLORS.consultationFeedbackPrimary} />
+              <AppText style={styles.statusText}>{statusMessage}</AppText>
+            </View>
+          )}
 
-          <TouchableOpacity
-            activeOpacity={0.9}
-            style={[
-              styles.joinButton,
-              isPrimaryDisabled ? styles.joinButtonDisabled : styles.joinButtonActive,
-            ]}
-            onPress={handlePrimaryAction}
-            disabled={isPrimaryDisabled}
-          >
-            <AppText style={styles.joinButtonText}>{isBooking ? 'Đang xử lý...' : primaryButtonText}</AppText>
-          </TouchableOpacity>
+          {!isCancelledStatus && !isCompletedStatus ? (
+            <TouchableOpacity
+              activeOpacity={0.9}
+              style={[
+                styles.joinButton,
+                isPrimaryDisabled ? styles.joinButtonDisabled : styles.joinButtonActive,
+              ]}
+              onPress={handlePrimaryAction}
+              disabled={isPrimaryDisabled}
+            >
+              <AppText style={styles.joinButtonText}>{isBooking ? 'Đang xử lý...' : primaryButtonText}</AppText>
+            </TouchableOpacity>
+          ) : null}
 
           {!isBooked ? (
             <AppText style={styles.reminderText}>
@@ -450,11 +696,24 @@ const WaitingRoomScreen: React.FC = () => {
             </AppText>
           ) : null}
 
-          {isBooked && shouldDisableJoinButton ? (
+          {isBooked && statusAllowsJoin && shouldDisableJoinButton ? (
             <AppText style={styles.helperText}>Bạn chỉ có thể tham gia trong vòng 10 phút trước giờ hẹn.</AppText>
           ) : null}
 
           {bookingError ? <AppText style={styles.errorText}>{bookingError}</AppText> : null}
+
+          {isBooked && statusAllowsCancel ? (
+            <TouchableOpacity
+              activeOpacity={0.85}
+              style={waitingExtraStyles.cancelButton}
+              onPress={openCancelDialog}
+            >
+              <Ionicons name="close-circle-outline" size={16} color={COLORS.errorText} />
+              <AppText style={waitingExtraStyles.cancelButtonText}>
+                {t('booking.appointmentDetail.cancelButton')}
+              </AppText>
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         <View style={styles.card}>
@@ -572,8 +831,226 @@ const WaitingRoomScreen: React.FC = () => {
           </AppText>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        visible={isCancelDialogOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={closeCancelDialog}
+        statusBarTranslucent
+      >
+        <View style={waitingExtraStyles.modalBackdrop}>
+          <View style={waitingExtraStyles.modalCard}>
+            <AppText style={waitingExtraStyles.modalTitle}>
+              {t('booking.appointmentDetail.cancelDialogTitle')}
+            </AppText>
+            <AppText style={waitingExtraStyles.modalBody}>
+              {t('booking.appointmentDetail.cancelDialogBody')}
+            </AppText>
+            <TextInput
+              style={[waitingExtraStyles.modalInput, { fontFamily: FONTS.regular }]}
+              placeholder={t('booking.appointmentDetail.cancelDialogPlaceholder')}
+              placeholderTextColor={COLORS.placeholder}
+              multiline
+              value={cancelReason}
+              onChangeText={text => {
+                setCancelReason(text);
+                if (cancelError) {
+                  setCancelError('');
+                }
+              }}
+              maxLength={CANCEL_REASON_MAX_LENGTH}
+              editable={!isCancelling}
+            />
+            <AppText style={waitingExtraStyles.modalCounter}>
+              {cancelReason.length}/{CANCEL_REASON_MAX_LENGTH}
+            </AppText>
+            {cancelError ? (
+              <AppText style={waitingExtraStyles.modalErrorText}>{cancelError}</AppText>
+            ) : null}
+            <View style={waitingExtraStyles.modalActions}>
+              <TouchableOpacity
+                style={[waitingExtraStyles.modalButton, waitingExtraStyles.modalButtonGhost]}
+                onPress={closeCancelDialog}
+                disabled={isCancelling}
+                activeOpacity={0.85}
+              >
+                <AppText style={waitingExtraStyles.modalButtonGhostText}>
+                  {t('booking.appointmentDetail.cancelDialogDismiss')}
+                </AppText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  waitingExtraStyles.modalButton,
+                  waitingExtraStyles.modalButtonDanger,
+                  isCancelling ? waitingExtraStyles.modalButtonDisabled : null,
+                ]}
+                onPress={submitCancellation}
+                disabled={isCancelling}
+                activeOpacity={0.85}
+              >
+                {isCancelling ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <AppText style={waitingExtraStyles.modalButtonDangerText}>
+                    {t('booking.appointmentDetail.cancelDialogSubmit')}
+                  </AppText>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
+
+const waitingExtraStyles = StyleSheet.create({
+  badgeRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+  },
+  awaitingBanner: {
+    marginTop: 14,
+    backgroundColor: '#FFF8E1',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FFC107',
+  },
+  cancelledBanner: {
+    marginTop: 14,
+    backgroundColor: '#FDECEA',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#E53935',
+  },
+  bannerTextBlock: {
+    flex: 1,
+  },
+  awaitingBannerTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#856404',
+  },
+  awaitingBannerBody: {
+    marginTop: 2,
+    fontSize: 13,
+    lineHeight: 18,
+    color: '#856404',
+  },
+  cancelledBannerTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#721C24',
+  },
+  cancelledBannerBody: {
+    marginTop: 2,
+    fontSize: 13,
+    lineHeight: 18,
+    color: '#721C24',
+  },
+  cancelButton: {
+    marginTop: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderColor: COLORS.errorBorder,
+    borderRadius: 12,
+    paddingVertical: 12,
+  },
+  cancelButtonText: {
+    color: COLORS.errorText,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: COLORS.overlayDark45,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  modalCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  modalBody: {
+    marginTop: 6,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+  },
+  modalInput: {
+    marginTop: 14,
+    minHeight: 90,
+    borderWidth: 1,
+    borderColor: COLORS.inputBorder,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 14,
+    textAlignVertical: 'top',
+    color: COLORS.text,
+    backgroundColor: COLORS.inputBackground,
+  },
+  modalCounter: {
+    marginTop: 4,
+    alignSelf: 'flex-end',
+    fontSize: 12,
+    color: COLORS.textSecondary,
+  },
+  modalErrorText: {
+    marginTop: 6,
+    color: COLORS.errorText,
+    fontSize: 13,
+  },
+  modalActions: {
+    marginTop: 16,
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modalButton: {
+    flex: 1,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButtonGhost: {
+    backgroundColor: COLORS.inputBackground,
+  },
+  modalButtonGhostText: {
+    color: COLORS.text,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  modalButtonDanger: {
+    backgroundColor: COLORS.errorText,
+  },
+  modalButtonDangerText: {
+    color: COLORS.white,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  modalButtonDisabled: {
+    opacity: 0.6,
+  },
+});
 
 export default WaitingRoomScreen;
