@@ -38,6 +38,7 @@ import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { AttachmentFile } from '@/types';
 import { WidgetBridge } from '@/native/WidgetBridge';
+import { playSoftHaptic } from '@/utils';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
 
 const MAX_CONTENT_LENGTH = 500;
@@ -231,6 +232,7 @@ const DiaryEntryScreen: React.FC = () => {
       return;
     }
 
+    playSoftHaptic();
     setIsSubmitting(true);
     const mappedScore = getMoodScore(moodTag);
     setPositivityScore(mappedScore);

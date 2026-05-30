@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AxiosError } from 'axios';
 import { ClinicalNote, getClinicalNoteByAppointment, getTherapistDetails, submitReview, TherapistDetail } from '@/api';
+import { playSoftHaptic } from '@/utils';
 import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/ConsultationFeedbackScreen.styles';
@@ -178,6 +179,7 @@ const ConsultationFeedbackScreen: React.FC = () => {
       return;
     }
 
+    playSoftHaptic();
     setIsSubmitting(true);
     setSubmitError('');
 

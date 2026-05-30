@@ -40,6 +40,7 @@ import {
 import { COLORS } from '@/theme';
 import { Message, BackendChatMessage } from '@/types';
 import { RootStackParamList } from '@/navigation';
+import { playSoftHaptic } from '@/utils';
 import { styles } from './ChatScreen.styles';
 
 type NavigationPropType = NavigationProp<RootStackParamList>;
@@ -224,6 +225,7 @@ const ChatScreen: React.FC = () => {
   }, [currentSessionId]);
 
   const handleSendMessage = useCallback(() => {
+    playSoftHaptic();
     sendText(inputText);
   }, [inputText, sendText]);
 

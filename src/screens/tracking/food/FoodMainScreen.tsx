@@ -26,7 +26,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { RootStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { FoodLogRequest, FoodLogResponse } from '@/types';
-import { endOfWeekSunday, isSameDate, startOfWeekMonday } from '@/utils';
+import { endOfWeekSunday, isSameDate, playSoftHaptic, startOfWeekMonday } from '@/utils';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './FoodMainScreen.styles';
 
@@ -402,6 +402,7 @@ const FoodMainScreen: React.FC = () => {
       return;
     }
 
+    playSoftHaptic();
     setIsSaving(true);
 
     const payload: FoodLogRequest = {

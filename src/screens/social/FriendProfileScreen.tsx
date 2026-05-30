@@ -15,6 +15,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { dataAccessGrantApi, socialApi } from '@/api';
 import type { GrantStatusResponse } from '@/api/dataAccessGrantApi';
 import { AppText } from '@/components';
+import { playSoftHaptic } from '@/utils';
 import { DailyLogsSection } from '@/components/tracking';
 import { RootStackParamList } from '@/navigation';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
@@ -61,6 +62,7 @@ const FriendProfileScreen: React.FC = () => {
   }, [navigation]);
 
   const handleConfirmGrant = useCallback(async () => {
+    playSoftHaptic();
     setIsGranting(true);
     try {
       const expiresAt = new Date(
@@ -89,6 +91,7 @@ const FriendProfileScreen: React.FC = () => {
   }, [friendProfileId, friendName, loadGrantStatus]);
 
   const handleConfirmUnfriend = useCallback(async () => {
+    playSoftHaptic();
     setIsUnfriending(true);
     try {
       await socialApi.unfriend(friendProfileId);

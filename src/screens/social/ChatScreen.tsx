@@ -19,6 +19,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { useChatWebSocket, ChatSocketMessage } from '@/hooks';
 import { RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
+import { playSoftHaptic } from '@/utils';
 import { styles } from './ChatScreen.style';
 
 type SocialChatRoute = RouteProp<RootStackParamList, 'SocialChat'>;
@@ -184,6 +185,7 @@ const ChatScreen: React.FC = () => {
       return;
     }
 
+    playSoftHaptic();
     sendMessage(channelId, messageToSend);
 
     const optimisticMsg: ChatSocketMessage = {

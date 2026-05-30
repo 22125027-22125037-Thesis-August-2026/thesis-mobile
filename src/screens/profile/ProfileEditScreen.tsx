@@ -19,6 +19,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { uploadAvatarImage } from '@/api';
+import { playSoftHaptic } from '@/utils';
 import { COLORS } from '@/theme';
 import { styles } from './ProfileEditScreen.styles';
 
@@ -99,6 +100,7 @@ const ProfileEditScreen: React.FC = () => {
       Alert.alert(t('profileEdit.validationTitle'), t('profileEdit.validationNameEmpty'));
       return;
     }
+    playSoftHaptic();
     setIsSaving(true);
     try {
       await updateProfile({

@@ -29,5 +29,6 @@ export interface DiaryEntryRequest {
 
 export interface StreakResponse {
   currentCount: number;
+  longestCount: number;
   lastLoggedAt: string;
 }

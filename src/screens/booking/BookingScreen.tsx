@@ -11,6 +11,7 @@ import { RootStackParamList } from '@/navigation';
 import styles from '@/screens/booking/BookingScreen.styles';
 import { getActiveAssignedTherapist, getTherapistAvailableSlots, TherapistAvailableSlot } from '@/api';
 import { AuthContext } from '@/context/AuthContext';
+import { playSoftHaptic } from '@/utils';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Booking'>;
 type BookingRouteProp = RouteProp<RootStackParamList, 'Booking'>;
@@ -296,6 +297,7 @@ const BookingScreen: React.FC = () => {
     if (!canConfirm || !selectedSlot || !resolvedTherapistId) {
       return;
     }
+    playSoftHaptic();
 
     navigation.navigate('ConsultationDetail', {
       therapistId: resolvedTherapistId,

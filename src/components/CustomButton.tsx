@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '@/theme';
+import { playSoftHaptic } from '@/utils';
 import AppText from './AppText';
 
 interface Props {
@@ -19,10 +20,15 @@ const CustomButton = ({
   disabled = false,
   icon = 'arrow-forward',
 }: Props) => {
+  const handlePress = (): void => {
+    playSoftHaptic();
+    onPress();
+  };
+
   return (
     <TouchableOpacity
       style={[styles.button, disabled && !isLoading && styles.buttonDisabled]}
-      onPress={onPress}
+      onPress={handlePress}
       disabled={disabled || isLoading}
       activeOpacity={0.8}
     >

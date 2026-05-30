@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
@@ -10,11 +10,12 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { AppText } from '@/components';
+import { AppText, TrophyShowcase } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '@/theme';
+import { trackingApi } from '@/api';
 import { RootStackParamList } from '@/navigation';
 import { styles } from './ProfileScreen.styles';
 
@@ -24,6 +25,26 @@ const ProfileScreen: React.FC = () => {
   const authContext = useContext(AuthContext);
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [longestStreak, setLongestStreak] = useState<number>(0);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    trackingApi
+      .getStreak()
+      .then(streak => {
+        if (isMounted) {
+          setLongestStreak(streak.longestCount ?? 0);
+        }
+      })
+      .catch(error => {
+        console.warn('[ProfileScreen] Failed to load streak:', error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   if (!authContext) {
     return (
@@ -192,6 +213,14 @@ const ProfileScreen: React.FC = () => {
               <AppText style={styles.ctaPillText}>{t('profile.menuPersonalInfo')}</AppText>
             </Pressable>
           </View>
+        </View>
+
+        {/* ===== TROPHIES SECTION ===== */}
+        <View style={styles.sectionBlock}>
+          <AppText style={styles.sectionLabel}>
+            {t('profile.sectionAchievements', { defaultValue: 'Achievements' })}
+          </AppText>
+          <TrophyShowcase longestCount={longestStreak} />
         </View>
 
         {/* ===== SETTINGS SECTION ===== */}
