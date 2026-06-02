@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, View } from 'react-native';
 import {
   NavigationContainer,
@@ -6,7 +6,19 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import notifee, { EventType } from '@notifee/react-native';
 import '@/locales/i18n';
+
+// Must be registered before the app renders so Notifee can wake the JS thread
+// when a local notification is pressed while the app is in background/quit state.
+notifee.onBackgroundEvent(async ({ type, detail }) => {
+  if (type === EventType.PRESS) {
+    const target = detail.notification?.data?.target as string | undefined;
+    if (target) {
+      await AsyncStorage.setItem('@pending_notifee_target', target);
+    }
+  }
+});
 
 import { AppText } from '@/components';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
@@ -223,8 +235,8 @@ const AppNav: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const handleTarget = (target: string | null | undefined): void => {
+  const handleTarget = useCallback(
+    (target: string | null | undefined): void => {
       if (!target) return;
       if (!navigationRef.isReady()) return;
       if ((target === 'diary-new' || target === 'mood-add') && auth?.userToken) {
@@ -232,19 +244,39 @@ const AppNav: React.FC = () => {
       } else if (target === 'login' && !auth?.userToken) {
         navigationRef.navigate('Login' as never);
       }
-    };
+    },
+    [auth?.userToken, navigationRef],
+  );
 
+  // Widget deep links
+  useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
       WIDGET_DEEP_LINK_EVENT,
       (payload: WidgetDeepLinkPayload) => handleTarget(payload?.target),
     );
-
     void WidgetBridge.consumePendingDeepLink().then(handleTarget);
+    return () => subscription.remove();
+  }, [handleTarget]);
 
-    return () => {
-      subscription.remove();
-    };
-  }, [auth?.userToken, navigationRef]);
+  // Notifee local notification press — foreground
+  useEffect(() => {
+    return notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        const target = detail.notification?.data?.target as string | undefined;
+        handleTarget(target);
+      }
+    });
+  }, [handleTarget]);
+
+  // Notifee local notification press — background/quit (pending target stored by onBackgroundEvent)
+  useEffect(() => {
+    AsyncStorage.getItem('@pending_notifee_target').then(target => {
+      if (target) {
+        AsyncStorage.removeItem('@pending_notifee_target');
+        handleTarget(target);
+      }
+    });
+  }, [handleTarget]);
 
   const markOnboardingDone = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');

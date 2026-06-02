@@ -601,6 +601,13 @@
     "menuPersonalInfoSub": "Tên, ảnh đại diện, email",
     "menuNotifications": "Thông báo",
     "menuNotificationsSub": "Nhắc viết nhật ký, ngủ, ăn",
+    "focusMode": {
+      "title": "Chế độ tập trung",
+      "subtitleOn": "Nhắc nhở nhẹ mỗi 90 phút đang hoạt động",
+      "subtitleOff": "Nhận nhắc nhở uống nước & cập nhật cảm xúc",
+      "errorTitle": "Không thể bật thông báo",
+      "errorMessage": "Vui lòng kiểm tra quyền thông báo trong cài đặt thiết bị."
+    },
     "menuPrivacy": "Quyền riêng tư & dữ liệu",
     "menuPrivacySub": "Người được xem nhật ký của bạn",
     "menuLanguage": "Ngôn ngữ",

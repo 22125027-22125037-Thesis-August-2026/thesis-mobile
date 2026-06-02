@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { AppText, TrophyShowcase } from '@/components';
+import { AppText, FocusModeToggle, TrophyShowcase } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -86,12 +86,6 @@ const ProfileScreen: React.FC = () => {
     Alert.alert('Sắp ra mắt', 'Tính năng này đang được phát triển 💚');
 
   const accountMenuItems: MenuItem[] = [
-    {
-      icon: 'bell-outline',
-      title: t('profile.menuNotifications'),
-      subtitle: t('profile.menuNotificationsSub'),
-      onPress: wip,
-    },
     {
       icon: 'shield-check-outline',
       title: t('profile.menuPrivacy'),
@@ -226,7 +220,34 @@ const ProfileScreen: React.FC = () => {
         {/* ===== SETTINGS SECTION ===== */}
         <View style={styles.sectionBlock}>
           <AppText style={styles.sectionLabel}>{t('profile.sectionSettings')}</AppText>
-          {renderMenuSection(accountMenuItems)}
+          <View style={styles.menuCard}>
+            <FocusModeToggle variant="row" />
+            {accountMenuItems.map((item, index) => (
+              <Pressable
+                key={item.title}
+                style={({ pressed }) => [
+                  styles.menuRow,
+                  index === accountMenuItems.length - 1 && styles.menuRowLast,
+                  pressed && { opacity: 0.7 },
+                ]}
+                onPress={item.onPress}
+              >
+                <View style={styles.menuIconContainer}>
+                  <MaterialCommunityIcons name={item.icon} size={22} color={COLORS.primary} />
+                </View>
+                <View style={styles.menuTextBlock}>
+                  <AppText style={styles.menuTitle}>{item.title}</AppText>
+                  <AppText style={styles.menuSubtitle}>{item.subtitle}</AppText>
+                </View>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={18}
+                  color={COLORS.textTertiary}
+                  style={styles.menuChevron}
+                />
+              </Pressable>
+            ))}
+          </View>
         </View>
 
         {/* ===== SUPPORT SECTION ===== */}

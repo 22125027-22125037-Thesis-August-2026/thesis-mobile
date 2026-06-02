@@ -13,11 +13,11 @@
     "build:android:arm64": "cd android && gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a"
   },
   "dependencies": {
+    "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/datetimepicker": "^8.6.0",
     "@react-native-firebase/app": "^24.0.0",
     "@react-native-firebase/messaging": "^24.0.0",
-    "@notifee/react-native": "^9.1.0",
     "@react-native/new-app-screen": "0.83.1",
     "@react-navigation/bottom-tabs": "^7.15.9",
     "@react-navigation/native": "^7.1.28",

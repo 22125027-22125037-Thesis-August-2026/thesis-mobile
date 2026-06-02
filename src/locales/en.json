@@ -601,6 +601,13 @@
     "menuPersonalInfoSub": "Name, avatar, email",
     "menuNotifications": "Notifications",
     "menuNotificationsSub": "Journal, sleep & meal reminders",
+    "focusMode": {
+      "title": "Focus Mode",
+      "subtitleOn": "Gentle reminders every 90 minutes are active",
+      "subtitleOff": "Get reminders to drink water & log your mood",
+      "errorTitle": "Notifications unavailable",
+      "errorMessage": "Please check notification permissions in your device settings."
+    },
     "menuPrivacy": "Privacy & data",
     "menuPrivacySub": "Who can view your journal",
     "menuLanguage": "Language",
