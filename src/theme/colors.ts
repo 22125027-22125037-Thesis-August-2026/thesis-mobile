@@ -108,6 +108,12 @@ export const COLORS = {
   foodChartEmpty: '#F1F1F1',
   foodFab: '#1A1A1A',
 
+  // Steps / Activity
+  stepsHeaderTeal: '#00897B',
+  stepsTealSoft: '#E0F2F1',
+  stepsChartEmpty: '#F1F1F1',
+  stepsFab: '#1A1A1A',
+
   // Appointments / Therapy
   appointmentsActive: '#2E7D32',
   therapyBackground: '#FDFAF7',

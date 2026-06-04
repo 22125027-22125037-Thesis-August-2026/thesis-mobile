@@ -75,6 +75,35 @@
     "legendNeutral": "Neutral",
     "legendPositive": "Positive"
   },
+  "steps": {
+    "main": {
+      "headerTitle": "Steps",
+      "headerSubtitle": "Daily walking activity",
+      "todayLabel": "Today",
+      "goalLabel": "of {{goal}} steps",
+      "goalReached": "Goal reached! 🎉",
+      "remaining": "{{count}} steps to go",
+      "distanceLabel": "Distance",
+      "caloriesLabel": "Calories",
+      "weeklyTitle": "This week",
+      "weeklySubtitle": "Steps over the last 7 days",
+      "averageLabel": "Daily average",
+      "totalLabel": "Week total",
+      "bestLabel": "Best day",
+      "noData": "No step data for this week yet.",
+      "loading": "Loading step data...",
+      "permissionTitle": "Activity permission needed",
+      "permissionMessage": "Allow activity recognition so we can count your steps.",
+      "unavailable": "Step counting is not available on this device.",
+      "weekdayMon": "Mon",
+      "weekdayTue": "Tue",
+      "weekdayWed": "Wed",
+      "weekdayThu": "Thu",
+      "weekdayFri": "Fri",
+      "weekdaySat": "Sat",
+      "weekdaySun": "Sun"
+    }
+  },
   "sleep": {
     "main": {
       "headerTitle": "Sleep Quality",
@@ -506,6 +535,10 @@
       "sleep": {
         "title": "Sleep",
         "subtitle": "Avg {{avg}}h · last 7 days"
+      },
+      "steps": {
+        "title": "Steps",
+        "subtitle": "{{count}} / {{goal}} steps"
       },
       "diary": {
         "title": "Mind Corner",

@@ -7,6 +7,7 @@ export * from './matching';
 export * from './media';
 export * from './sleep';
 export * from './social';
+export * from './steps';
 export type {
   MoodLogRequest,
   MoodLogResponse,

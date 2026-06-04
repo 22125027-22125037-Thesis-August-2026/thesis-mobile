@@ -75,6 +75,35 @@
     "legendNeutral": "Trung tính",
     "legendPositive": "Tích cực"
   },
+  "steps": {
+    "main": {
+      "headerTitle": "Bước chân",
+      "headerSubtitle": "Hoạt động đi bộ hằng ngày",
+      "todayLabel": "Hôm nay",
+      "goalLabel": "trên {{goal}} bước",
+      "goalReached": "Đã đạt mục tiêu! 🎉",
+      "remaining": "Còn {{count}} bước",
+      "distanceLabel": "Quãng đường",
+      "caloriesLabel": "Calo",
+      "weeklyTitle": "Tuần này",
+      "weeklySubtitle": "Số bước trong 7 ngày qua",
+      "averageLabel": "Trung bình ngày",
+      "totalLabel": "Tổng tuần",
+      "bestLabel": "Ngày tốt nhất",
+      "noData": "Chưa có dữ liệu bước chân trong tuần này.",
+      "loading": "Đang tải dữ liệu bước chân...",
+      "permissionTitle": "Cần quyền nhận diện hoạt động",
+      "permissionMessage": "Cho phép nhận diện hoạt động để chúng tôi đếm số bước của bạn.",
+      "unavailable": "Thiết bị này không hỗ trợ đếm bước chân.",
+      "weekdayMon": "Hai",
+      "weekdayTue": "Ba",
+      "weekdayWed": "Tư",
+      "weekdayThu": "Năm",
+      "weekdayFri": "Sáu",
+      "weekdaySat": "Bảy",
+      "weekdaySun": "CN"
+    }
+  },
   "sleep": {
     "main": {
       "headerTitle": "Chất lượng giấc ngủ",
@@ -506,6 +535,10 @@
       "sleep": {
         "title": "Giấc ngủ",
         "subtitle": "Trung bình {{avg}}h · 7 ngày qua"
+      },
+      "steps": {
+        "title": "Bước chân",
+        "subtitle": "{{count}} / {{goal}} bước"
       },
       "diary": {
         "title": "Tâm tư",

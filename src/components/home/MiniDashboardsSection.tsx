@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components';
 import { HomeDashboardData } from '@/hooks/useHomeDashboardData';
-import { COLORS, FONT_SIZES, SPACING } from '@/theme';
+import { COLORS, SPACING } from '@/theme';
 
 import DiaryMiniDashboard from './DiaryMiniDashboard';
 import NutritionMiniDashboard from './NutritionMiniDashboard';
 import SleepMiniDashboard from './SleepMiniDashboard';
+import StepsMiniDashboard from './StepsMiniDashboard';
 
 interface MiniDashboardsSectionProps {
   data: HomeDashboardData;
@@ -26,6 +27,11 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
       </View>
 
       <SleepMiniDashboard hours={data.sleep.hours} avg={data.sleep.avg} />
+      <StepsMiniDashboard
+        days={data.steps.days}
+        today={data.steps.today}
+        goal={data.steps.goal}
+      />
       <DiaryMiniDashboard moods={data.diary.moods} streak={data.diary.streak} />
       <NutritionMiniDashboard
         waterCups={data.nutrition.waterCups}

@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { diaryApi, foodApi, sleepApi } from '@/api';
+import { diaryApi, foodApi, sleepApi, stepsApi } from '@/api';
 import { SATIETY_UI_MAP } from '@/constants/food';
 import { MoodTag } from '@/constants/moods';
-import { FoodLogResponse, SleepLogResponse } from '@/types';
+import { getTodaySteps } from '@/services/stepTracker';
+import { FoodLogResponse, SleepLogResponse, StepLogResponse } from '@/types';
 import { calculateStreakFromCreatedAt } from '@/utils';
 
 export const WATER_DAILY_GOAL = 8;
+export const STEPS_DAILY_GOAL = 6000;
 
 export type NutritionStatus = 'tot' | 'binhThuong' | 'canCaiThien';
 
@@ -19,6 +21,7 @@ export interface HomeDashboardData {
     weekScore: number;
     status: NutritionStatus;
   };
+  steps: { days: number[]; today: number; goal: number };
   isLoading: boolean;
   refetch: () => Promise<void>;
 }
@@ -69,6 +72,8 @@ export const useHomeDashboardData = (
   const [waterCups, setWaterCups] = useState<number>(0);
   const [weekScore, setWeekScore] = useState<number>(0);
   const [status, setStatus] = useState<NutritionStatus>('canCaiThien');
+  const [stepDays, setStepDays] = useState<number[]>(EMPTY_7);
+  const [stepsToday, setStepsToday] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refetch = useCallback(async (): Promise<void> => {
@@ -82,16 +87,18 @@ export const useHomeDashboardData = (
     const todayKey = dayKeys[dayKeys.length - 1];
     const startKey = dayKeys[0];
 
-    const [sleepRes, diaryRes, foodRes] = await Promise.allSettled([
+    const [sleepRes, diaryRes, foodRes, stepsRes] = await Promise.allSettled([
       sleepApi.getAllSleepLogs(profileId),
       diaryApi.getDiaryEntries(profileId),
       foodApi.getFoodLogs(profileId, startKey, todayKey),
+      stepsApi.getStepLogsInRange(profileId, startKey, todayKey),
     ]);
 
     // Log any failures for debugging
     if (sleepRes.status === 'rejected') console.error('[Dashboard] sleep fetch failed:', sleepRes.reason);
     if (diaryRes.status === 'rejected') console.error('[Dashboard] diary fetch failed:', diaryRes.reason);
     if (foodRes.status === 'rejected') console.error('[Dashboard] food fetch failed:', foodRes.reason);
+    if (stepsRes.status === 'rejected') console.error('[Dashboard] steps fetch failed:', stepsRes.reason);
 
     // Sleep
     if (sleepRes.status === 'fulfilled') {
@@ -166,6 +173,34 @@ export const useHomeDashboardData = (
       setStatus('canCaiThien');
     }
 
+    // Steps: map logged counts onto the 7 day keys by entryDate (latest wins)
+    let mappedToday = 0;
+    if (stepsRes.status === 'fulfilled') {
+      const stepsByDay = new Map<string, { count: number; updatedAt: string }>();
+      stepsRes.value.forEach((log: StepLogResponse) => {
+        const key = log.entryDate;
+        if (!key) return;
+        const existing = stepsByDay.get(key);
+        if (!existing || new Date(log.updatedAt) > new Date(existing.updatedAt)) {
+          stepsByDay.set(key, { count: log.stepCount ?? 0, updatedAt: log.updatedAt });
+        }
+      });
+      const days = dayKeys.map(k => stepsByDay.get(k)?.count ?? 0);
+      mappedToday = stepsByDay.get(todayKey)?.count ?? 0;
+      setStepDays(days);
+    } else {
+      setStepDays(EMPTY_7);
+    }
+
+    // Prefer the live sensor reading so the card reflects today's steps even
+    // before a sync round-trips to the backend.
+    try {
+      const liveToday = await getTodaySteps();
+      setStepsToday(Math.max(liveToday, mappedToday));
+    } catch {
+      setStepsToday(mappedToday);
+    }
+
     setIsLoading(false);
   }, [profileId]);
 
@@ -173,10 +208,16 @@ export const useHomeDashboardData = (
     void refetch();
   }, [refetch]);
 
+  // Reflect the live today count in the last bar so the chart matches the subtitle.
+  const stepDaysWithToday = stepDays.length === 7
+    ? [...stepDays.slice(0, 6), Math.max(stepDays[6] ?? 0, stepsToday)]
+    : stepDays;
+
   return {
     sleep: { hours: sleepHours, avg: sleepAvg },
     diary: { moods: diaryMoods, streak: diaryStreak },
     nutrition: { waterCups, waterGoal: WATER_DAILY_GOAL, weekScore, status },
+    steps: { days: stepDaysWithToday, today: stepsToday, goal: STEPS_DAILY_GOAL },
     isLoading,
     refetch,
   };
