@@ -14,9 +14,10 @@ import { AuthResponse, RegisterPayload, User, UserRole } from '@/types';
 
 const AUTH_BASE_PATH = '/api/v1/auth';
 const USER_TOKEN_KEY = 'userToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
 const USER_ROLE_KEY = 'userRole';
 const PROFILE_ID_KEY = 'profileId';
-const AUTH_STORAGE_KEYS = [USER_TOKEN_KEY, USER_ROLE_KEY, PROFILE_ID_KEY];
+const AUTH_STORAGE_KEYS = [USER_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_ROLE_KEY, PROFILE_ID_KEY];
 
 type ApiResponse<T> = {
   data: T;
@@ -53,6 +54,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const hasBootstrappedRef = useRef(false);
 
   const clearAuthSession = async () => {
+    // Best-effort server-side revoke: tell auth-service to invalidate the
+    // refresh token (and the bearer access token) before we drop them
+    // locally. Guarded so a network/401 failure never blocks local logout.
+    try {
+      const refreshToken = await AsyncStorage.getItem(REFRESH_TOKEN_KEY);
+      if (refreshToken) {
+        await axiosClient.post(`${AUTH_BASE_PATH}/logout`, { refreshToken });
+      }
+    } catch (err) {
+      console.log('[Auth] refresh-token revoke failed:', err);
+    }
+
     setUserToken(null);
     setUserInfo(null);
     // Best-effort deregister of the FCM token so the user stops receiving
@@ -89,15 +102,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         { email, password: pass },
       );
       const authPayload = unwrapApiData<AuthResponse>(res.data);
-      const { token, profileId, role } = authPayload;
+      const { profileId, role } = authPayload;
+      // Prefer the new split tokens; fall back to the legacy single `token`
+      // field while the backend rollout is in flight.
+      const accessToken = authPayload.accessToken ?? authPayload.token;
+      const refreshToken = authPayload.refreshToken;
 
-      setUserToken(token);
-      await AsyncStorage.multiSet([
-        [USER_TOKEN_KEY, token],
+      if (!accessToken) {
+        throw new Error('Login response did not include an access token');
+      }
+
+      setUserToken(accessToken);
+      const writes: [string, string][] = [
+        [USER_TOKEN_KEY, accessToken],
         [USER_ROLE_KEY, role],
         [PROFILE_ID_KEY, profileId],
-      ]);
-      void WidgetBridge.setAuth(token, profileId);
+      ];
+      if (refreshToken) {
+        writes.push([REFRESH_TOKEN_KEY, refreshToken]);
+      }
+      await AsyncStorage.multiSet(writes);
+      void WidgetBridge.setAuth(accessToken, profileId);
 
       const userRes = await axiosClient.get<User | ApiResponse<User>>(
         `${AUTH_BASE_PATH}/me`,

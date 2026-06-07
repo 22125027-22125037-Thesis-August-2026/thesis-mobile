@@ -13,9 +13,23 @@ export interface User {
 
 // Dữ liệu trả về khi Login thành công
 export interface AuthResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
+  tokenType?: string;
+  /** Access-token lifetime in seconds (e.g. 900 for 15 min). */
+  expiresIn?: number;
+  /** @deprecated legacy single-token field, kept during backend rollout. */
+  token?: string;
   profileId: string;
   role: UserRole;
+}
+
+// Dữ liệu trả về khi gọi /auth/refresh (refresh token xoay vòng mỗi lần)
+export interface RefreshResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType?: string;
+  expiresIn?: number;
 }
 
 export interface RegisterPayload {
