@@ -30,7 +30,7 @@ interface MessageBubbleProps {
   isMine: boolean;
 }
 
-const CHAT_BROKER_URL = process.env.REACT_APP_CHAT_WS_URL || 'ws://161.118.252.10:8086/ws';
+const CHAT_BROKER_URL = process.env.REACT_APP_CHAT_WS_URL || 'ws://140.245.124.163:8086/ws';
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMine }) => {
   const formattedTime = new Date(message.sentAt).toLocaleTimeString([], {

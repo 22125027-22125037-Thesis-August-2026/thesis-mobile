@@ -4,7 +4,7 @@ This app uses a single Axios client pointed at the 8080 API Gateway. All API mod
 
 ### Base URL
 
-- `http://161.118.252.10:8080`
+- `http://140.245.124.163:8080`
 
 ### Axios Client
 
