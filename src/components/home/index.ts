@@ -7,3 +7,5 @@ export { default as MoodCheckInCard } from './MoodCheckInCard';
 export { default as NutritionMiniDashboard } from './NutritionMiniDashboard';
 export { default as SleepMiniDashboard } from './SleepMiniDashboard';
 export { default as StepsMiniDashboard } from './StepsMiniDashboard';
+export { default as SupportMiniDashboard } from './SupportMiniDashboard';
+export { default as TreasureMiniDashboard } from './TreasureMiniDashboard';

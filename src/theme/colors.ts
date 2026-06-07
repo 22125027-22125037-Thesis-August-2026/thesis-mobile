@@ -124,6 +124,27 @@ export const COLORS = {
   breathingCompleteOrb: '#869460',
   breathingCompleteBadge: 'rgba(255,255,255,0.18)',
 
+  // Treasure Box / Safe Space — warm rose & gold comfort palette
+  comfortHeader: '#D9748E',
+  comfortHeaderDeep: '#B85470',
+  comfortSoft: '#FCE9EE',
+  comfortGold: '#E5A45C',
+  comfortGoldSoft: '#FBEFD9',
+  comfortRoseSoft: '#FFF4F7',
+  comfortCircle: 'rgba(255, 255, 255, 0.16)',
+  comfortChipActive: '#D9748E',
+  comfortChipIdle: '#F5E7EC',
+
+  // Mental Health Support / Find Help Now — calm, trustworthy teal-green
+  supportHeader: '#2F8F83',
+  supportHeaderDeep: '#1F6B61',
+  supportSoft: '#E4F1EE',
+  supportCircle: 'rgba(255, 255, 255, 0.16)',
+  // Emergency accent — warm coral (clear but not panic-inducing red)
+  supportEmergency: '#E2563D',
+  supportEmergencyDeep: '#C13D27',
+  supportEmergencySoft: '#FCEBE6',
+
   // Appointments / Therapy
   appointmentsActive: '#2E7D32',
   therapyBackground: '#FDFAF7',

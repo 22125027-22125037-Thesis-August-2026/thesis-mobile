@@ -88,6 +88,8 @@ export type RootStackParamList = {
   DiaryOverview: { viewProfileId?: string } | undefined;
   DiaryEntry: { entryId?: string } | undefined;
   FoodMain: { viewProfileId?: string } | undefined;
+  TreasureBox: undefined;
+  MentalHealthSupport: undefined;
 };
 
 declare global {

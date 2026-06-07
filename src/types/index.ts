@@ -9,6 +9,7 @@ export * from './media';
 export * from './sleep';
 export * from './social';
 export * from './steps';
+export * from './treasure';
 export type {
   MoodLogRequest,
   MoodLogResponse,

@@ -11,6 +11,8 @@ import DiaryMiniDashboard from './DiaryMiniDashboard';
 import NutritionMiniDashboard from './NutritionMiniDashboard';
 import SleepMiniDashboard from './SleepMiniDashboard';
 import StepsMiniDashboard from './StepsMiniDashboard';
+import SupportMiniDashboard from './SupportMiniDashboard';
+import TreasureMiniDashboard from './TreasureMiniDashboard';
 
 interface MiniDashboardsSectionProps {
   data: HomeDashboardData;
@@ -27,6 +29,7 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
         </AppText>
       </View>
 
+      <TreasureMiniDashboard />
       <SleepMiniDashboard hours={data.sleep.hours} avg={data.sleep.avg} />
       <StepsMiniDashboard
         days={data.steps.days}
@@ -45,6 +48,7 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
         weekScore={data.nutrition.weekScore}
         status={data.nutrition.status}
       />
+      <SupportMiniDashboard />
     </View>
   );
 };

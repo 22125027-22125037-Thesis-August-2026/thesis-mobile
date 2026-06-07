@@ -53,6 +53,8 @@ import {
   SleepMainScreen,
   StepMainScreen,
   BreathingExerciseScreen,
+  TreasureBoxScreen,
+  MentalHealthSupportScreen,
   SplashScreen,
   TherapistDetailScreen,
   TherapyOverviewScreen,
@@ -170,6 +172,8 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="SleepMain" component={SleepMainScreen} />
       <Stack.Screen name="StepMain" component={StepMainScreen} />
       <Stack.Screen name="BreathingMain" component={BreathingExerciseScreen} />
+      <Stack.Screen name="TreasureBox" component={TreasureBoxScreen} />
+      <Stack.Screen name="MentalHealthSupport" component={MentalHealthSupportScreen} />
       <Stack.Screen name="FoodMain" component={FoodMainScreen} />
       <Stack.Screen name="FriendProfile" component={FriendProfileScreen} />
     </>
