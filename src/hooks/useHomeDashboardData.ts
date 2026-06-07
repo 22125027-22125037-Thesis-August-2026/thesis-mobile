@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { diaryApi, foodApi, sleepApi, stepsApi } from '@/api';
+import { breathingApi, diaryApi, foodApi, sleepApi, stepsApi } from '@/api';
+import { BREATHING_DAILY_GOAL_SECONDS } from '@/constants/breathing';
 import { SATIETY_UI_MAP } from '@/constants/food';
 import { MoodTag } from '@/constants/moods';
 import { getTodaySteps } from '@/services/stepTracker';
-import { FoodLogResponse, SleepLogResponse, StepLogResponse } from '@/types';
+import {
+  BreathingLogResponse,
+  FoodLogResponse,
+  SleepLogResponse,
+  StepLogResponse,
+} from '@/types';
 import { calculateStreakFromCreatedAt } from '@/utils';
 
 export const WATER_DAILY_GOAL = 8;
 export const STEPS_DAILY_GOAL = 6000;
+export const BREATHING_DAILY_GOAL_MINUTES = Math.round(
+  BREATHING_DAILY_GOAL_SECONDS / 60,
+);
 
 export type NutritionStatus = 'tot' | 'binhThuong' | 'canCaiThien';
 
@@ -22,6 +31,7 @@ export interface HomeDashboardData {
     status: NutritionStatus;
   };
   steps: { days: number[]; today: number; goal: number };
+  breathing: { minutes: number[]; today: number; goalMinutes: number };
   isLoading: boolean;
   refetch: () => Promise<void>;
 }
@@ -74,6 +84,8 @@ export const useHomeDashboardData = (
   const [status, setStatus] = useState<NutritionStatus>('canCaiThien');
   const [stepDays, setStepDays] = useState<number[]>(EMPTY_7);
   const [stepsToday, setStepsToday] = useState<number>(0);
+  const [breathingMinutes, setBreathingMinutes] = useState<number[]>(EMPTY_7);
+  const [breathingToday, setBreathingToday] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refetch = useCallback(async (): Promise<void> => {
@@ -87,11 +99,12 @@ export const useHomeDashboardData = (
     const todayKey = dayKeys[dayKeys.length - 1];
     const startKey = dayKeys[0];
 
-    const [sleepRes, diaryRes, foodRes, stepsRes] = await Promise.allSettled([
+    const [sleepRes, diaryRes, foodRes, stepsRes, breathingRes] = await Promise.allSettled([
       sleepApi.getAllSleepLogs(profileId),
       diaryApi.getDiaryEntries(profileId),
       foodApi.getFoodLogs(profileId, startKey, todayKey),
       stepsApi.getStepLogsInRange(profileId, startKey, todayKey),
+      breathingApi.getBreathingLogsInRange(profileId, startKey, todayKey),
     ]);
 
     // Log any failures for debugging
@@ -99,6 +112,7 @@ export const useHomeDashboardData = (
     if (diaryRes.status === 'rejected') console.error('[Dashboard] diary fetch failed:', diaryRes.reason);
     if (foodRes.status === 'rejected') console.error('[Dashboard] food fetch failed:', foodRes.reason);
     if (stepsRes.status === 'rejected') console.error('[Dashboard] steps fetch failed:', stepsRes.reason);
+    if (breathingRes.status === 'rejected') console.error('[Dashboard] breathing fetch failed:', breathingRes.reason);
 
     // Sleep
     if (sleepRes.status === 'fulfilled') {
@@ -201,6 +215,30 @@ export const useHomeDashboardData = (
       setStepsToday(mappedToday);
     }
 
+    // Breathing: total seconds per day -> minutes (latest log per entryDate wins)
+    if (breathingRes.status === 'fulfilled') {
+      const secondsByDay = new Map<string, { seconds: number; updatedAt: string }>();
+      breathingRes.value.forEach((log: BreathingLogResponse) => {
+        const key = log.entryDate;
+        if (!key) return;
+        const existing = secondsByDay.get(key);
+        if (!existing || new Date(log.updatedAt) > new Date(existing.updatedAt)) {
+          secondsByDay.set(key, {
+            seconds: log.totalDurationSeconds ?? 0,
+            updatedAt: log.updatedAt,
+          });
+        }
+      });
+      const minutes = dayKeys.map(k =>
+        Math.round((secondsByDay.get(k)?.seconds ?? 0) / 60),
+      );
+      setBreathingMinutes(minutes);
+      setBreathingToday(Math.round((secondsByDay.get(todayKey)?.seconds ?? 0) / 60));
+    } else {
+      setBreathingMinutes(EMPTY_7);
+      setBreathingToday(0);
+    }
+
     setIsLoading(false);
   }, [profileId]);
 
@@ -218,6 +256,11 @@ export const useHomeDashboardData = (
     diary: { moods: diaryMoods, streak: diaryStreak },
     nutrition: { waterCups, waterGoal: WATER_DAILY_GOAL, weekScore, status },
     steps: { days: stepDaysWithToday, today: stepsToday, goal: STEPS_DAILY_GOAL },
+    breathing: {
+      minutes: breathingMinutes,
+      today: breathingToday,
+      goalMinutes: BREATHING_DAILY_GOAL_MINUTES,
+    },
     isLoading,
     refetch,
   };

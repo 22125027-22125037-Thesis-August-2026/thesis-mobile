@@ -84,6 +84,7 @@ export type RootStackParamList = {
   // Resolved from main
   SleepMain: { viewProfileId?: string } | undefined;
   StepMain: { viewProfileId?: string } | undefined;
+  BreathingMain: undefined;
   DiaryOverview: { viewProfileId?: string } | undefined;
   DiaryEntry: { entryId?: string } | undefined;
   FoodMain: { viewProfileId?: string } | undefined;

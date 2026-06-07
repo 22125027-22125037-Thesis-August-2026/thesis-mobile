@@ -1,3 +1,4 @@
+export { default as BreathingMiniDashboard } from './BreathingMiniDashboard';
 export { default as DiaryMiniDashboard } from './DiaryMiniDashboard';
 export { default as FindTherapistCta } from './FindTherapistCta';
 export { default as MeditationCarousel } from './MeditationCarousel';

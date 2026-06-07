@@ -104,6 +104,39 @@
       "weekdaySun": "CN"
     }
   },
+  "breathing": {
+    "main": {
+      "headerTitle": "Hít thở",
+      "headerSubtitle": "Một khoảnh khắc để tâm trí bình yên",
+      "roundLabel": "Lượt {{current}} / {{total}}",
+      "startButton": "Bắt đầu",
+      "getReady": "Tìm một tư thế thoải mái và thả lỏng vai.",
+      "soundOn": "Bật nhạc",
+      "soundOff": "Tắt nhạc",
+      "skip": "Bỏ qua",
+      "next": "Tiếp theo",
+      "finish": "Hoàn tất",
+      "reflectionTitle": "Bây giờ, hãy nhẹ nhàng suy ngẫm",
+      "completedTitle": "Làm tốt lắm 🌿",
+      "completedSubtitle": "Hôm nay bạn đã dành {{minutes}} phút cho chính mình.",
+      "goalReachedBadge": "Đã hoàn thành mục tiêu",
+      "goalReachedTitle": "Đã xong bài thở hôm nay 🌿",
+      "goalReachedSubtitle": "Hôm nay bạn đã thở {{minutes}} phút — tâm trí biết ơn bạn. Cứ thoải mái tiếp tục nhé.",
+      "completedButton": "Xong"
+    },
+    "phases": {
+      "inhale": "Hít vào",
+      "hold": "Giữ hơi",
+      "exhale": "Thở ra từ từ"
+    },
+    "prompts": {
+      "goodMemory": "Hình dung một kỷ niệm vui. Khi đó bạn ở đâu và cùng với ai?",
+      "recentAchievement": "Nghĩ về một thành tựu gần đây, dù lớn hay nhỏ. Hãy cho phép mình tự hào.",
+      "gratitude": "Nghĩ về một điều bạn biết ơn ngay lúc này.",
+      "personYouLove": "Hình dung một người bạn yêu thương. Tưởng tượng bạn nói cho họ biết cảm xúc của mình.",
+      "safePlace": "Tưởng tượng một nơi bạn cảm thấy hoàn toàn an toàn và bình yên."
+    }
+  },
   "sleep": {
     "main": {
       "headerTitle": "Chất lượng giấc ngủ",
@@ -539,6 +572,10 @@
       "steps": {
         "title": "Bước chân",
         "subtitle": "{{count}} / {{goal}} bước"
+      },
+      "breathing": {
+        "title": "Hít thở",
+        "subtitle": "{{count}} / {{goal}} phút hôm nay"
       },
       "diary": {
         "title": "Tâm tư",

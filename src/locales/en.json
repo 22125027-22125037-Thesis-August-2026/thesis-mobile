@@ -104,6 +104,39 @@
       "weekdaySun": "Sun"
     }
   },
+  "breathing": {
+    "main": {
+      "headerTitle": "Breathe",
+      "headerSubtitle": "A moment to calm your mind",
+      "roundLabel": "Round {{current}} of {{total}}",
+      "startButton": "Begin",
+      "getReady": "Find a comfortable position and relax your shoulders.",
+      "soundOn": "Sound on",
+      "soundOff": "Sound off",
+      "skip": "Skip",
+      "next": "Next",
+      "finish": "Finish",
+      "reflectionTitle": "Now, gently reflect",
+      "completedTitle": "Well done 🌿",
+      "completedSubtitle": "You took {{minutes}} min for yourself today.",
+      "goalReachedBadge": "Daily goal complete",
+      "goalReachedTitle": "Today's breathing done 🌿",
+      "goalReachedSubtitle": "You've breathed {{minutes}} min today — your mind thanks you. Feel free to keep going.",
+      "completedButton": "Done"
+    },
+    "phases": {
+      "inhale": "Breathe in",
+      "hold": "Hold",
+      "exhale": "Breathe out slowly"
+    },
+    "prompts": {
+      "goodMemory": "Picture a happy memory. Where were you, and who was with you?",
+      "recentAchievement": "Think of a recent achievement, big or small. Let yourself feel proud.",
+      "gratitude": "Bring to mind one thing you're grateful for right now.",
+      "personYouLove": "Picture someone you love. Imagine telling them how you feel.",
+      "safePlace": "Imagine a place where you feel completely safe and at peace."
+    }
+  },
   "sleep": {
     "main": {
       "headerTitle": "Sleep Quality",
@@ -539,6 +572,10 @@
       "steps": {
         "title": "Steps",
         "subtitle": "{{count}} / {{goal}} steps"
+      },
+      "breathing": {
+        "title": "Breathing",
+        "subtitle": "{{count}} / {{goal}} min today"
       },
       "diary": {
         "title": "Mind Corner",

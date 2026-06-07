@@ -1,5 +1,6 @@
 export { aiApi } from '@/api/aiApi';
 export { default as axiosClient, setLogoutHandler } from '@/api/axiosClient';
+import * as breathingApi from '@/api/breathingApi';
 import * as dataAccessGrantApi from '@/api/dataAccessGrantApi';
 import * as diaryApi from '@/api/diaryApi';
 import * as foodApi from '@/api/foodApi';
@@ -11,7 +12,8 @@ import * as stepsApi from '@/api/stepsApi';
 import * as therapistApi from '@/api/therapistApi';
 import * as trackingApi from '@/api/trackingApi';
 
-export { dataAccessGrantApi, diaryApi, foodApi, notificationApi, profileApi, socialApi, sleepApi, stepsApi, therapistApi, trackingApi };
+export { breathingApi, dataAccessGrantApi, diaryApi, foodApi, notificationApi, profileApi, socialApi, sleepApi, stepsApi, therapistApi, trackingApi };
+export * from '@/api/breathingApi';
 export * from '@/api/dataAccessGrantApi';
 export * from '@/api/diaryApi';
 export * from '@/api/foodApi';

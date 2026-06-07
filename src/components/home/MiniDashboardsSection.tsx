@@ -6,6 +6,7 @@ import { AppText } from '@/components';
 import { HomeDashboardData } from '@/hooks/useHomeDashboardData';
 import { COLORS, SPACING } from '@/theme';
 
+import BreathingMiniDashboard from './BreathingMiniDashboard';
 import DiaryMiniDashboard from './DiaryMiniDashboard';
 import NutritionMiniDashboard from './NutritionMiniDashboard';
 import SleepMiniDashboard from './SleepMiniDashboard';
@@ -31,6 +32,11 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
         days={data.steps.days}
         today={data.steps.today}
         goal={data.steps.goal}
+      />
+      <BreathingMiniDashboard
+        minutes={data.breathing.minutes}
+        today={data.breathing.today}
+        goalMinutes={data.breathing.goalMinutes}
       />
       <DiaryMiniDashboard moods={data.diary.moods} streak={data.diary.streak} />
       <NutritionMiniDashboard

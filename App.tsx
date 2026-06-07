@@ -52,6 +52,7 @@ import {
   SocialChatScreen,
   SleepMainScreen,
   StepMainScreen,
+  BreathingExerciseScreen,
   SplashScreen,
   TherapistDetailScreen,
   TherapyOverviewScreen,
@@ -168,6 +169,7 @@ const renderTeenExperienceRoutes = () => {
       <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
       <Stack.Screen name="SleepMain" component={SleepMainScreen} />
       <Stack.Screen name="StepMain" component={StepMainScreen} />
+      <Stack.Screen name="BreathingMain" component={BreathingExerciseScreen} />
       <Stack.Screen name="FoodMain" component={FoodMainScreen} />
       <Stack.Screen name="FriendProfile" component={FriendProfileScreen} />
     </>

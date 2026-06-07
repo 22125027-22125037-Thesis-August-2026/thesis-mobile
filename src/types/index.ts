@@ -1,5 +1,6 @@
 export * from './auth';
 export * from './booking';
+export * from './breathing';
 export * from './chat';
 export * from './diary';
 export * from './food';

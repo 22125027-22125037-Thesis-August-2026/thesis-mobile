@@ -114,6 +114,16 @@ export const COLORS = {
   stepsChartEmpty: '#F1F1F1',
   stepsFab: '#1A1A1A',
 
+  // Breathing / Calm
+  breathingHeader: '#5C6BC0',
+  breathingSoft: '#E8EAF6',
+  breathingOrb: '#7986CB',
+  breathingOrbGlow: 'rgba(92,107,192,0.18)',
+  // Goal-reached celebration — calming muddy/moss green
+  breathingComplete: '#6B7A4F',
+  breathingCompleteOrb: '#869460',
+  breathingCompleteBadge: 'rgba(255,255,255,0.18)',
+
   // Appointments / Therapy
   appointmentsActive: '#2E7D32',
   therapyBackground: '#FDFAF7',
