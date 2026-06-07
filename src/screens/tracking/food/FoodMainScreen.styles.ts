@@ -235,49 +235,6 @@ export const styles = StyleSheet.create({
   tagTextSelected: {
     color: COLORS.white,
   },
-  satietySection: {
-    rowGap: SPACING.sm,
-  },
-  satietyList: {
-    rowGap: SPACING.sm,
-  },
-  satietyItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: SPACING.sm,
-    borderRadius: BORDER_RADIUS.lg,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    backgroundColor: COLORS.surface,
-    borderWidth: SPACING.borderWidth,
-    borderColor: COLORS.borderSubtle,
-  },
-  satietyItemSelected: {
-    backgroundColor: COLORS.journalPillBackground,
-    borderColor: COLORS.foodHeaderOrange,
-  },
-  satietyTextBlock: {
-    flex: 1,
-    rowGap: SPACING.xxs,
-  },
-  satietyTitle: {
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '800',
-  },
-  satietySubtitle: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
-  },
-  satietyIconWrap: {
-    width: 46,
-    height: 46,
-    borderRadius: BORDER_RADIUS.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.socialBg,
-  },
   inputLabel: {
     color: COLORS.textPrimary,
     fontSize: FONT_SIZES.md,

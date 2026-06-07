@@ -30,15 +30,6 @@ import { endOfWeekSunday, isSameDate, playSoftHaptic, startOfWeekMonday } from '
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './FoodMainScreen.styles';
 
-type SatietyOption = {
-  value: number;
-  level: string;
-  titleKey: string;
-  subtitleKey: string;
-  icon: string;
-  color: string;
-};
-
 type FoodDayTrend = {
   label: string;
   rating: number;
@@ -54,50 +45,7 @@ const WEEKDAY_LABEL_KEYS: string[] = [
   'food.overview.weekdaySun',
 ];
 
-const SATIETY_OPTIONS: SatietyOption[] = [
-  {
-    value: 5,
-    level: 'ENERGIZED',
-    titleKey: 'food.satiety.energized',
-    subtitleKey: 'food.satietySubtitle.energized',
-    icon: 'emoticon-happy-outline',
-    color: COLORS.sleepQualityExcellent,
-  },
-  {
-    value: 4,
-    level: 'NORMAL',
-    titleKey: 'food.satiety.normal',
-    subtitleKey: 'food.satietySubtitle.normal',
-    icon: 'emoticon-outline',
-    color: COLORS.sleepQualityGood,
-  },
-  {
-    value: 3,
-    level: 'INDULGENT',
-    titleKey: 'food.satiety.indulgent',
-    subtitleKey: 'food.satietySubtitle.indulgent',
-    icon: 'emoticon-neutral-outline',
-    color: COLORS.emotionNeutral,
-  },
-  {
-    value: 2,
-    level: 'OVERATE',
-    titleKey: 'food.satiety.overate',
-    subtitleKey: 'food.satietySubtitle.overate',
-    icon: 'emoticon-sad-outline',
-    color: COLORS.sleepQualityBad,
-  },
-  {
-    value: 1,
-    level: 'SKIPPED',
-    titleKey: 'food.satiety.skipped',
-    subtitleKey: 'food.satietySubtitle.skipped',
-    icon: 'emoticon-cry-outline',
-    color: COLORS.sleepQualityTerrible,
-  },
-];
-
-const DEFAULT_SATIETY_VALUE = 4;
+const WATER_STEP_LITERS = 0.25;
 const MAX_DESCRIPTION_LENGTH = 300;
 
 const formatDateKey = (date: Date): string => {
@@ -157,17 +105,8 @@ const toRgba = (hexColor: string, opacity: number): string => {
   return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
 };
 
-const satietyValueForLevel = (satietyLevel: string): number => {
-  return (
-    SATIETY_OPTIONS.find(option => option.level === satietyLevel)?.value ??
-    DEFAULT_SATIETY_VALUE
-  );
-};
-
-const satietyOptionForValue = (value: number): SatietyOption => {
-  return (
-    SATIETY_OPTIONS.find(option => option.value === value) ?? SATIETY_OPTIONS[1]
-  );
+const mealCountFromLog = (log: FoodLogResponse): number => {
+  return Number.parseInt(log.satietyLevel, 10) || 0;
 };
 
 const FoodMainScreen: React.FC = () => {
@@ -182,11 +121,9 @@ const FoodMainScreen: React.FC = () => {
     clampToToday(new Date()),
   );
   const [currentLogId, setCurrentLogId] = useState<string | null>(null);
-  const [waterGlasses, setWaterGlasses] = useState<number>(0);
+  const [waterLiters, setWaterLiters] = useState<number>(0);
   const [foodDescription, setFoodDescription] = useState<string>('');
-  const [satietyLevel, setSatietyLevel] = useState<number>(
-    DEFAULT_SATIETY_VALUE,
-  );
+  const [mealCount, setMealCount] = useState<number>(0);
   const [weeklyLogs, setWeeklyLogs] = useState<FoodLogResponse[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -233,22 +170,22 @@ const FoodMainScreen: React.FC = () => {
 
       if (foundLog) {
         setCurrentLogId(foundLog.id);
-        setWaterGlasses(foundLog.waterGlasses);
+        setWaterLiters(foundLog.waterGlasses / 1000);
         setFoodDescription(foundLog.foodDescription);
-        setSatietyLevel(satietyValueForLevel(foundLog.satietyLevel));
+        setMealCount(mealCountFromLog(foundLog));
       } else {
         setCurrentLogId(null);
-        setWaterGlasses(0);
+        setWaterLiters(0);
         setFoodDescription('');
-        setSatietyLevel(DEFAULT_SATIETY_VALUE);
+        setMealCount(0);
       }
     } catch (error) {
       console.error('[FoodMainScreen] Failed to fetch food logs:', error);
       setWeeklyLogs([]);
       setCurrentLogId(null);
-      setWaterGlasses(0);
+      setWaterLiters(0);
       setFoodDescription('');
-      setSatietyLevel(DEFAULT_SATIETY_VALUE);
+      setMealCount(0);
       Alert.alert(t('food.entry.errorTitle'), t('food.entry.errorMessage'));
     } finally {
       setIsLoading(false);
@@ -270,7 +207,7 @@ const FoodMainScreen: React.FC = () => {
         .filter(log => log.entryDate === dateKey)
         .sort(sortByUpdatedAtDesc)[0];
 
-      return latestDayLog?.waterGlasses ?? 0;
+      return (latestDayLog?.waterGlasses ?? 0) / 1000;
     });
 
     return {
@@ -304,7 +241,7 @@ const FoodMainScreen: React.FC = () => {
 
       return {
         label: t(WEEKDAY_LABEL_KEYS[index]),
-        rating: latestLog ? satietyValueForLevel(latestLog.satietyLevel) : 0,
+        rating: latestLog ? mealCountFromLog(latestLog) : 0,
       };
     });
   }, [selectedWeekStart, t, weeklyLogs]);
@@ -313,18 +250,18 @@ const FoodMainScreen: React.FC = () => {
     () => weekTrend.map(day => day.rating),
     [weekTrend],
   );
-  const averageMindfulScore = useMemo(() => {
-    const meaningfulScores = weeklyLogs
-      .map(log => satietyValueForLevel(log.satietyLevel))
-      .filter(score => score > 0);
+  const averageMealCount = useMemo(() => {
+    const meaningfulCounts = weeklyLogs
+      .map(log => mealCountFromLog(log))
+      .filter(count => count > 0);
 
-    if (meaningfulScores.length === 0) {
+    if (meaningfulCounts.length === 0) {
       return 0;
     }
 
     return (
-      meaningfulScores.reduce((sum, score) => sum + score, 0) /
-      meaningfulScores.length
+      meaningfulCounts.reduce((sum, count) => sum + count, 0) /
+      meaningfulCounts.length
     );
   }, [weeklyLogs]);
   const chartWidth = Math.max(
@@ -356,7 +293,7 @@ const FoodMainScreen: React.FC = () => {
       backgroundColor: COLORS.surface,
       backgroundGradientFrom: COLORS.surface,
       backgroundGradientTo: COLORS.surface,
-      decimalPlaces: 0,
+      decimalPlaces: 1,
       barPercentage: 0.65,
       color: (opacity = 1): string => toRgba(COLORS.foodHeaderOrange, opacity),
       labelColor: (opacity = 1): string =>
@@ -390,11 +327,23 @@ const FoodMainScreen: React.FC = () => {
   };
 
   const handleDecreaseWater = (): void => {
-    setWaterGlasses(previous => Math.max(0, previous - 1));
+    setWaterLiters(previous =>
+      Math.max(0, Math.round((previous - WATER_STEP_LITERS) * 100) / 100),
+    );
   };
 
   const handleIncreaseWater = (): void => {
-    setWaterGlasses(previous => previous + 1);
+    setWaterLiters(previous =>
+      Math.round((previous + WATER_STEP_LITERS) * 100) / 100,
+    );
+  };
+
+  const handleDecreaseMeals = (): void => {
+    setMealCount(previous => Math.max(0, previous - 1));
+  };
+
+  const handleIncreaseMeals = (): void => {
+    setMealCount(previous => previous + 1);
   };
 
   const handleSave = async (): Promise<void> => {
@@ -406,9 +355,9 @@ const FoodMainScreen: React.FC = () => {
     setIsSaving(true);
 
     const payload: FoodLogRequest = {
-      waterGlasses,
-      foodDescription: foodDescription.trim(),
-      satietyLevel: satietyOptionForValue(satietyLevel).level,
+      waterGlasses: Math.round(waterLiters * 1000),
+      foodDescription: foodDescription.trim() || '-',
+      satietyLevel: String(mealCount),
       entryDate: selectedDateKey,
     };
 
@@ -436,7 +385,7 @@ const FoodMainScreen: React.FC = () => {
     }
   };
 
-  const isSaveDisabled = isSaving || foodDescription.trim().length === 0;
+  const isSaveDisabled = isSaving || mealCount <= 0;
 
   const today = useMemo(() => {
     const now = new Date();
@@ -559,8 +508,8 @@ const FoodMainScreen: React.FC = () => {
               <View style={styles.summaryRow}>
                 <View style={styles.summaryCard}>
                   <AppText style={styles.summaryValue}>
-                    {averageMindfulScore > 0
-                      ? averageMindfulScore.toFixed(1)
+                    {averageMealCount > 0
+                      ? averageMealCount.toFixed(1)
                       : '0.0'}
                   </AppText>
                   <AppText style={styles.summaryLabel}>
@@ -596,7 +545,7 @@ const FoodMainScreen: React.FC = () => {
                   height={230}
                   fromZero
                   yAxisLabel=""
-                  yAxisSuffix=""
+                  yAxisSuffix="L"
                   showValuesOnTopOfBars
                   withInnerLines={false}
                   chartConfig={barChartConfig}
@@ -632,7 +581,7 @@ const FoodMainScreen: React.FC = () => {
 
                   <View style={styles.waterValueWrap}>
                     <AppText style={styles.waterValueText}>
-                      {waterGlasses}
+                      {waterLiters.toFixed(2)}
                     </AppText>
                     <AppText style={styles.waterValueUnit}>
                       {t('food.main.hydrationUnit')}
@@ -648,41 +597,34 @@ const FoodMainScreen: React.FC = () => {
                 </View>
               </View>
 
-              <View style={styles.satietySection}>
+              <View style={styles.waterTrackerCard}>
                 <AppText style={styles.inputLabel}>
-                  {t('food.main.mindfulLabel')}
+                  {t('food.main.mealCountLabel')}
                 </AppText>
-                <View style={styles.satietyList}>
-                  {SATIETY_OPTIONS.map(option => {
-                    const isSelected = satietyLevel === option.value;
 
-                    return (
-                      <Pressable
-                        key={option.value}
-                        style={[
-                          styles.satietyItem,
-                          isSelected && styles.satietyItemSelected,
-                        ]}
-                        onPress={() => setSatietyLevel(option.value)}
-                      >
-                        <View style={styles.satietyTextBlock}>
-                          <AppText style={styles.satietyTitle}>
-                            {t(option.titleKey)}
-                          </AppText>
-                          <AppText style={styles.satietySubtitle}>
-                            {t(option.subtitleKey)}
-                          </AppText>
-                        </View>
-                        <View style={styles.satietyIconWrap}>
-                          <MaterialCommunityIcons
-                            name={option.icon}
-                            size={26}
-                            color={option.color}
-                          />
-                        </View>
-                      </Pressable>
-                    );
-                  })}
+                <View style={styles.waterStepperRow}>
+                  <Pressable
+                    style={styles.waterCircleButton}
+                    onPress={handleDecreaseMeals}
+                  >
+                    <Feather name="minus" size={20} color={COLORS.white} />
+                  </Pressable>
+
+                  <View style={styles.waterValueWrap}>
+                    <AppText style={styles.waterValueText}>
+                      {mealCount}
+                    </AppText>
+                    <AppText style={styles.waterValueUnit}>
+                      {t('food.main.mealUnit')}
+                    </AppText>
+                  </View>
+
+                  <Pressable
+                    style={styles.waterCircleButton}
+                    onPress={handleIncreaseMeals}
+                  >
+                    <Feather name="plus" size={20} color={COLORS.white} />
+                  </Pressable>
                 </View>
               </View>
 

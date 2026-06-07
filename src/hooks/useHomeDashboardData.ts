@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { breathingApi, diaryApi, foodApi, sleepApi, stepsApi } from '@/api';
 import { BREATHING_DAILY_GOAL_SECONDS } from '@/constants/breathing';
-import { SATIETY_UI_MAP } from '@/constants/food';
 import { MoodTag } from '@/constants/moods';
 import { getTodaySteps } from '@/services/stepTracker';
 import {
@@ -13,7 +12,7 @@ import {
 } from '@/types';
 import { calculateStreakFromCreatedAt } from '@/utils';
 
-export const WATER_DAILY_GOAL = 8;
+export const WATER_DAILY_GOAL = 2;
 export const STEPS_DAILY_GOAL = 6000;
 export const BREATHING_DAILY_GOAL_MINUTES = Math.round(
   BREATHING_DAILY_GOAL_SECONDS / 60,
@@ -25,7 +24,7 @@ export interface HomeDashboardData {
   sleep: { hours: number[]; avg: number };
   diary: { moods: (MoodTag | null)[]; streak: number };
   nutrition: {
-    waterCups: number;
+    waterLiters: number;
     waterGoal: number;
     weekScore: number;
     status: NutritionStatus;
@@ -67,8 +66,8 @@ const resolveSleepDateKey = (log: SleepLogResponse): string | null => {
 };
 
 const deriveStatus = (weekScore: number): NutritionStatus => {
-  if (weekScore >= 4) return 'tot';
-  if (weekScore >= 3) return 'binhThuong';
+  if (weekScore >= 3) return 'tot';
+  if (weekScore >= 2) return 'binhThuong';
   return 'canCaiThien';
 };
 
@@ -79,7 +78,7 @@ export const useHomeDashboardData = (
   const [sleepAvg, setSleepAvg] = useState<number>(0);
   const [diaryMoods, setDiaryMoods] = useState<(MoodTag | null)[]>(EMPTY_MOODS);
   const [diaryStreak, setDiaryStreak] = useState<number>(0);
-  const [waterCups, setWaterCups] = useState<number>(0);
+  const [waterLiters, setWaterLiters] = useState<number>(0);
   const [weekScore, setWeekScore] = useState<number>(0);
   const [status, setStatus] = useState<NutritionStatus>('canCaiThien');
   const [stepDays, setStepDays] = useState<number[]>(EMPTY_7);
@@ -171,18 +170,18 @@ export const useHomeDashboardData = (
     if (foodRes.status === 'fulfilled') {
       const logs: FoodLogResponse[] = foodRes.value;
       const todayLogs = logs.filter(l => l.entryDate === todayKey);
-      const cups = todayLogs.reduce((sum, l) => sum + (l.waterGlasses ?? 0), 0);
-      const scores = logs
-        .map(l => SATIETY_UI_MAP[l.satietyLevel]?.value)
-        .filter((v): v is number => typeof v === 'number');
-      const avg = scores.length === 0
+      const liters = todayLogs.reduce((sum, l) => sum + (l.waterGlasses ?? 0) / 1000, 0);
+      const mealCounts = logs
+        .map(l => Number.parseInt(l.satietyLevel, 10) || 0)
+        .filter(v => v > 0);
+      const avg = mealCounts.length === 0
         ? 0
-        : Math.round((scores.reduce((s, v) => s + v, 0) / scores.length) * 10) / 10;
-      setWaterCups(cups);
+        : Math.round((mealCounts.reduce((s, v) => s + v, 0) / mealCounts.length) * 10) / 10;
+      setWaterLiters(liters);
       setWeekScore(avg);
       setStatus(deriveStatus(avg));
     } else {
-      setWaterCups(0);
+      setWaterLiters(0);
       setWeekScore(0);
       setStatus('canCaiThien');
     }
@@ -254,7 +253,7 @@ export const useHomeDashboardData = (
   return {
     sleep: { hours: sleepHours, avg: sleepAvg },
     diary: { moods: diaryMoods, streak: diaryStreak },
-    nutrition: { waterCups, waterGoal: WATER_DAILY_GOAL, weekScore, status },
+    nutrition: { waterLiters, waterGoal: WATER_DAILY_GOAL, weekScore, status },
     steps: { days: stepDaysWithToday, today: stepsToday, goal: STEPS_DAILY_GOAL },
     breathing: {
       minutes: breathingMinutes,

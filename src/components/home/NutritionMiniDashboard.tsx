@@ -9,8 +9,10 @@ import { RootStackParamList } from '@/navigation';
 import { NutritionStatus } from '@/hooks/useHomeDashboardData';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 
+const WATER_CELL_LITERS = 0.25;
+
 interface NutritionMiniDashboardProps {
-  waterCups: number;
+  waterLiters: number;
   waterGoal: number;
   weekScore: number;
   status: NutritionStatus;
@@ -29,14 +31,16 @@ const STATUS_COLOR: Record<NutritionStatus, string> = {
 };
 
 const NutritionMiniDashboard: React.FC<NutritionMiniDashboardProps> = ({
-  waterCups,
+  waterLiters,
   waterGoal,
   weekScore,
   status,
 }) => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const cells = Array.from({ length: waterGoal });
+  const cellCount = Math.round(waterGoal / WATER_CELL_LITERS);
+  const filledCells = Math.round(waterLiters / WATER_CELL_LITERS);
+  const cells = Array.from({ length: cellCount });
 
   return (
     <Pressable style={styles.card} onPress={() => navigation.navigate('FoodMain')}>
@@ -51,7 +55,10 @@ const NutritionMiniDashboard: React.FC<NutritionMiniDashboardProps> = ({
         <View style={styles.headerText}>
           <AppText style={styles.title}>{t('home.dashboards.nutrition.title')}</AppText>
           <AppText style={styles.subtitle}>
-            {t('home.dashboards.nutrition.water', { cups: waterCups, goal: waterGoal })}
+            {t('home.dashboards.nutrition.water', {
+              liters: waterLiters.toFixed(2),
+              goal: waterGoal.toFixed(1),
+            })}
           </AppText>
         </View>
         <MaterialCommunityIcons name="chevron-right" size={20} color={COLORS.textTertiary} />
@@ -59,7 +66,7 @@ const NutritionMiniDashboard: React.FC<NutritionMiniDashboardProps> = ({
 
       <View style={styles.waterRow}>
         {cells.map((_, i) => {
-          const isFilled = i < waterCups;
+          const isFilled = i < filledCells;
           return (
             <View
               key={i}
@@ -84,7 +91,7 @@ const NutritionMiniDashboard: React.FC<NutritionMiniDashboardProps> = ({
             {t('home.dashboards.nutrition.weekScore')}
           </AppText>
           <AppText style={styles.statValue}>
-            {weekScore.toFixed(1)}/5
+            {weekScore.toFixed(1)}
           </AppText>
         </View>
         <View style={styles.statTile}>

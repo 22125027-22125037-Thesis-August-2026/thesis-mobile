@@ -43,7 +43,7 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
       />
       <DiaryMiniDashboard moods={data.diary.moods} streak={data.diary.streak} />
       <NutritionMiniDashboard
-        waterCups={data.nutrition.waterCups}
+        waterLiters={data.nutrition.waterLiters}
         waterGoal={data.nutrition.waterGoal}
         weekScore={data.nutrition.weekScore}
         status={data.nutrition.status}
