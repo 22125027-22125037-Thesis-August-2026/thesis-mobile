@@ -49,3 +49,41 @@ export const calculateStreakFromCreatedAt = (entries: DiaryEntryResponse[]): num
 
   return streak;
 };
+
+/**
+ * Computes the longest writing streak ever achieved, based on when entries were
+ * actually created (createdAt). Used to decide which achievement trophies are
+ * unlocked, since the backend has no streak service for diary logging.
+ */
+export const calculateLongestStreakFromCreatedAt = (
+  entries: DiaryEntryResponse[],
+): number => {
+  if (entries.length === 0) return 0;
+
+  const writtenDays = new Set<string>();
+  entries.forEach(entry => {
+    writtenDays.add(toLocalDateKey(new Date(entry.createdAt)));
+  });
+
+  // Sort the unique written days chronologically, then scan for the longest run
+  // of consecutive calendar days.
+  const sortedDays = Array.from(writtenDays)
+    .map(key => new Date(key))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  let longest = 1;
+  let current = 1;
+  for (let i = 1; i < sortedDays.length; i++) {
+    const prev = sortedDays[i - 1];
+    const expectedNext = new Date(prev);
+    expectedNext.setDate(expectedNext.getDate() + 1);
+    if (toLocalDateKey(expectedNext) === toLocalDateKey(sortedDays[i])) {
+      current++;
+      longest = Math.max(longest, current);
+    } else {
+      current = 1;
+    }
+  }
+
+  return longest;
+};

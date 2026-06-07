@@ -15,7 +15,8 @@ import { AuthContext } from '@/context/AuthContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '@/theme';
-import { trackingApi } from '@/api';
+import { diaryApi } from '@/api';
+import { calculateLongestStreakFromCreatedAt } from '@/utils';
 import { RootStackParamList } from '@/navigation';
 import { styles } from './ProfileScreen.styles';
 
@@ -27,24 +28,30 @@ const ProfileScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [longestStreak, setLongestStreak] = useState<number>(0);
 
+  const profileId = authContext?.userInfo?.profileId;
+
   useEffect(() => {
+    if (!profileId) return;
+
     let isMounted = true;
 
-    trackingApi
-      .getStreak()
-      .then(streak => {
+    // No backend streak service for diary logging — derive the longest streak
+    // from diary entries on the client, the same source the home dashboard uses.
+    diaryApi
+      .getDiaryEntries(profileId)
+      .then(entries => {
         if (isMounted) {
-          setLongestStreak(streak.longestCount ?? 0);
+          setLongestStreak(calculateLongestStreakFromCreatedAt(entries));
         }
       })
       .catch(error => {
-        console.warn('[ProfileScreen] Failed to load streak:', error);
+        console.warn('[ProfileScreen] Failed to load diary entries:', error);
       });
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [profileId]);
 
   if (!authContext) {
     return (

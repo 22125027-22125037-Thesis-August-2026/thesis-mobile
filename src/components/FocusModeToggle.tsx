@@ -15,27 +15,33 @@ import {
   scheduleFocusModeNotifications,
   cancelFocusModeNotifications,
   getFocusModeEnabled,
+  getQuietHours,
+  type QuietHours,
 } from '@/utils/focusModeNotifications';
 
 interface Props {
   /**
-   * 'card'  — standalone card with shadow (default, for use outside a menu list)
-   * 'row'   — flat row, no shadow/border-radius, designed to live inside a menuCard View
+   * 'card'  — standalone card with shadow (default)
+   * 'row'   — flat row designed to live inside a menuCard View
    */
   variant?: 'card' | 'row';
-  /** When variant='row', hide the bottom border on the last item */
   isLast?: boolean;
 }
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 const FocusModeToggle: React.FC<Props> = ({ variant = 'card', isLast = false }) => {
   const { t } = useTranslation();
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [quiet, setQuiet] = useState<QuietHours>({ start: 22, end: 7 });
 
   useEffect(() => {
-    getFocusModeEnabled()
-      .then(setEnabled)
-      .finally(() => setLoading(false));
+    Promise.all([getFocusModeEnabled(), getQuietHours()]).then(([on, q]) => {
+      setEnabled(on);
+      setQuiet(q);
+      setLoading(false);
+    });
   }, []);
 
   const handleToggle = async (value: boolean) => {
@@ -60,12 +66,7 @@ const FocusModeToggle: React.FC<Props> = ({ variant = 'card', isLast = false }) 
   const isRow = variant === 'row';
 
   return (
-    <View
-      style={[
-        isRow ? styles.row : styles.card,
-        isRow && !isLast && styles.rowBorder,
-      ]}
-    >
+    <View style={[isRow ? styles.row : styles.card, isRow && !isLast && styles.rowBorder]}>
       {/* Icon */}
       <View style={[styles.iconContainer, enabled && styles.iconContainerActive]}>
         <MaterialCommunityIcons
@@ -78,9 +79,17 @@ const FocusModeToggle: React.FC<Props> = ({ variant = 'card', isLast = false }) 
       {/* Text */}
       <View style={styles.textBlock}>
         <AppText style={styles.title}>{t('profile.focusMode.title')}</AppText>
-        <AppText style={styles.subtitle} numberOfLines={2}>
+        <AppText style={styles.subtitle}>
           {t(enabled ? 'profile.focusMode.subtitleOn' : 'profile.focusMode.subtitleOff')}
         </AppText>
+        {enabled && (
+          <AppText style={styles.quietBadge}>
+            {t('profile.focusMode.quietBadge', {
+              start: pad(quiet.start),
+              end: pad(quiet.end),
+            })}
+          </AppText>
+        )}
       </View>
 
       {/* Control */}
@@ -110,7 +119,6 @@ const ROW_BASE = {
 };
 
 const styles = StyleSheet.create({
-  // ── standalone card ──────────────────────────────────────────────────────────
   card: {
     ...ROW_BASE,
     backgroundColor: COLORS.surfaceRaised,
@@ -121,7 +129,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
   },
-  // ── menu-row variant (no shadow — parent menuCard provides it) ────────────────
   row: {
     ...ROW_BASE,
   },
@@ -129,7 +136,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderSubtle,
   },
-  // ── shared ───────────────────────────────────────────────────────────────────
   iconContainer: {
     width: 44,
     height: 44,
@@ -155,6 +161,11 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xs,
     color: COLORS.textSecondary,
     marginTop: 2,
+  },
+  quietBadge: {
+    fontSize: 11,
+    color: COLORS.textTertiary,
+    marginTop: 3,
   },
   loader: {
     marginHorizontal: 4,

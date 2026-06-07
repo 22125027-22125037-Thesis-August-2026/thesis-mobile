@@ -23,6 +23,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 import { AppText } from '@/components';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
 import { listenForForegroundNotifications } from '@/services/notifications';
+import { rescheduleFocusModeIfNeeded } from '@/utils/focusModeNotifications';
 import {
   WidgetBridge,
   WIDGET_DEEP_LINK_EVENT,
@@ -241,6 +242,10 @@ const AppNav: React.FC = () => {
         unsubscribe();
       }
     };
+  }, []);
+
+  useEffect(() => {
+    void rescheduleFocusModeIfNeeded();
   }, []);
 
   const handleTarget = useCallback(

@@ -677,6 +677,7 @@
       "title": "Focus Mode",
       "subtitleOn": "Gentle reminders every 90 minutes are active",
       "subtitleOff": "Get reminders to drink water & log your mood",
+      "quietBadge": "🌙 Quiet {{start}}:00 – {{end}}:00",
       "errorTitle": "Notifications unavailable",
       "errorMessage": "Please check notification permissions in your device settings."
     },
