@@ -1,4 +1,11 @@
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Animated,
@@ -20,10 +27,12 @@ import { useTranslation } from 'react-i18next';
 import { AppText } from '@/components';
 import {
   FindTherapistCta,
+  LowMoodPromptSheet,
   MeditationCarousel,
   MiniDashboardsSection,
   MoodCheckInCard,
 } from '@/components/home';
+import { MoodTag } from '@/constants';
 import { AuthContext } from '@/context/AuthContext';
 import { useHomeDashboardData } from '@/hooks/useHomeDashboardData';
 import { COLORS } from '@/theme';
@@ -32,6 +41,10 @@ import LogoMark from '@/assets/logo/LogoMark';
 import { styles } from './HomeScreen.styles';
 
 type NavigationPropType = NavigationProp<RootStackParamList>;
+
+// Anti-nag rate-limit: surface the low-mood safety net at most once per 6h.
+const LOW_MOOD_PROMPT_KEY = '@low_mood_prompt_last_shown';
+const LOW_MOOD_COOLDOWN_MS = 6 * 60 * 60 * 1000;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // AI COMPANION CARD
@@ -81,12 +94,34 @@ const HomeScreen: React.FC = () => {
   const { userInfo } = useContext(AuthContext)!;
   const { t } = useTranslation();
   const dashboard = useHomeDashboardData(userInfo?.profileId);
+  const [lowMoodVisible, setLowMoodVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       void dashboard.refetch();
     }, [dashboard.refetch]),
   );
+
+  const handleMoodSaved = async (saved?: {
+    moodTag: MoodTag;
+    score: number;
+  }): Promise<void> => {
+    void dashboard.refetch();
+    if (!saved || (saved.moodTag !== 'TERRIBLE' && saved.moodTag !== 'BAD')) {
+      return;
+    }
+    try {
+      const lastShownRaw = await AsyncStorage.getItem(LOW_MOOD_PROMPT_KEY);
+      const lastShown = lastShownRaw ? Number(lastShownRaw) : 0;
+      if (Date.now() - lastShown < LOW_MOOD_COOLDOWN_MS) {
+        return;
+      }
+      await AsyncStorage.setItem(LOW_MOOD_PROMPT_KEY, String(Date.now()));
+    } catch {
+      // If storage fails, still surface the safety net rather than swallow it.
+    }
+    setLowMoodVisible(true);
+  };
 
   const handleNavigateChatbot = (): void => {
     navigation.navigate('Chat');
@@ -159,7 +194,9 @@ const HomeScreen: React.FC = () => {
 
         {/* ===== MOOD CHECK-IN — overlaps hero ===== */}
         <View style={styles.moodOverlap}>
-          <MoodCheckInCard onMoodSaved={() => void dashboard.refetch()} />
+          <MoodCheckInCard
+            onMoodSaved={saved => void handleMoodSaved(saved)}
+          />
         </View>
 
         {/* ===== MAIN CONTENT ===== */}
@@ -183,6 +220,11 @@ const HomeScreen: React.FC = () => {
           <View style={styles.bottomSpacer} />
         </View>
       </ScrollView>
+
+      <LowMoodPromptSheet
+        visible={lowMoodVisible}
+        onClose={() => setLowMoodVisible(false)}
+      />
     </SafeAreaView>
   );
 };

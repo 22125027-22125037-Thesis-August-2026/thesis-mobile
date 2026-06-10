@@ -28,7 +28,7 @@ const EMOTION_ROWS: PlutchikEmotionEntry[][] = [
 const hexWithAlpha = (hex: string, alphaHex: string): string => `${hex}${alphaHex}`;
 
 interface MoodCheckInCardProps {
-  onMoodSaved?: () => void;
+  onMoodSaved?: (saved?: { moodTag: MoodTag; score: number }) => void;
 }
 
 const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
@@ -101,7 +101,7 @@ const MoodCheckInCard: React.FC<MoodCheckInCardProps> = ({ onMoodSaved }) => {
       void WidgetBridge.requestRefresh();
       if (successTimerRef.current) clearTimeout(successTimerRef.current);
       successTimerRef.current = setTimeout(() => setSuccessEmotion(null), 2500);
-      onMoodSaved?.();
+      onMoodSaved?.({ moodTag: emotion.moodTag, score: emotion.score });
     } catch {
       setCurrentMood(null);
       setPendingMood(null);

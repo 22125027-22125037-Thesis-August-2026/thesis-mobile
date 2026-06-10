@@ -1,6 +1,7 @@
 export { default as BreathingMiniDashboard } from './BreathingMiniDashboard';
 export { default as DiaryMiniDashboard } from './DiaryMiniDashboard';
 export { default as FindTherapistCta } from './FindTherapistCta';
+export { default as LowMoodPromptSheet } from './LowMoodPromptSheet';
 export { default as MeditationCarousel } from './MeditationCarousel';
 export { default as MiniDashboardsSection } from './MiniDashboardsSection';
 export { default as MoodCheckInCard } from './MoodCheckInCard';
