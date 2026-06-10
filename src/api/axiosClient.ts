@@ -181,10 +181,15 @@ axiosClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 401 → try a one-shot refresh + replay before giving up. 403 is an
-    // authorization failure (not an expired token), so it skips refresh.
+    // An expired/invalid access token surfaces as 401 OR 403 depending on the
+    // service's Spring Security entry point — the deployed gateway returns 403
+    // for an expired token (default Http403ForbiddenEntryPoint). Either way,
+    // attempt a one-shot refresh + replay before giving up. We only tear down
+    // the session when the *refresh itself* fails: a 403 that still persists
+    // after a successful refresh is a genuine authorization error and must
+    // surface to its caller, not force a logout.
     if (
-      status === 401 &&
+      (status === 401 || status === 403) &&
       !HAS_HARDCODED_TEST_TOKEN &&
       originalRequest &&
       !(originalRequest as any)._retry
@@ -196,10 +201,9 @@ axiosClient.interceptors.response.use(
         (originalRequest.headers as any).Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originalRequest);
       }
-      // Refresh failed → fall through to logout below.
-    }
 
-    if (status === 401 || status === 403) {
+      // No usable refresh token (or the refresh was rejected) → the session is
+      // unrecoverable. Clear local auth and bounce back to the login screen.
       await AsyncStorage.multiRemove(AUTH_STORAGE_KEYS);
       if (logoutHandler) {
         logoutHandler();
