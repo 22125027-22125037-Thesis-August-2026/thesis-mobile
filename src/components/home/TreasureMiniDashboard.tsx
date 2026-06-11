@@ -8,9 +8,10 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { AppText } from '@/components';
+import { treasureApi } from '@/api';
 import { RootStackParamList } from '@/navigation';
 import { getTreasureCategory } from '@/constants/treasures';
-import { loadTreasures } from '@/utils/treasureStore';
+import { cacheTreasures, loadCachedTreasures } from '@/utils/treasureStore';
 import type { Treasure } from '@/types';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 
@@ -21,11 +22,23 @@ const TreasureMiniDashboard: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       let active = true;
-      void loadTreasures().then(items => {
-        if (active) {
-          setTreasures(items);
+      // Paint from cache first, then refresh from the server.
+      void loadCachedTreasures().then(cached => {
+        if (active && cached.length > 0) {
+          setTreasures(prev => (prev.length > 0 ? prev : cached));
         }
       });
+      void treasureApi
+        .getTreasures()
+        .then(items => {
+          if (active) {
+            setTreasures(items);
+            void cacheTreasures(items);
+          }
+        })
+        .catch(() => {
+          // Keep whatever the cache provided; the dashboard is non-critical.
+        });
       return () => {
         active = false;
       };

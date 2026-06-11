@@ -11,8 +11,9 @@ import * as sleepApi from '@/api/sleepApi';
 import * as stepsApi from '@/api/stepsApi';
 import * as therapistApi from '@/api/therapistApi';
 import * as trackingApi from '@/api/trackingApi';
+import * as treasureApi from '@/api/treasureApi';
 
-export { breathingApi, dataAccessGrantApi, diaryApi, foodApi, notificationApi, profileApi, socialApi, sleepApi, stepsApi, therapistApi, trackingApi };
+export { breathingApi, dataAccessGrantApi, diaryApi, foodApi, notificationApi, profileApi, socialApi, sleepApi, stepsApi, therapistApi, trackingApi, treasureApi };
 export * from '@/api/breathingApi';
 export * from '@/api/dataAccessGrantApi';
 export * from '@/api/diaryApi';

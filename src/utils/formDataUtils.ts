@@ -80,3 +80,21 @@ export const createDiaryFormData = (
 
   return formData;
 };
+
+// A treasure carries at most one media item, sent as the optional "media" part
+// alongside the "treasure" JSON metadata — matching TreasureController's
+// multipart contract on the backend.
+export const createTreasureFormData = (
+  treasure: { category: string; content: string; emoji: string },
+  media?: AttachmentFile | null,
+): FormData => {
+  const formData = new FormData();
+
+  formData.append('treasure', JSON.stringify(treasure));
+
+  if (media) {
+    formData.append('media', toMultipartFile(media) as unknown as Blob);
+  }
+
+  return formData;
+};

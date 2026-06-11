@@ -198,6 +198,7 @@ export const COLORS = {
   // Overlay
   overlayDark45: 'rgba(0, 0, 0, 0.45)',
   overlayDark14: 'rgba(0, 0, 0, 0.14)',
+  overlayBlack: 'rgba(0, 0, 0, 0.92)',
 
   // Misc
   shadowBase: '#000000',

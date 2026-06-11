@@ -443,4 +443,200 @@ export const styles = StyleSheet.create({
     color: COLORS.comfortHeaderDeep,
     textDecorationLine: 'underline',
   },
+
+  // ── Loading / error states ──
+  stateBlock: {
+    alignItems: 'center',
+    paddingVertical: SPACING.xxl,
+  },
+  errorTitle: {
+    fontSize: FONT_SIZES.md,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginTop: SPACING.sm,
+    marginBottom: 4,
+  },
+  errorHint: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.xl,
+    lineHeight: 20,
+    marginBottom: SPACING.md,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: 10,
+    borderRadius: BORDER_RADIUS.pill,
+    backgroundColor: COLORS.comfortSoft,
+  },
+  retryButtonText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    color: COLORS.comfortHeaderDeep,
+  },
+
+  // ── Add-modal media picker ──
+  mediaPickerRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+  },
+  mediaPickButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 12,
+    borderRadius: BORDER_RADIUS.lg,
+    backgroundColor: COLORS.surfaceRaised,
+    borderWidth: 1.5,
+    borderColor: COLORS.borderSubtle,
+  },
+  mediaPickButtonText: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  mediaDraftPreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
+    padding: SPACING.sm,
+    borderRadius: BORDER_RADIUS.lg,
+    backgroundColor: COLORS.comfortSoft,
+  },
+  mediaDraftThumb: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    backgroundColor: COLORS.borderSubtle,
+  },
+  mediaDraftIconBox: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.comfortChipIdle,
+  },
+  mediaDraftLabel: {
+    flex: 1,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    color: COLORS.comfortHeaderDeep,
+  },
+  mediaDraftRemove: {
+    padding: 6,
+  },
+
+  // ── Treasure card media ──
+  cardMediaThumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    marginTop: SPACING.sm,
+    backgroundColor: COLORS.borderSubtle,
+  },
+  cardMediaChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 5,
+    marginTop: SPACING.sm,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: BORDER_RADIUS.pill,
+    backgroundColor: COLORS.surfaceRaised,
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+  },
+  cardMediaChipText: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '700',
+  },
+
+  // ── Comfort overlay media ──
+  comfortMediaImageWrap: {
+    width: '100%',
+  },
+  comfortMediaImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: BORDER_RADIUS.lg,
+    marginBottom: SPACING.lg,
+    backgroundColor: COLORS.borderSubtle,
+  },
+  comfortMediaChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: BORDER_RADIUS.pill,
+    backgroundColor: COLORS.comfortSoft,
+    marginBottom: SPACING.lg,
+  },
+  comfortMediaChipText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    color: COLORS.comfortHeaderDeep,
+  },
+
+  // ── Full-screen media viewer ──
+  mediaViewerBackdrop: {
+    flex: 1,
+    backgroundColor: COLORS.overlayBlack,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mediaViewerClose: {
+    position: 'absolute',
+    top: SPACING.xxl,
+    right: SPACING.lg,
+    zIndex: 2,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.whiteAlpha20,
+  },
+  mediaViewerImage: {
+    width: '100%',
+    height: '80%',
+  },
+  mediaViewerPlayerWrap: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mediaViewerVideo: {
+    width: '100%',
+    height: 280,
+  },
+  mediaViewerAudio: {
+    width: 1,
+    height: 1,
+  },
+  mediaViewerAudioEmoji: {
+    fontSize: 96,
+    marginBottom: SPACING.lg,
+  },
+  mediaViewerFallback: {
+    alignItems: 'center',
+    gap: SPACING.sm,
+    paddingHorizontal: SPACING.xxl,
+  },
+  mediaViewerFallbackText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.white,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });

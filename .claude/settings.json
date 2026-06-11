@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(ssh -i \"D:\\\\Y4-Sem 2 Thesis\\\\Oracle deployment\\\\hieu-vm-oracle-ssh-key-2026-06-07.key\" -o StrictHostKeyChecking=no ubuntu@140.245.124.163 'echo === client_max_body_size matches ===; docker exec nginx grep -rn client_max_body_size /etc/nginx/; echo === tracking location ===; docker exec nginx sed -n 96,104p /etc/nginx/nginx.conf; echo === http block head ===; docker exec nginx sed -n 1,22p /etc/nginx/nginx.conf; echo === count of 413 in access log ===; docker logs nginx 2>&1 | grep -c \" 413 \"')",
+      "PowerShell(ssh -i \"D:\\\\Y4-Sem 2 Thesis\\\\Oracle deployment\\\\hieu-vm-oracle-ssh-key-2026-06-07.key\" -o StrictHostKeyChecking=no ubuntu@140.245.124.163 'echo === the 413 line ===; docker logs nginx 2>&1 | grep \" 413 \"; echo === nginx mounts ===; docker inspect -f \"{{range .Mounts}}{{.Source}} =\\\\> {{.Destination}} \\({{.Type}}\\){{println}}{{end}}\" nginx')",
+      "PowerShell(ssh -i \"D:\\\\Y4-Sem 2 Thesis\\\\Oracle deployment\\\\hieu-vm-oracle-ssh-key-2026-06-07.key\" -o StrictHostKeyChecking=no ubuntu@140.245.124.163 'docker logs nginx 2>&1 | grep \" 413 \"')",
+      "PowerShell(ssh -i \"D:\\\\Y4-Sem 2 Thesis\\\\Oracle deployment\\\\hieu-vm-oracle-ssh-key-2026-06-07.key\" -o StrictHostKeyChecking=no ubuntu@140.245.124.163 'docker inspect --format \"{{json .Mounts}}\" nginx')",
+      "PowerShell(npx eslint src/screens/tracking/treasure/TreasureBoxScreen.tsx src/screens/tracking/treasure/TreasureBoxScreen.styles.ts)"
+    ]
+  }
+}
