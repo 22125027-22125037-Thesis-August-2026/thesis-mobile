@@ -183,6 +183,9 @@ export const styles = StyleSheet.create({
     marginHorizontal: SPACING.screenHorizontal,
     marginTop: SPACING.lg,
   },
+  trophySpacer: {
+    height: SPACING.sm,
+  },
   sectionLabel: {
     fontSize: FONT_SIZES.xs,
     fontWeight: '700',

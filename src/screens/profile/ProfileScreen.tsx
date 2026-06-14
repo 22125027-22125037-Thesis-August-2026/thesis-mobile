@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
@@ -9,14 +9,27 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { AppText, FocusModeToggle, TrophyShowcase } from '@/components';
+import {
+  useNavigation,
+  NavigationProp,
+  useFocusEffect,
+} from '@react-navigation/native';
+import {
+  AppText,
+  DailyTrackingTrophy,
+  FocusModeToggle,
+  TrophyShowcase,
+} from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '@/theme';
-import { diaryApi } from '@/api';
-import { calculateLongestStreakFromCreatedAt } from '@/utils';
+import { diaryApi, foodApi, sleepApi, stepsApi } from '@/api';
+import {
+  calculateLongestStreakFromCreatedAt,
+  getTodayTrackingStatus,
+  DailyTrackingStatus,
+} from '@/utils';
 import { RootStackParamList } from '@/navigation';
 import { styles } from './ProfileScreen.styles';
 
@@ -27,31 +40,56 @@ const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [longestStreak, setLongestStreak] = useState<number>(0);
+  const [trackingStatus, setTrackingStatus] = useState<DailyTrackingStatus>({
+    count: 0,
+    diary: false,
+    nutrition: false,
+    sleep: false,
+    steps: false,
+  });
+  const [refreshing, setRefreshing] = useState(false);
 
   const profileId = authContext?.userInfo?.profileId;
 
-  useEffect(() => {
+  const fetchAchievements = useCallback(async () => {
     if (!profileId) return;
 
-    let isMounted = true;
+    // No backend streak/achievement service — derive everything on the client
+    // from the tracking logs, the same sources the home dashboard uses.
+    const [diaryRes, foodRes, sleepRes, stepsRes] = await Promise.allSettled([
+      diaryApi.getDiaryEntries(profileId),
+      foodApi.getAllFoodLogs(profileId),
+      sleepApi.getAllSleepLogs(profileId),
+      stepsApi.getAllStepLogs(profileId),
+    ]);
 
-    // No backend streak service for diary logging — derive the longest streak
-    // from diary entries on the client, the same source the home dashboard uses.
-    diaryApi
-      .getDiaryEntries(profileId)
-      .then(entries => {
-        if (isMounted) {
-          setLongestStreak(calculateLongestStreakFromCreatedAt(entries));
-        }
-      })
-      .catch(error => {
-        console.warn('[ProfileScreen] Failed to load diary entries:', error);
-      });
+    const diaryEntries = diaryRes.status === 'fulfilled' ? diaryRes.value : [];
+    const foodLogs = foodRes.status === 'fulfilled' ? foodRes.value : [];
+    const sleepLogs = sleepRes.status === 'fulfilled' ? sleepRes.value : [];
+    const stepLogs = stepsRes.status === 'fulfilled' ? stepsRes.value : [];
 
-    return () => {
-      isMounted = false;
-    };
+    setLongestStreak(calculateLongestStreakFromCreatedAt(diaryEntries));
+    setTrackingStatus(
+      getTodayTrackingStatus(diaryEntries, foodLogs, sleepLogs, stepLogs),
+    );
   }, [profileId]);
+
+  // Re-fetch every time the Profile tab comes into focus so trophies reflect
+  // data logged in other tabs during the same session.
+  useFocusEffect(
+    useCallback(() => {
+      void fetchAchievements();
+    }, [fetchAchievements]),
+  );
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await fetchAchievements();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchAchievements]);
 
   if (!authContext) {
     return (
@@ -171,8 +209,8 @@ const ProfileScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={false}
-            onRefresh={() => { /* TODO: wire refreshUser */ }}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
             tintColor={COLORS.primary}
             colors={[COLORS.primary]}
           />
@@ -222,6 +260,8 @@ const ProfileScreen: React.FC = () => {
             {t('profile.sectionAchievements', { defaultValue: 'Achievements' })}
           </AppText>
           <TrophyShowcase longestCount={longestStreak} />
+          <View style={styles.trophySpacer} />
+          <DailyTrackingTrophy status={trackingStatus} />
         </View>
 
         {/* ===== SETTINGS SECTION ===== */}
