@@ -38,6 +38,7 @@ import {
   PLUTCHIK_EMOTION_LIST,
   PLUTCHIK_EMOTIONS,
   getEmotionFromMoodTag,
+  getEmotionFromScore,
   getMoodTag,
 } from '@/constants';
 import { COLORS, FONTS } from '@/theme';
@@ -159,7 +160,10 @@ const DiaryEntryScreen: React.FC = () => {
         setTitle(entry.title ?? '');
 
         const resolvedMoodTag = getMoodTag(entry.moodTag);
-        setSelectedEmotion(getEmotionFromMoodTag(resolvedMoodTag));
+        const resolvedEmotion =
+          getEmotionFromScore(entry.positivityScore) ??
+          getEmotionFromMoodTag(resolvedMoodTag);
+        setSelectedEmotion(resolvedEmotion);
 
         if (entry.entryDate) {
           setEntryDate(new Date(entry.entryDate));

@@ -105,11 +105,41 @@ const MOOD_TAG_TO_EMOTION: Record<MoodTag, PlutchikEmotion> = {
   TERRIBLE: 'ANGER',
 };
 
+const SCORE_TO_EMOTION: Record<number, PlutchikEmotion> = {
+  10: 'JOY',
+  8: 'TRUST',
+  7: 'ANTICIPATION',
+  6: 'SURPRISE',
+  4: 'FEAR',
+  3: 'SADNESS',
+  2: 'DISGUST',
+  1: 'ANGER',
+};
+
 export const getEmotionFromMoodTag = (moodTag: MoodTag): PlutchikEmotion =>
   MOOD_TAG_TO_EMOTION[moodTag] ?? 'JOY';
+
+export const getEmotionFromScore = (
+  score: number | null | undefined,
+): PlutchikEmotion | null =>
+  score != null ? (SCORE_TO_EMOTION[score] ?? null) : null;
 
 /** Single safe call: raw API value → PlutchikEmotionConfig (never undefined). */
 export const emotionConfigFromRaw = (
   raw: string | null | undefined,
 ): PlutchikEmotionConfig =>
   PLUTCHIK_CONFIG[MOOD_TAG_TO_EMOTION[getMoodTag(raw)] ?? 'JOY'];
+
+/**
+ * Resolves the exact PlutchikEmotionConfig from a diary entry.
+ * Prefers positivityScore (unique per emotion) over moodTag (5-value only)
+ * to recover ANTICIPATION, FEAR, DISGUST which share moodTags with other emotions.
+ */
+export const emotionConfigFromEntry = (
+  moodTag: string | null | undefined,
+  positivityScore: number | null | undefined,
+): PlutchikEmotionConfig => {
+  const fromScore = getEmotionFromScore(positivityScore);
+  if (fromScore) return PLUTCHIK_CONFIG[fromScore];
+  return emotionConfigFromRaw(moodTag);
+};

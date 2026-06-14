@@ -23,7 +23,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { diaryApi } from '@/api';
-import { emotionConfigFromRaw } from '@/constants';
+import { emotionConfigFromEntry } from '@/constants';
 import { AppText } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
@@ -185,7 +185,7 @@ const DiaryOverviewScreen: React.FC = () => {
     item: DiaryEntryResponse;
     index: number;
   }) => {
-    const emotionConfig = emotionConfigFromRaw(item.moodTag);
+    const emotionConfig = emotionConfigFromEntry(item.moodTag, item.positivityScore);
     const isLastItem = index === filteredEntries.length - 1;
 
     return (
