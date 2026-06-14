@@ -5,4 +5,5 @@ export { default as CustomInput } from './CustomInput';
 export { default as DailyTrackingTrophy } from './DailyTrackingTrophy';
 export { default as FocusModeToggle } from './FocusModeToggle';
 export { default as TherapySessionCard } from './TherapySessionCard';
+export { default as TrackingCelebrationSheet } from './TrackingCelebrationSheet';
 export { default as TrophyShowcase } from './TrophyShowcase';

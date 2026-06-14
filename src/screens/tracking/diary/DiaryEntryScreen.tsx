@@ -29,6 +29,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { launchImageLibrary } from 'react-native-image-picker';
 
 import { diaryApi } from '@/api';
+import { TrackingCelebrationSheet } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import {
   ALL_DIARY_TAGS,
@@ -43,7 +44,11 @@ import { COLORS, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { AttachmentFile } from '@/types';
 import { WidgetBridge } from '@/native/WidgetBridge';
-import { playSoftHaptic } from '@/utils';
+import {
+  CelebrationStatus,
+  markCategoryLogged,
+  playSoftHaptic,
+} from '@/utils';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
 import TagSelector from './TagSelector';
 
@@ -108,6 +113,10 @@ const DiaryEntryScreen: React.FC = () => {
   const currentBgRef = useRef(EMOTION_BACKGROUNDS.JOY);
   const [prevBgColor, setPrevBgColor] = useState(EMOTION_BACKGROUNDS.JOY);
   const [currentBgColor, setCurrentBgColor] = useState(EMOTION_BACKGROUNDS.JOY);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationStatus, setCelebrationStatus] = useState<CelebrationStatus>({
+    count: 0, diary: false, nutrition: false, sleep: false, steps: false,
+  });
 
   useEffect(() => {
     const nextColor = EMOTION_BACKGROUNDS[selectedEmotion];
@@ -292,17 +301,12 @@ const DiaryEntryScreen: React.FC = () => {
     const imageUris = attachments.map(a => a.uri);
 
     try {
-      const response = entryId
-        ? await diaryApi.updateDiaryEntry(entryId, diaryPayload, imageUris)
-        : await diaryApi.createDiaryEntry(diaryPayload, imageUris);
+      await (entryId
+        ? diaryApi.updateDiaryEntry(entryId, diaryPayload, imageUris)
+        : diaryApi.createDiaryEntry(diaryPayload, imageUris));
 
       void WidgetBridge.cacheLastMood(emotion.moodTag, new Date().toISOString());
       void WidgetBridge.requestRefresh();
-
-      Alert.alert(
-        t('entry.successTitle'),
-        t('entry.successDiaryId', { id: response.id }),
-      );
 
       setTitle('');
       setSelectedEmotion('JOY');
@@ -310,7 +314,10 @@ const DiaryEntryScreen: React.FC = () => {
       setQuickNote('');
       setAttachments([]);
       setEntryDate(new Date());
-      navigation?.goBack();
+
+      // Show celebration sheet; navigate back after it closes
+      setCelebrationStatus(markCategoryLogged('diary'));
+      setShowCelebration(true);
     } catch {
       Alert.alert(t('entry.errorTitle'), t('entry.errorCreateDiary'));
     } finally {
@@ -615,6 +622,14 @@ const DiaryEntryScreen: React.FC = () => {
           </View>
         </View>
       </KeyboardAvoidingView>
+      <TrackingCelebrationSheet
+        visible={showCelebration}
+        status={celebrationStatus}
+        onClose={() => {
+          setShowCelebration(false);
+          navigation?.goBack();
+        }}
+      />
     </SafeAreaView>
     </View>
   );

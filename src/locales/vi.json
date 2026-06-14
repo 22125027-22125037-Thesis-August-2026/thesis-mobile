@@ -674,7 +674,14 @@
       "nutrition": "Dinh dưỡng",
       "sleep": "Giấc ngủ",
       "diary": "Nhật ký",
-      "steps": "Bước chân"
+      "steps": "Bước chân",
+      "complete": "Tuyệt vời! Hoàn thành hôm nay 🎉"
+    },
+    "celebration": {
+      "earned": "Bạn đã đạt được hôm nay! 🎉",
+      "progress": "{{count}}/4 hạng mục",
+      "encourage": "Tiếp tục để nhận cúp thưởng hôm nay!",
+      "dismiss": "Chạm để đóng"
     },
     "statsStreak": "Streak nhật ký",
     "statsAiSessions": "Phiên AI",

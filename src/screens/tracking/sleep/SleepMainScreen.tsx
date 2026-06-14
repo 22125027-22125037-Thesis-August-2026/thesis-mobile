@@ -22,13 +22,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { sleepApi } from '@/api';
-import { AppText, CustomButton } from '@/components';
+import { AppText, CustomButton, TrackingCelebrationSheet } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { SLEEP_QUALITY_UI_MAP } from '@/constants';
 import { RootStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { SleepLogRequest, SleepLogResponse } from '@/types';
-import { endOfWeekSunday, isSameDate, startOfWeekMonday } from '@/utils';
+import {
+  CelebrationStatus,
+  endOfWeekSunday,
+  isSameDate,
+  markCategoryLogged,
+  startOfWeekMonday,
+} from '@/utils';
 import { styles } from './SleepMainScreen.styles';
 
 type SleepPickerTarget = 'date' | 'bedTime' | 'wakeTime' | null;
@@ -216,6 +222,10 @@ const SleepMainScreen: React.FC = () => {
     DEFAULT_SLEEP_QUALITY,
   );
   const [note, setNote] = useState<string>('');
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationStatus, setCelebrationStatus] = useState<CelebrationStatus>({
+    count: 0, diary: false, nutrition: false, sleep: false, steps: false,
+  });
 
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const selectedDateKey = useMemo(
@@ -472,10 +482,8 @@ const SleepMainScreen: React.FC = () => {
 
       await refreshLogs();
 
-      Alert.alert(
-        t('sleep.entry.successTitle'),
-        t('sleep.entry.successMessage'),
-      );
+      setCelebrationStatus(markCategoryLogged('sleep'));
+      setShowCelebration(true);
     } catch (error) {
       console.error('[SleepMainScreen] Failed to save sleep log:', error);
       Alert.alert(t('sleep.entry.errorTitle'), t('sleep.entry.errorMessage'));
@@ -848,6 +856,11 @@ const SleepMainScreen: React.FC = () => {
           ) : null}
         </View>
       </KeyboardAvoidingView>
+      <TrackingCelebrationSheet
+        visible={showCelebration}
+        status={celebrationStatus}
+        onClose={() => setShowCelebration(false)}
+      />
     </SafeAreaView>
   );
 };

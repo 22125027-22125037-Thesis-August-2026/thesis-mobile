@@ -674,7 +674,14 @@
       "nutrition": "Nutrition",
       "sleep": "Sleep",
       "diary": "Journal",
-      "steps": "Steps"
+      "steps": "Steps",
+      "complete": "Amazing! All done today 🎉"
+    },
+    "celebration": {
+      "earned": "You earned it today! 🎉",
+      "progress": "{{count}}/4 categories",
+      "encourage": "Keep going to earn today's trophy!",
+      "dismiss": "Tap to close"
     },
     "statsStreak": "Journal streak",
     "statsAiSessions": "AI sessions",

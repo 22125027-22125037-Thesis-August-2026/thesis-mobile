@@ -21,12 +21,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 
 import { foodApi } from '@/api';
-import { AppText } from '@/components';
+import { AppText, TrackingCelebrationSheet } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import { RootStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { FoodLogRequest, FoodLogResponse } from '@/types';
-import { endOfWeekSunday, isSameDate, playSoftHaptic, startOfWeekMonday } from '@/utils';
+import {
+  CelebrationStatus,
+  endOfWeekSunday,
+  isSameDate,
+  markCategoryLogged,
+  playSoftHaptic,
+  startOfWeekMonday,
+} from '@/utils';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from './FoodMainScreen.styles';
 
@@ -129,6 +136,10 @@ const FoodMainScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationStatus, setCelebrationStatus] = useState<CelebrationStatus>({
+    count: 0, diary: false, nutrition: false, sleep: false, steps: false,
+  });
 
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const selectedDateKey = useMemo(
@@ -370,10 +381,8 @@ const FoodMainScreen: React.FC = () => {
 
       await loadLogs();
 
-      Alert.alert(
-        t('food.entry.successTitle'),
-        t('food.entry.successMessage'),
-      );
+      setCelebrationStatus(markCategoryLogged('nutrition'));
+      setShowCelebration(true);
     } catch (error) {
       console.error('[FoodMainScreen] Failed to save food log:', error);
       Alert.alert(
@@ -711,6 +720,11 @@ const FoodMainScreen: React.FC = () => {
           ) : null}
         </View>
       </KeyboardAvoidingView>
+      <TrackingCelebrationSheet
+        visible={showCelebration}
+        status={celebrationStatus}
+        onClose={() => setShowCelebration(false)}
+      />
     </SafeAreaView>
   );
 };

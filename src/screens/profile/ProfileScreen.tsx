@@ -27,8 +27,9 @@ import { COLORS } from '@/theme';
 import { diaryApi, foodApi, sleepApi, stepsApi } from '@/api';
 import {
   calculateLongestStreakFromCreatedAt,
-  getTodayTrackingStatus,
   DailyTrackingStatus,
+  getTodayTrackingStatus,
+  seedCacheFromStatus,  // keeps profile in sync when it fetches fresher data
 } from '@/utils';
 import { RootStackParamList } from '@/navigation';
 import { styles } from './ProfileScreen.styles';
@@ -69,9 +70,12 @@ const ProfileScreen: React.FC = () => {
     const stepLogs = stepsRes.status === 'fulfilled' ? stepsRes.value : [];
 
     setLongestStreak(calculateLongestStreakFromCreatedAt(diaryEntries));
-    setTrackingStatus(
-      getTodayTrackingStatus(diaryEntries, foodLogs, sleepLogs, stepLogs),
-    );
+
+    const todayStatus = getTodayTrackingStatus(diaryEntries, foodLogs, sleepLogs, stepLogs);
+    setTrackingStatus(todayStatus);
+    // Seed the popup cache with accurate server data so the celebration sheet
+    // always shows the real trophy tier, not a session-relative count.
+    seedCacheFromStatus(todayStatus);
   }, [profileId]);
 
   // Re-fetch every time the Profile tab comes into focus so trophies reflect

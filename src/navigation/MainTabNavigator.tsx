@@ -14,6 +14,7 @@ import {
   ProfileScreen,
 } from '@/screens';
 import { TherapistBookingLandingScreen } from '@/screens/booking';
+import { useSeedTrackingCache } from '@/hooks';
 import { RootStackParamList } from '@/navigation';
 import { COLORS } from '@/theme';
 
@@ -38,6 +39,11 @@ const MainTabNavigator: React.FC = () => {
   const { t } = useTranslation();
   const parentNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const lastBackPressRef = useRef<number | null>(null);
+
+  // Seed the popup cache with real server data once per day so celebration
+  // sheets always show the correct trophy tier, independent of which tab the
+  // user visits first.
+  useSeedTrackingCache();
 
   const getActiveTabName = useCallback((): keyof MainTabParamList => {
     const parentState = parentNavigation.getState();

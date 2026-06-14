@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
@@ -8,13 +8,28 @@ import AppText from './AppText';
 
 type TrophyTier = 'none' | 'bronze' | 'silver' | 'gold';
 
-const TIER_STYLE: Record<
+const TIER_CFG: Record<
   Exclude<TrophyTier, 'none'>,
-  { color: string; ringColor: string; labelKey: string }
+  { color: string; ringColor: string; headerColor: string; labelKey: string }
 > = {
-  bronze: { color: '#CD7F32', ringColor: '#F4D9B8', labelKey: 'profile.dailyTrophy.bronze' },
-  silver: { color: '#9AA0A6', ringColor: '#E4E6EB', labelKey: 'profile.dailyTrophy.silver' },
-  gold: { color: '#F2B400', ringColor: '#FFEFB8', labelKey: 'profile.dailyTrophy.gold' },
+  bronze: {
+    color: '#CD7F32',
+    ringColor: '#F4D9B8',
+    headerColor: '#FEF3E6',
+    labelKey: 'profile.dailyTrophy.bronze',
+  },
+  silver: {
+    color: '#9AA0A6',
+    ringColor: '#E4E6EB',
+    headerColor: '#F1F3F5',
+    labelKey: 'profile.dailyTrophy.silver',
+  },
+  gold: {
+    color: '#F2B400',
+    ringColor: '#FFEFB8',
+    headerColor: '#FFFBEA',
+    labelKey: 'profile.dailyTrophy.gold',
+  },
 };
 
 const resolveTier = (count: number): TrophyTier => {
@@ -44,86 +59,134 @@ interface DailyTrackingTrophyProps {
 const DailyTrackingTrophy: React.FC<DailyTrackingTrophyProps> = ({ status }) => {
   const { t } = useTranslation();
   const tier = useMemo(() => resolveTier(status.count), [status.count]);
+  const hasTier = tier !== 'none';
+  const tierCfg = hasTier ? TIER_CFG[tier] : null;
+  const isComplete = status.count >= 4;
+
+  // Scale-in animation whenever tier changes (a new trophy is earned)
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const prevTierRef = useRef<TrophyTier>('none');
+
+  useEffect(() => {
+    if (tier !== prevTierRef.current && hasTier) {
+      prevTierRef.current = tier;
+      scaleAnim.setValue(0.7);
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 5,
+        tension: 70,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      prevTierRef.current = tier;
+    }
+  }, [tier, hasTier, scaleAnim]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
+      {/* Colored accent header */}
+      <View
+        style={[
+          styles.headerBand,
+          { backgroundColor: hasTier ? tierCfg!.headerColor : COLORS.primaryMuted },
+        ]}
+      >
         <AppText style={styles.title}>
           {t('profile.dailyTrophy.title', { defaultValue: "Today's tracking trophy" })}
         </AppText>
-        <AppText style={styles.subtitle}>
-          {t('profile.dailyTrophy.progress', {
-            defaultValue: 'Today: {{count}}/4 logged',
-            count: status.count,
-          })}
-        </AppText>
-      </View>
-
-      {/* Earned cup (single, highest tier reached today) */}
-      <View style={styles.cupBlock}>
-        {tier === 'none' ? (
-          <>
-            <View style={[styles.cupBadge, styles.cupBadgeEmpty]}>
-              <MaterialCommunityIcons
-                name="trophy-outline"
-                size={36}
-                color={COLORS.textTertiary}
-              />
-            </View>
-            <AppText style={styles.emptyText}>
-              {t('profile.dailyTrophy.empty', {
-                defaultValue:
-                  'Log at least 2 categories today to earn the bronze cup!',
+        <View style={styles.progressPillWrapper}>
+          <View
+            style={[
+              styles.progressPill,
+              { backgroundColor: hasTier ? tierCfg!.ringColor : COLORS.white },
+            ]}
+          >
+            <AppText
+              style={[
+                styles.progressPillText,
+                { color: hasTier ? tierCfg!.color : COLORS.textTertiary },
+              ]}
+            >
+              {t('profile.dailyTrophy.progress', {
+                defaultValue: 'Today: {{count}}/4 logged',
+                count: status.count,
               })}
             </AppText>
-          </>
-        ) : (
-          <>
-            <View
-              style={[styles.cupBadge, { backgroundColor: TIER_STYLE[tier].ringColor }]}
-            >
-              <MaterialCommunityIcons
-                name="trophy"
-                size={36}
-                color={TIER_STYLE[tier].color}
-              />
-            </View>
-            <AppText style={[styles.tierLabel, { color: TIER_STYLE[tier].color }]}>
-              {t(TIER_STYLE[tier].labelKey, { defaultValue: tier })}
-            </AppText>
-          </>
-        )}
+          </View>
+        </View>
       </View>
 
-      {/* Per-category breakdown for today */}
-      <View style={styles.categoryRow}>
-        {CATEGORIES.map(category => {
-          const done = status[category.key];
-          return (
-            <View key={category.key} style={styles.categoryItem}>
-              <View
-                style={[
-                  styles.categoryIcon,
-                  done ? styles.categoryIconDone : styles.categoryIconPending,
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={done ? 'check' : category.icon}
-                  size={18}
-                  color={done ? COLORS.white : COLORS.textTertiary}
-                />
-              </View>
-              <AppText
-                style={[
-                  styles.categoryLabel,
-                  done && styles.categoryLabelDone,
-                ]}
-              >
-                {t(category.labelKey, { defaultValue: category.key })}
-              </AppText>
+      <View style={styles.body}>
+        {/* Trophy cup */}
+        <View style={styles.cupBlock}>
+          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+            <View
+              style={[
+                styles.cupBadge,
+                hasTier
+                  ? { backgroundColor: tierCfg!.ringColor }
+                  : styles.cupBadgeNone,
+              ]}
+            >
+              <MaterialCommunityIcons
+                name={hasTier ? 'trophy' : 'trophy-outline'}
+                size={40}
+                color={hasTier ? tierCfg!.color : COLORS.textTertiary}
+              />
             </View>
-          );
-        })}
+          </Animated.View>
+
+          {hasTier ? (
+            <AppText style={[styles.tierLabel, { color: tierCfg!.color }]}>
+              {t(tierCfg!.labelKey)}
+            </AppText>
+          ) : (
+            <AppText style={styles.emptyText}>
+              {t('profile.dailyTrophy.empty', {
+                defaultValue: 'Log at least 2 categories today to earn the bronze cup!',
+              })}
+            </AppText>
+          )}
+
+          {isComplete && (
+            <AppText style={styles.completeText}>
+              {t('profile.dailyTrophy.complete', {
+                defaultValue: 'Tuyệt vời! Hoàn thành hôm nay 🎉',
+              })}
+            </AppText>
+          )}
+        </View>
+
+        {/* Category breakdown */}
+        <View style={styles.categoryRow}>
+          {CATEGORIES.map(cat => {
+            const done = status[cat.key];
+            return (
+              <View key={cat.key} style={styles.categoryItem}>
+                <View
+                  style={[
+                    styles.categoryBadge,
+                    done ? styles.categoryBadgeDone : styles.categoryBadgePending,
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={done ? 'check-bold' : cat.icon}
+                    size={20}
+                    color={done ? COLORS.white : COLORS.textTertiary}
+                  />
+                </View>
+                <AppText
+                  style={[
+                    styles.categoryLabel,
+                    done && styles.categoryLabelDone,
+                  ]}
+                >
+                  {t(cat.labelKey, { defaultValue: cat.key })}
+                </AppText>
+              </View>
+            );
+          })}
+        </View>
       </View>
     </View>
   );
@@ -133,44 +196,60 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.surfaceRaised,
     borderRadius: BORDER_RADIUS.card,
-    padding: SPACING.md,
+    overflow: 'hidden',
     shadowColor: COLORS.shadowBase,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.09,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  headerRow: {
-    marginBottom: SPACING.sm,
+  headerBand: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
   },
   title: {
     fontSize: FONT_SIZES.sm,
     fontWeight: '700',
     color: COLORS.text,
+    marginBottom: SPACING.xxs,
   },
-  subtitle: {
+  progressPillWrapper: {
+    flexDirection: 'row',
+  },
+  progressPill: {
+    borderRadius: 999,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 3,
+  },
+  progressPillText: {
     fontSize: FONT_SIZES.xs,
-    color: COLORS.textSecondary,
-    marginTop: 2,
+    fontWeight: '600',
+  },
+  body: {
+    paddingHorizontal: SPACING.md,
+    paddingBottom: SPACING.md,
+    paddingTop: SPACING.sm,
   },
   cupBlock: {
     alignItems: 'center',
-    paddingVertical: SPACING.xs,
+    paddingVertical: SPACING.sm,
   },
   cupBadge: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.xs,
   },
-  cupBadgeEmpty: {
+  cupBadgeNone: {
     backgroundColor: COLORS.primaryMuted,
   },
   tierLabel: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.md,
+    fontWeight: '800',
+    marginBottom: SPACING.xxs,
   },
   emptyText: {
     fontSize: FONT_SIZES.xs,
@@ -178,29 +257,38 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: SPACING.sm,
   },
+  completeText: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.primary,
+    fontWeight: '600',
+    marginTop: SPACING.xxs,
+  },
   categoryRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: SPACING.sm,
+    paddingTop: SPACING.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.primaryMuted,
   },
   categoryItem: {
     alignItems: 'center',
     flex: 1,
   },
-  categoryIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  categoryBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: SPACING.xs,
+    marginBottom: SPACING.xxs,
   },
-  categoryIconDone: {
+  categoryBadgeDone: {
     backgroundColor: COLORS.primary,
   },
-  categoryIconPending: {
+  categoryBadgePending: {
     backgroundColor: COLORS.primaryMuted,
-    opacity: 0.7,
+    opacity: 0.65,
   },
   categoryLabel: {
     fontSize: 11,
