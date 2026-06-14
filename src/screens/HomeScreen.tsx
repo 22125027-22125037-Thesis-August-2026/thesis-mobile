@@ -10,9 +10,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Animated,
   Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   Pressable,
   RefreshControl,
   ScrollView,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import {
@@ -25,6 +28,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components';
+import { useTourTarget } from '@/components/tour';
 import {
   FindTherapistCta,
   LowMoodPromptSheet,
@@ -33,7 +37,9 @@ import {
   MoodCheckInCard,
 } from '@/components/home';
 import { MoodTag } from '@/constants';
+import { TOUR_TARGETS, TourTargetKey } from '@/constants/tour';
 import { AuthContext } from '@/context/AuthContext';
+import { useTour } from '@/context/TourContext';
 import { useHomeDashboardData } from '@/hooks/useHomeDashboardData';
 import { COLORS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
@@ -96,6 +102,67 @@ const HomeScreen: React.FC = () => {
   const dashboard = useHomeDashboardData(userInfo?.profileId);
   const [lowMoodVisible, setLowMoodVisible] = useState(false);
 
+  // ─── Tour coach-mark ────────────────────────────────────────────────────────
+  const { height: windowHeight } = useWindowDimensions();
+  const { start: startTour, registerScroller } = useTour();
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollYRef = useRef(0);
+  const hasAutoStartedRef = useRef(false);
+
+  const moodTarget = useTourTarget(TOUR_TARGETS.mood);
+  const dashboardsTarget = useTourTarget(TOUR_TARGETS.dashboards);
+  const meditationTarget = useTourTarget(TOUR_TARGETS.meditation);
+  const companionTarget = useTourTarget(TOUR_TARGETS.companion);
+  const findTherapistTarget = useTourTarget(TOUR_TARGETS.findTherapist);
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>): void => {
+    scrollYRef.current = e.nativeEvent.contentOffset.y;
+  };
+
+  // Cuộn một target bất kỳ (kể cả thẻ con trong khu theo dõi) vào tầm nhìn
+  // trước khi tour đo vị trí. Dùng hàm measure do context cung cấp nên không
+  // cần giữ ref của từng target tại đây.
+  useEffect(() => {
+    const scrollIntoView = async (
+      _key: TourTargetKey,
+      measure?: () => Promise<{ y: number } | null>,
+    ): Promise<void> => {
+      if (!measure) {
+        return;
+      }
+      const rect = await measure();
+      if (!rect) {
+        return;
+      }
+      const desiredY = windowHeight * 0.26;
+      const delta = rect.y - desiredY;
+      if (Math.abs(delta) < 8) {
+        return;
+      }
+      const newOffset = Math.max(0, scrollYRef.current + delta);
+      scrollRef.current?.scrollTo({ y: newOffset, animated: true });
+    };
+
+    registerScroller(scrollIntoView);
+    return () => registerScroller(null);
+  }, [registerScroller, windowHeight]);
+
+  // Tự bật tour 1 lần cho người dùng teen mới (start() tự kiểm tra cờ đã xem).
+  useEffect(() => {
+    if (hasAutoStartedRef.current) {
+      return;
+    }
+    const role = userInfo?.role;
+    if (role && role !== 'TEEN') {
+      return;
+    }
+    hasAutoStartedRef.current = true;
+    const timer = setTimeout(() => {
+      void startTour();
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [startTour, userInfo?.role]);
+
   useFocusEffect(
     useCallback(() => {
       void dashboard.refetch();
@@ -140,6 +207,8 @@ const HomeScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
+        ref={scrollRef}
+        onScroll={handleScroll}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         refreshControl={
@@ -193,29 +262,56 @@ const HomeScreen: React.FC = () => {
         </View>
 
         {/* ===== MOOD CHECK-IN — overlaps hero ===== */}
-        <View style={styles.moodOverlap}>
+        <View
+          ref={moodTarget.ref}
+          onLayout={moodTarget.onLayout}
+          collapsable={false}
+          style={styles.moodOverlap}
+        >
           <MoodCheckInCard
             onMoodSaved={saved => void handleMoodSaved(saved)}
           />
         </View>
 
         {/* ===== MAIN CONTENT ===== */}
-        <View style={styles.paddedContent}>
+        <View
+          ref={dashboardsTarget.ref}
+          onLayout={dashboardsTarget.onLayout}
+          collapsable={false}
+          style={styles.paddedContent}
+        >
           <MiniDashboardsSection data={dashboard} />
         </View>
 
-        <MeditationCarousel />
+        <View
+          ref={meditationTarget.ref}
+          onLayout={meditationTarget.onLayout}
+          collapsable={false}
+        >
+          <MeditationCarousel />
+        </View>
 
         <View style={styles.paddedContent}>
           {/* AI COMPANION */}
-          <View style={styles.companionSection}>
+          <View
+            ref={companionTarget.ref}
+            onLayout={companionTarget.onLayout}
+            collapsable={false}
+            style={styles.companionSection}
+          >
             <AppText style={styles.sectionTitle}>
               {t('home.overview.aiChatbotTitle')}
             </AppText>
             <CompanionCard onPress={handleNavigateChatbot} />
           </View>
 
-          <FindTherapistCta />
+          <View
+            ref={findTherapistTarget.ref}
+            onLayout={findTherapistTarget.onLayout}
+            collapsable={false}
+          >
+            <FindTherapistCta />
+          </View>
 
           <View style={styles.bottomSpacer} />
         </View>

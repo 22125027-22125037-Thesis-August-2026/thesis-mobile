@@ -493,6 +493,79 @@
       }
     }
   },
+  "tour": {
+    "next": "Next",
+    "skip": "Skip",
+    "done": "Done",
+    "replayMenuTitle": "Replay the guide",
+    "replayMenuSub": "Run the quick tour for new users again",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to uMatter! 👋",
+        "body": "Let's take a quick tour of the main features. It takes less than a minute."
+      },
+      "mood": {
+        "title": "Log how you feel each day",
+        "body": "Tap to check in your mood. Every entry helps you understand yourself and keep your streak going."
+      },
+      "dashboards": {
+        "title": "Track your wellbeing",
+        "body": "Sleep, steps, breathing, journal, nutrition and your treasure box — all in one place."
+      },
+      "treasure": {
+        "title": "Treasure Box",
+        "body": "Keep photos, notes and the things that comfort you — open it whenever you need a lift."
+      },
+      "steps": {
+        "title": "Daily steps",
+        "body": "Automatically count your steps, set an activity goal and track your progress for a healthier body."
+      },
+      "breathing": {
+        "title": "Breathing exercises",
+        "body": "Relax quickly with guided breathing — helps you calm down when stressed or anxious."
+      },
+      "nutrition": {
+        "title": "Nutrition & water",
+        "body": "Log your meals and water intake each day to build healthy eating habits."
+      },
+      "support": {
+        "title": "Find urgent support",
+        "body": "When you need help fast, quickly reach hotlines and mental health resources here."
+      },
+      "meditation": {
+        "title": "Relax & meditate",
+        "body": "A collection of meditations and calming sounds to help you rest and rebalance."
+      },
+      "companion": {
+        "title": "Bạn Tâm Giao is always here",
+        "body": "An empathetic AI companion, ready to chat 24/7 — no judgment, no pressure."
+      },
+      "findTherapist": {
+        "title": "Connect with a therapist",
+        "body": "When you need deeper support, find and book a verified professional right here."
+      },
+      "tabHome": {
+        "title": "Home",
+        "body": "Come back here anytime to see an overview of your day."
+      },
+      "tabAi": {
+        "title": "Chat with AI",
+        "body": "Open Bạn Tâm Giao to talk or get gentle advice."
+      },
+      "tabTherapist": {
+        "title": "Therapists",
+        "body": "Find a therapist and book a video or chat session."
+      },
+      "tabChat": {
+        "title": "Messages",
+        "body": "Chat with your friends and therapists here."
+      },
+      "tabProfile": {
+        "title": "Your profile",
+        "body": "View achievements, edit your profile, and replay this guide anytime."
+      }
+    }
+  },
   "profileEdit": {
     "headerTitle": "Edit profile",
     "fullNameLabel": "Full name",

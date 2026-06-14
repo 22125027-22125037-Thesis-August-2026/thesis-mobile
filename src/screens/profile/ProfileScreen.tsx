@@ -21,6 +21,7 @@ import {
   TrophyShowcase,
 } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
+import { useTour } from '@/context/TourContext';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '@/theme';
@@ -40,6 +41,7 @@ const ProfileScreen: React.FC = () => {
   const authContext = useContext(AuthContext);
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { start: startTour } = useTour();
   const [longestStreak, setLongestStreak] = useState<number>(0);
   const [trackingStatus, setTrackingStatus] = useState<DailyTrackingStatus>({
     count: 0,
@@ -134,6 +136,14 @@ const ProfileScreen: React.FC = () => {
   const wip = () =>
     Alert.alert('Sắp ra mắt', 'Tính năng này đang được phát triển 💚');
 
+  // Điều hướng về Home rồi chạy lại tour coach-mark từ đầu (force = bỏ qua cờ đã xem).
+  const handleReplayTour = () => {
+    navigation.navigate('MainTabs', { screen: 'HomeTab' });
+    setTimeout(() => {
+      void startTour(true);
+    }, 450);
+  };
+
   const accountMenuItems: MenuItem[] = [
     {
       icon: 'shield-check-outline',
@@ -156,6 +166,12 @@ const ProfileScreen: React.FC = () => {
   ];
 
   const supportMenuItems: MenuItem[] = [
+    {
+      icon: 'compass-outline',
+      title: t('tour.replayMenuTitle'),
+      subtitle: t('tour.replayMenuSub'),
+      onPress: handleReplayTour,
+    },
     {
       icon: 'lifebuoy',
       title: t('profile.menuHelp'),

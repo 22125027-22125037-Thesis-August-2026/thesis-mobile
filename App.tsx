@@ -21,7 +21,9 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 });
 
 import { AppText } from '@/components';
+import { TourOverlay } from '@/components/tour';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
+import { TourProvider } from '@/context/TourContext';
 import { listenForForegroundNotifications } from '@/services/notifications';
 import { rescheduleFocusModeIfNeeded } from '@/utils/focusModeNotifications';
 import {
@@ -374,7 +376,10 @@ const AppNav: React.FC = () => {
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <AppNav />
+      <TourProvider>
+        <AppNav />
+        <TourOverlay />
+      </TourProvider>
     </AuthProvider>
   );
 };

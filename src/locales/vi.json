@@ -493,6 +493,79 @@
       }
     }
   },
+  "tour": {
+    "next": "Tiếp",
+    "skip": "Bỏ qua",
+    "done": "Hoàn tất",
+    "replayMenuTitle": "Xem lại hướng dẫn",
+    "replayMenuSub": "Chạy lại hướng dẫn nhanh cho người mới",
+    "steps": {
+      "welcome": {
+        "title": "Chào mừng đến với uMatter! 👋",
+        "body": "Cùng dạo nhanh một vòng để bạn biết các tính năng chính. Chỉ mất chưa đến một phút thôi."
+      },
+      "mood": {
+        "title": "Ghi lại cảm xúc mỗi ngày",
+        "body": "Chạm để check-in tâm trạng. Mỗi lần ghi giúp bạn hiểu bản thân và giữ chuỗi ngày đều đặn."
+      },
+      "dashboards": {
+        "title": "Theo dõi sức khỏe của bạn",
+        "body": "Giấc ngủ, bước chân, hít thở, nhật ký, dinh dưỡng và hộp kho báu — tất cả gọn trong một nơi."
+      },
+      "treasure": {
+        "title": "Hộp kho báu",
+        "body": "Cất giữ ảnh, lời nhắn và những điều khiến bạn thấy ấm lòng — mở ra mỗi khi cần được an ủi."
+      },
+      "steps": {
+        "title": "Bước chân mỗi ngày",
+        "body": "Tự động đếm số bước, đặt mục tiêu vận động và theo dõi tiến độ vì một cơ thể khỏe mạnh hơn."
+      },
+      "breathing": {
+        "title": "Bài tập hít thở",
+        "body": "Thư giãn nhanh với bài thở có hướng dẫn — giúp bạn bình tĩnh lại khi căng thẳng hay lo âu."
+      },
+      "nutrition": {
+        "title": "Dinh dưỡng & nước uống",
+        "body": "Ghi lại bữa ăn và lượng nước mỗi ngày để giữ thói quen ăn uống lành mạnh."
+      },
+      "support": {
+        "title": "Tìm hỗ trợ khẩn cấp",
+        "body": "Khi cần giúp đỡ gấp, truy cập nhanh các đường dây nóng và nguồn hỗ trợ tâm lý tại đây."
+      },
+      "meditation": {
+        "title": "Thư giãn & thiền",
+        "body": "Bộ sưu tập bài thiền và âm thanh thư giãn giúp bạn nghỉ ngơi và lấy lại cân bằng."
+      },
+      "companion": {
+        "title": "Bạn Tâm Giao luôn lắng nghe",
+        "body": "Trợ lý AI thấu cảm, trò chuyện 24/7 — không phán xét, không áp lực."
+      },
+      "findTherapist": {
+        "title": "Kết nối chuyên gia tâm lý",
+        "body": "Khi cần hỗ trợ sâu hơn, tìm và đặt lịch với chuyên gia được xác minh ngay tại đây."
+      },
+      "tabHome": {
+        "title": "Trang chủ",
+        "body": "Quay về đây bất cứ lúc nào để xem tổng quan ngày của bạn."
+      },
+      "tabAi": {
+        "title": "Trò chuyện với AI",
+        "body": "Mở Bạn Tâm Giao để tâm sự hoặc xin lời khuyên nhẹ nhàng."
+      },
+      "tabTherapist": {
+        "title": "Chuyên gia",
+        "body": "Tìm chuyên gia, đặt lịch tư vấn qua video hoặc chat."
+      },
+      "tabChat": {
+        "title": "Tin nhắn",
+        "body": "Trò chuyện với bạn bè và chuyên gia của bạn ở đây."
+      },
+      "tabProfile": {
+        "title": "Hồ sơ của bạn",
+        "body": "Xem thành tích, chỉnh sửa hồ sơ và xem lại hướng dẫn này bất cứ lúc nào."
+      }
+    }
+  },
   "profileEdit": {
     "headerTitle": "Chỉnh sửa hồ sơ",
     "fullNameLabel": "Họ và tên",

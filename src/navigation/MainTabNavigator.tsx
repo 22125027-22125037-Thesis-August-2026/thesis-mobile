@@ -1,10 +1,19 @@
 import React, { useCallback, useRef } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  BottomTabBarButtonProps,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import { BackHandler, Platform, ToastAndroid } from 'react-native';
+import {
+  BackHandler,
+  Platform,
+  Pressable,
+  StyleSheet,
+  ToastAndroid,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -13,6 +22,8 @@ import {
   MessageListScreen,
   ProfileScreen,
 } from '@/screens';
+import { useTourTarget } from '@/components/tour';
+import { TOUR_TARGETS, TourTargetKey } from '@/constants/tour';
 import { TherapistBookingLandingScreen } from '@/screens/booking';
 import { useSeedTrackingCache } from '@/hooks';
 import { RootStackParamList } from '@/navigation';
@@ -27,6 +38,43 @@ export type MainTabParamList = {
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+// Nút tab tự đăng ký làm "target" cho tour coach-mark (để overlay đo được vị trí
+// và khoét sáng đúng tab), đồng thời giữ nguyên hành vi nhấn mặc định.
+const TourTabBarButton: React.FC<
+  BottomTabBarButtonProps & { tourKey: TourTargetKey }
+> = ({ tourKey, children, onPress, onLongPress, accessibilityState, accessibilityLabel, testID }) => {
+  const { ref, onLayout } = useTourTarget(tourKey);
+  return (
+    <Pressable
+      ref={ref}
+      onLayout={onLayout}
+      collapsable={false}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      accessibilityState={accessibilityState}
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
+      android_ripple={{ borderless: true }}
+      style={tabStyles.tabButton}
+    >
+      {children}
+    </Pressable>
+  );
+};
+
+const tabStyles = StyleSheet.create({
+  tabButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+const makeTabBarButton =
+  (tourKey: TourTargetKey) =>
+  (props: BottomTabBarButtonProps): React.ReactNode =>
+    <TourTabBarButton {...props} tourKey={tourKey} />;
 const TAB_ROUTE_NAMES: Array<keyof MainTabParamList> = [
   'HomeTab',
   'AIChatTab',
@@ -123,6 +171,7 @@ const MainTabNavigator: React.FC = () => {
         name="HomeTab"
         component={HomeScreen}
         options={{
+          tabBarButton: makeTabBarButton(TOUR_TARGETS.tabHome),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="home-outline"
@@ -138,6 +187,7 @@ const MainTabNavigator: React.FC = () => {
         name="AIChatTab"
         component={TherapyOverviewScreen}
         options={{
+          tabBarButton: makeTabBarButton(TOUR_TARGETS.tabAi),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="robot-outline"
@@ -153,6 +203,7 @@ const MainTabNavigator: React.FC = () => {
         name="TherapistTab"
         component={TherapistBookingLandingScreen}
         options={{
+          tabBarButton: makeTabBarButton(TOUR_TARGETS.tabTherapist),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="hospital-box-outline"
@@ -168,6 +219,7 @@ const MainTabNavigator: React.FC = () => {
         name="ChatRoomTab"
         component={MessageListScreen}
         options={{
+          tabBarButton: makeTabBarButton(TOUR_TARGETS.tabChat),
           tabBarIcon: ({ color, size }) => (
             <Feather name="message-square" size={size} color={color} />
           ),
@@ -179,6 +231,7 @@ const MainTabNavigator: React.FC = () => {
         name="ProfileTab"
         component={ProfileScreen}
         options={{
+          tabBarButton: makeTabBarButton(TOUR_TARGETS.tabProfile),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="account-outline"
