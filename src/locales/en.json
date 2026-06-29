@@ -564,6 +564,18 @@
       "tabProfile": {
         "title": "Your profile",
         "body": "View achievements, edit your profile, and replay this guide anytime."
+      },
+      "streakTrophy": {
+        "title": "Streak trophy 🔥",
+        "body": "Journal every day to keep your streak flame alive. Reach 7, 14 and 30 days in a row to unlock the Bronze, Silver and Gold cups."
+      },
+      "dailyTrophy": {
+        "title": "Daily trophy 🏆",
+        "body": "The more categories you complete each day (sleep, nutrition, journal, steps), the higher your cup: 2 for Bronze, 3 for Silver, all 4 for Gold."
+      },
+      "focusMode": {
+        "title": "Focus mode",
+        "body": "Turn it on to mute notifications during quiet hours, so you can rest and focus without interruptions."
       }
     }
   },

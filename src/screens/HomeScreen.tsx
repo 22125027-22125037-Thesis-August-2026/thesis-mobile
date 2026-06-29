@@ -120,31 +120,37 @@ const HomeScreen: React.FC = () => {
 
   // Cuộn một target bất kỳ (kể cả thẻ con trong khu theo dõi) vào tầm nhìn
   // trước khi tour đo vị trí. Dùng hàm measure do context cung cấp nên không
-  // cần giữ ref của từng target tại đây.
-  useEffect(() => {
-    const scrollIntoView = async (
-      _key: TourTargetKey,
-      measure?: () => Promise<{ y: number } | null>,
-    ): Promise<void> => {
-      if (!measure) {
-        return;
-      }
-      const rect = await measure();
-      if (!rect) {
-        return;
-      }
-      const desiredY = windowHeight * 0.26;
-      const delta = rect.y - desiredY;
-      if (Math.abs(delta) < 8) {
-        return;
-      }
-      const newOffset = Math.max(0, scrollYRef.current + delta);
-      scrollRef.current?.scrollTo({ y: newOffset, animated: true });
-    };
+  // cần giữ ref của từng target tại đây. Đăng ký theo focus để màn đang hiển
+  // thị sở hữu scroller (tránh tranh chấp với màn Hồ sơ khi tour chuyển tab).
+  useFocusEffect(
+    useCallback(() => {
+      const scrollIntoView = async (
+        _key: TourTargetKey,
+        measure?: () => Promise<{ y: number } | null>,
+      ): Promise<void> => {
+        if (!measure) {
+          return;
+        }
+        const rect = await measure();
+        if (!rect) {
+          return;
+        }
+        const desiredY = windowHeight * 0.26;
+        const delta = rect.y - desiredY;
+        if (Math.abs(delta) < 8) {
+          return;
+        }
+        const newOffset = Math.max(0, scrollYRef.current + delta);
+        // Cuộn tức thì (không animated) để đo vị trí chính xác ngay, tránh
+        // trường hợp animation chưa dừng làm spotlight lệch.
+        scrollRef.current?.scrollTo({ y: newOffset, animated: false });
+        scrollYRef.current = newOffset;
+      };
 
-    registerScroller(scrollIntoView);
-    return () => registerScroller(null);
-  }, [registerScroller, windowHeight]);
+      registerScroller(scrollIntoView);
+      return () => registerScroller(null);
+    }, [registerScroller, windowHeight]),
+  );
 
   // Tự bật tour 1 lần cho người dùng teen mới (start() tự kiểm tra cờ đã xem).
   useEffect(() => {

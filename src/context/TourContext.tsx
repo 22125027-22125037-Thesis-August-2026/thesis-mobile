@@ -12,6 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   TOUR_SEEN_KEY,
   TOUR_STEPS,
+  TourNavTab,
   TourStep,
   TourTargetKey,
 } from '@/constants/tour';
@@ -28,6 +29,7 @@ type ScrollIntoViewFn = (
   key: TourTargetKey,
   measure: MeasureFn | undefined,
 ) => Promise<void> | void;
+type NavigateFn = (tab: TourNavTab) => void;
 
 interface TourContextValue {
   isActive: boolean;
@@ -41,6 +43,7 @@ interface TourContextValue {
   registerTarget: (key: TourTargetKey, measure: MeasureFn) => void;
   unregisterTarget: (key: TourTargetKey) => void;
   registerScroller: (fn: ScrollIntoViewFn | null) => void;
+  registerNavigator: (fn: NavigateFn | null) => void;
 }
 
 const TourContext = createContext<TourContextValue | null>(null);
@@ -54,6 +57,7 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
 
   const targetsRef = useRef<Map<TourTargetKey, MeasureFn>>(new Map());
   const scrollerRef = useRef<ScrollIntoViewFn | null>(null);
+  const navigatorRef = useRef<NavigateFn | null>(null);
   // Bảo vệ chống race khi nhiều applyStep chạy chồng nhau.
   const applyTokenRef = useRef(0);
 
@@ -67,6 +71,10 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
 
   const registerScroller = useCallback((fn: ScrollIntoViewFn | null) => {
     scrollerRef.current = fn;
+  }, []);
+
+  const registerNavigator = useCallback((fn: NavigateFn | null) => {
+    navigatorRef.current = fn;
   }, []);
 
   const applyStep = useCallback(async (index: number) => {
@@ -84,6 +92,16 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
 
     // Ẩn spotlight cũ trong lúc cuộn/đo để tránh nhấp nháy lệch vị trí.
     setTargetRect(null);
+
+    // Chuyển sang tab khác trước (vd các bước ở màn Hồ sơ) và đợi màn hình đó
+    // mount + đăng ký target/scroller xong.
+    if (step.navigateTab && navigatorRef.current) {
+      navigatorRef.current(step.navigateTab);
+      await wait(550);
+      if (token !== applyTokenRef.current) {
+        return;
+      }
+    }
 
     const measure = targetsRef.current.get(step.target);
 
@@ -163,6 +181,7 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
       registerTarget,
       unregisterTarget,
       registerScroller,
+      registerNavigator,
     }),
     [
       isActive,
@@ -174,6 +193,7 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
       registerTarget,
       unregisterTarget,
       registerScroller,
+      registerNavigator,
     ],
   );
 

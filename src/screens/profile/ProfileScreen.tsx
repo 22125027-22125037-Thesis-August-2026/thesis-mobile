@@ -1,12 +1,15 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Alert,
   Modal,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   ScrollView,
   Pressable,
   RefreshControl,
+  useWindowDimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -28,6 +31,8 @@ import {
 } from '@/constants';
 import { AuthContext } from '@/context/AuthContext';
 import { useTour } from '@/context/TourContext';
+import { useTourTarget } from '@/components/tour';
+import { TOUR_TARGETS, TourTargetKey } from '@/constants/tour';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '@/theme';
@@ -45,7 +50,20 @@ const ProfileScreen: React.FC = () => {
   const authContext = useContext(AuthContext);
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { start: startTour } = useTour();
+  const { start: startTour, registerScroller } = useTour();
+  const { height: windowHeight } = useWindowDimensions();
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollYRef = useRef(0);
+
+  // Target cho tour (được giới thiệu sau khi tour chuyển sang tab Hồ sơ).
+  const streakTrophyTarget = useTourTarget(TOUR_TARGETS.streakTrophy);
+  const dailyTrophyTarget = useTourTarget(TOUR_TARGETS.dailyTrophy);
+  const focusModeTarget = useTourTarget(TOUR_TARGETS.focusMode);
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>): void => {
+    scrollYRef.current = e.nativeEvent.contentOffset.y;
+  };
+
   const [longestStreak, setLongestStreak] = useState<number>(0);
   const [trackingStatus, setTrackingStatus] = useState<DailyTrackingStatus>({
     count: 0,
@@ -92,6 +110,38 @@ const ProfileScreen: React.FC = () => {
     useCallback(() => {
       void fetchAchievements();
     }, [fetchAchievements]),
+  );
+
+  // Khi tab Hồ sơ được focus, đăng ký scroller cho tour (màn đang focus sở hữu
+  // scroller) để các bước cúp & chế độ tập trung cuộn được vào tầm nhìn.
+  useFocusEffect(
+    useCallback(() => {
+      const scrollIntoView = async (
+        _key: TourTargetKey,
+        measure?: () => Promise<{ y: number } | null>,
+      ): Promise<void> => {
+        if (!measure) {
+          return;
+        }
+        const rect = await measure();
+        if (!rect) {
+          return;
+        }
+        const desiredY = windowHeight * 0.26;
+        const delta = rect.y - desiredY;
+        if (Math.abs(delta) < 8) {
+          return;
+        }
+        const newOffset = Math.max(0, scrollYRef.current + delta);
+        // Cuộn tức thì (không animated) để đo vị trí chính xác ngay, tránh
+        // trường hợp animation chưa dừng làm spotlight lệch.
+        scrollRef.current?.scrollTo({ y: newOffset, animated: false });
+        scrollYRef.current = newOffset;
+      };
+
+      registerScroller(scrollIntoView);
+      return () => registerScroller(null);
+    }, [registerScroller, windowHeight]),
   );
 
   const handleRefresh = useCallback(async () => {
@@ -220,6 +270,9 @@ const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
+        ref={scrollRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -265,15 +318,32 @@ const ProfileScreen: React.FC = () => {
           <AppText style={styles.sectionLabel}>
             {t('profile.sectionAchievements', { defaultValue: 'Achievements' })}
           </AppText>
-          <TrophyShowcase longestCount={longestStreak} />
+          <View
+            ref={streakTrophyTarget.ref}
+            onLayout={streakTrophyTarget.onLayout}
+            collapsable={false}
+          >
+            <TrophyShowcase longestCount={longestStreak} />
+          </View>
           <View style={styles.trophySpacer} />
-          <DailyTrackingTrophy status={trackingStatus} />
+          <View
+            ref={dailyTrophyTarget.ref}
+            onLayout={dailyTrophyTarget.onLayout}
+            collapsable={false}
+          >
+            <DailyTrackingTrophy status={trackingStatus} />
+          </View>
         </View>
 
         {/* ===== SETTINGS SECTION ===== */}
         <View style={styles.sectionBlock}>
           <AppText style={styles.sectionLabel}>{t('profile.sectionSettings')}</AppText>
-          <View style={styles.menuCard}>
+          <View
+            ref={focusModeTarget.ref}
+            onLayout={focusModeTarget.onLayout}
+            collapsable={false}
+            style={styles.menuCard}
+          >
             <FocusModeToggle variant="row" />
           </View>
         </View>

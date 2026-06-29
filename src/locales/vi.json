@@ -564,6 +564,18 @@
       "tabProfile": {
         "title": "Hồ sơ của bạn",
         "body": "Xem thành tích, chỉnh sửa hồ sơ và xem lại hướng dẫn này bất cứ lúc nào."
+      },
+      "streakTrophy": {
+        "title": "Cúp chuỗi ngày 🔥",
+        "body": "Ghi nhật ký đều mỗi ngày để giữ ngọn lửa chuỗi. Đạt 7, 14, 30 ngày liên tiếp để mở khoá cúp Đồng, Bạc, Vàng."
+      },
+      "dailyTrophy": {
+        "title": "Cúp hằng ngày 🏆",
+        "body": "Mỗi ngày hoàn thành càng nhiều hạng mục (ngủ, ăn uống, nhật ký, bước chân) thì cúp càng lên hạng: 2 mục Đồng, 3 mục Bạc, đủ 4 mục Vàng."
+      },
+      "focusMode": {
+        "title": "Chế độ tập trung",
+        "body": "Bật để tạm tắt thông báo trong khung giờ yên tĩnh, giúp bạn nghỉ ngơi và tập trung mà không bị làm phiền."
       }
     }
   },
@@ -826,12 +838,12 @@
       "eating": "Rối loạn ăn uống"
     },
     "communicationStyle": {
-      "listener": "Người lăng nghe",
+      "listener": "Người lắng nghe",
       "guide": "Người hướng dẫn",
       "combined": "Kết hợp cả hai"
     },
     "moodScales": {
-      "anxiety": "Lo lăn",
+      "anxiety": "Lo lắng",
       "lossInterest": "Mất hứng thú"
     },
     "form": {

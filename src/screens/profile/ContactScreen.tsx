@@ -7,10 +7,10 @@ import { AppText } from '@/components';
 import { COLORS, FONT_SIZES, SPACING } from '@/theme';
 
 const CHANNELS = [
-  { icon: 'email-outline',   label: 'Email',   value: 'hello@umatter.vn' },
-  { icon: 'phone-outline',   label: 'Hotline', value: '1900 1234' },
-  { icon: 'message-outline', label: 'Zalo',    value: 'uMatter Official' },
-  { icon: 'web',             label: 'Website', value: 'umatter.vn' },
+  { icon: 'email-outline',   label: 'Email',   value: 'apcsthesisteam@gmail.com' },
+  // { icon: 'phone-outline',   label: 'Hotline', value: '1900 1234' },
+  // { icon: 'message-outline', label: 'Zalo',    value: 'uMatter Official' },
+  // { icon: 'web',             label: 'Website', value: 'umatter.vn' },
 ];
 
 const ContactScreen: React.FC = () => {
@@ -69,12 +69,12 @@ const ContactScreen: React.FC = () => {
         ))}
 
         {/* Hours Callout */}
-        <View style={styles.hoursBox}>
+        {/* <View style={styles.hoursBox}>
           <AppText style={styles.hoursText}>
             Thời gian phản hồi: <AppText style={styles.hoursBold}>trong vòng 24 giờ</AppText>
             {'\n'}T2 – T6 · 8h00 – 18h00
           </AppText>
-        </View>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );

@@ -22,7 +22,19 @@ export const TOUR_TARGETS = {
   tabTherapist: 'tab.therapist',
   tabChat: 'tab.chat',
   tabProfile: 'tab.profile',
+  // Các tính năng trong màn Hồ sơ
+  streakTrophy: 'profile.streakTrophy',
+  dailyTrophy: 'profile.dailyTrophy',
+  focusMode: 'profile.focusMode',
 } as const;
+
+// Tên các tab dùng cho điều hướng trong tour (khớp với MainTabParamList).
+export type TourNavTab =
+  | 'HomeTab'
+  | 'AIChatTab'
+  | 'TherapistTab'
+  | 'ChatRoomTab'
+  | 'ProfileTab';
 
 export type TourTargetKey = (typeof TOUR_TARGETS)[keyof typeof TOUR_TARGETS];
 
@@ -35,6 +47,8 @@ export interface TourStep {
   placement: TourPlacement;
   // có cần cuộn target vào tầm nhìn trước khi đo không (các thẻ trong Home)
   scrollIntoView?: boolean;
+  // chuyển sang tab này trước khi đo (dùng cho các bước nằm ở màn khác)
+  navigateTab?: TourNavTab;
 }
 
 // Khoá i18n: tour.steps.<id>.{title,body}
@@ -56,6 +70,16 @@ export const TOUR_STEPS: TourStep[] = [
   { id: 'tabTherapist', target: TOUR_TARGETS.tabTherapist, placement: 'above' },
   { id: 'tabChat', target: TOUR_TARGETS.tabChat, placement: 'above' },
   { id: 'tabProfile', target: TOUR_TARGETS.tabProfile, placement: 'above' },
+  // Chuyển sang tab Hồ sơ và giới thiệu các tính năng tại đó
+  {
+    id: 'streakTrophy',
+    target: TOUR_TARGETS.streakTrophy,
+    placement: 'below',
+    scrollIntoView: true,
+    navigateTab: 'ProfileTab',
+  },
+  { id: 'dailyTrophy', target: TOUR_TARGETS.dailyTrophy, placement: 'below', scrollIntoView: true },
+  { id: 'focusMode', target: TOUR_TARGETS.focusMode, placement: 'below', scrollIntoView: true },
 ];
 
 export const TOUR_SEEN_KEY = 'hasSeenAppTour';

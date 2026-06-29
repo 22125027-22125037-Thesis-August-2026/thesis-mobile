@@ -8,10 +8,9 @@ import { COLORS, FONT_SIZES, SPACING } from '@/theme';
 
 const INFO_ROWS = [
   { label: 'Phiên bản',      value: '1.0.0' },
-  { label: 'Ngày phát hành', value: '15/05/2026' },
+  { label: 'Ngày phát hành', value: '01/07/2026' },
   { label: 'Nhà phát triển', value: 'uMatter Vietnam' },
-  { label: 'Website',        value: 'umatter.vn' },
-  { label: 'Email',          value: 'hello@umatter.vn' },
+  { label: 'Email',          value: 'apcsthesisteam@gmail.com' },
 ];
 
 const AboutScreen: React.FC = () => {

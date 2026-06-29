@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   BottomTabBarButtonProps,
   createBottomTabNavigator,
@@ -24,6 +24,7 @@ import {
 } from '@/screens';
 import { useTourTarget } from '@/components/tour';
 import { TOUR_TARGETS, TourTargetKey } from '@/constants/tour';
+import { useTour } from '@/context/TourContext';
 import { TherapistBookingLandingScreen } from '@/screens/booking';
 import { useSeedTrackingCache } from '@/hooks';
 import { RootStackParamList } from '@/navigation';
@@ -87,11 +88,20 @@ const MainTabNavigator: React.FC = () => {
   const { t } = useTranslation();
   const parentNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const lastBackPressRef = useRef<number | null>(null);
+  const { registerNavigator } = useTour();
 
   // Seed the popup cache with real server data once per day so celebration
   // sheets always show the correct trophy tier, independent of which tab the
   // user visits first.
   useSeedTrackingCache();
+
+  // Cho phép tour chuyển tab (vd sang Hồ sơ để giới thiệu cúp & chế độ tập trung).
+  useEffect(() => {
+    registerNavigator(tab =>
+      parentNavigation.navigate('MainTabs', { screen: tab }),
+    );
+    return () => registerNavigator(null);
+  }, [registerNavigator, parentNavigation]);
 
   const getActiveTabName = useCallback((): keyof MainTabParamList => {
     const parentState = parentNavigation.getState();
