@@ -316,6 +316,7 @@
       "confirmPasswordLabel": "Xác nhận mật khẩu",
       "confirmPasswordPlaceholder": "Xác nhận mật khẩu mới",
       "roleSectionTitle": "Bạn đăng ký với vai trò:",
+      "chooseAvatar": "Chọn ảnh đại diện",
       "agreePrefix": "Tôi đồng ý với ",
       "agreeTermsLink": "Điều khoản và Điều kiện",
       "alreadyHaveAccount": "Đã có tài khoản?",
@@ -735,6 +736,8 @@
     "logoutConfirmCancel": "Hủy",
     "logoutConfirmAction": "Đăng xuất",
     "errorLoadingProfile": "Lỗi tải hồ sơ",
+    "changeAvatarTitle": "Đổi ảnh đại diện",
+    "avatarUpdateError": "Không thể cập nhật ảnh đại diện. Vui lòng thử lại.",
     "greeting": "Chào bạn 💚",
     "sectionAchievements": "THÀNH TÍCH",
     "dailyTrophy": {

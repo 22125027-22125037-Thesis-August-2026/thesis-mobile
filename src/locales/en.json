@@ -316,6 +316,7 @@
       "confirmPasswordLabel": "Confirm password",
       "confirmPasswordPlaceholder": "Confirm new password",
       "roleSectionTitle": "Choose your role:",
+      "chooseAvatar": "Choose an avatar",
       "agreePrefix": "I agree to the ",
       "agreeTermsLink": "Terms and Conditions",
       "alreadyHaveAccount": "Already have an account?",
@@ -735,6 +736,8 @@
     "logoutConfirmCancel": "Cancel",
     "logoutConfirmAction": "Logout",
     "errorLoadingProfile": "Error loading profile",
+    "changeAvatarTitle": "Change avatar",
+    "avatarUpdateError": "Couldn't update avatar. Please try again.",
     "greeting": "Hey there 💚",
     "sectionAchievements": "ACHIEVEMENTS",
     "dailyTrophy": {

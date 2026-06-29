@@ -9,7 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Animated,
-  Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
@@ -27,7 +26,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 
-import { AppText } from '@/components';
+import { AppText, UserAvatar } from '@/components';
 import { useTourTarget } from '@/components/tour';
 import {
   FindTherapistCta,
@@ -201,7 +200,6 @@ const HomeScreen: React.FC = () => {
     year: 'numeric',
   });
 
-  const avatarUrl = userInfo?.avatarUrl ?? 'https://via.placeholder.com/80';
   const userName = userInfo?.fullName || 'Bạn';
 
   return (
@@ -245,10 +243,10 @@ const HomeScreen: React.FC = () => {
 
           {/* Greeting + avatar */}
           <View style={styles.profileSection}>
-            <Image
-              source={{ uri: avatarUrl }}
+            <UserAvatar
+              avatarUrl={userInfo?.avatarUrl}
+              size={56}
               style={styles.profileAvatar}
-              defaultSource={require('../assets/booking/placeholder.png')}
             />
             <View style={styles.profileInfo}>
               <AppText style={styles.greetingText}>

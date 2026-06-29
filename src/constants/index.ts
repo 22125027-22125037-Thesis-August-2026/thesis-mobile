@@ -1,3 +1,4 @@
+export * from './avatars';
 export * from './chat';
 export * from './diaryTags';
 export * from './emotions';

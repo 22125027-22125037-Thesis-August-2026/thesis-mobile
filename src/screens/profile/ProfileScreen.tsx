@@ -2,8 +2,8 @@ import React, { useCallback, useContext, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
-  Image,
   Alert,
+  Modal,
   ScrollView,
   Pressable,
   RefreshControl,
@@ -19,7 +19,13 @@ import {
   DailyTrackingTrophy,
   FocusModeToggle,
   TrophyShowcase,
+  UserAvatar,
 } from '@/components';
+import {
+  PRESET_AVATARS,
+  resolveAvatar,
+  toAvatarValue,
+} from '@/constants';
 import { AuthContext } from '@/context/AuthContext';
 import { useTour } from '@/context/TourContext';
 import Feather from 'react-native-vector-icons/Feather';
@@ -35,8 +41,6 @@ import {
 import { RootStackParamList } from '@/navigation';
 import { styles } from './ProfileScreen.styles';
 
-const PLACEHOLDER = require('../../assets/booking/placeholder.png');
-
 const ProfileScreen: React.FC = () => {
   const authContext = useContext(AuthContext);
   const { t } = useTranslation();
@@ -51,6 +55,8 @@ const ProfileScreen: React.FC = () => {
     steps: false,
   });
   const [refreshing, setRefreshing] = useState(false);
+  const [avatarModalVisible, setAvatarModalVisible] = useState(false);
+  const [savingAvatar, setSavingAvatar] = useState(false);
 
   const profileId = authContext?.userInfo?.profileId;
 
@@ -107,13 +113,26 @@ const ProfileScreen: React.FC = () => {
     );
   }
 
-  const { userInfo, logout } = authContext;
+  const { userInfo, logout, updateProfile } = authContext;
   const fullName = userInfo?.fullName || 'Bạn';
   const email = userInfo?.email ?? '';
   const role = userInfo?.role ?? '';
-  const avatarSource = userInfo?.avatarUrl
-    ? { uri: userInfo.avatarUrl }
-    : PLACEHOLDER;
+  const currentAvatarKey =
+    resolveAvatar(userInfo?.avatarUrl).type === 'preset'
+      ? userInfo?.avatarUrl?.split(':')[1]
+      : undefined;
+
+  const handleSelectAvatar = async (key: string) => {
+    setSavingAvatar(true);
+    try {
+      await updateProfile({ avatarUrl: toAvatarValue(key) });
+      setAvatarModalVisible(false);
+    } catch {
+      Alert.alert(t('profile.errorLoadingProfile'), t('profile.avatarUpdateError'));
+    } finally {
+      setSavingAvatar(false);
+    }
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -133,9 +152,6 @@ const ProfileScreen: React.FC = () => {
     onPress?: () => void;
   };
 
-  const wip = () =>
-    Alert.alert('Sắp ra mắt', 'Tính năng này đang được phát triển 💚');
-
   // Điều hướng về Home rồi chạy lại tour coach-mark từ đầu (force = bỏ qua cờ đã xem).
   const handleReplayTour = () => {
     navigation.navigate('MainTabs', { screen: 'HomeTab' });
@@ -143,27 +159,6 @@ const ProfileScreen: React.FC = () => {
       void startTour(true);
     }, 450);
   };
-
-  const accountMenuItems: MenuItem[] = [
-    {
-      icon: 'shield-check-outline',
-      title: t('profile.menuPrivacy'),
-      subtitle: t('profile.menuPrivacySub'),
-      onPress: wip,
-    },
-    {
-      icon: 'translate',
-      title: t('profile.menuLanguage'),
-      subtitle: 'Tiếng Việt',
-      onPress: wip,
-    },
-    {
-      icon: 'theme-light-dark',
-      title: t('profile.menuTheme'),
-      subtitle: t('profile.menuThemeSub'),
-      onPress: wip,
-    },
-  ];
 
   const supportMenuItems: MenuItem[] = [
     {
@@ -246,13 +241,15 @@ const ProfileScreen: React.FC = () => {
 
         {/* ===== AVATAR CARD ===== */}
         <View style={styles.avatarCard}>
-          <View style={styles.avatarWrapper}>
-            <Image
-              source={avatarSource}
-              style={styles.avatar}
-              defaultSource={PLACEHOLDER}
-            />
-          </View>
+          <Pressable
+            style={({ pressed }) => [styles.avatarWrapper, pressed && { opacity: 0.85 }]}
+            onPress={() => setAvatarModalVisible(true)}
+          >
+            <UserAvatar avatarUrl={userInfo?.avatarUrl} size={96} style={styles.avatar} />
+            <View style={styles.avatarEditBadge}>
+              <Feather name="edit-2" size={13} color={COLORS.white} />
+            </View>
+          </Pressable>
 
           <AppText style={styles.userName}>{fullName}</AppText>
           {!!email && <AppText style={styles.userEmail}>{email}</AppText>}
@@ -261,17 +258,6 @@ const ProfileScreen: React.FC = () => {
               <AppText style={styles.roleChipText}>🌱 {role}</AppText>
             </View>
           )}
-
-          {/* CTA */}
-          <View style={styles.ctaWrapper}>
-            <Pressable
-              style={({ pressed }) => [styles.ctaPill, pressed && { opacity: 0.85 }]}
-              onPress={() => navigation.navigate('ProfileEdit')}
-            >
-              <Feather name="edit-2" size={14} color={COLORS.white} />
-              <AppText style={styles.ctaPillText}>{t('profile.menuPersonalInfo')}</AppText>
-            </Pressable>
-          </View>
         </View>
 
         {/* ===== TROPHIES SECTION ===== */}
@@ -289,31 +275,6 @@ const ProfileScreen: React.FC = () => {
           <AppText style={styles.sectionLabel}>{t('profile.sectionSettings')}</AppText>
           <View style={styles.menuCard}>
             <FocusModeToggle variant="row" />
-            {accountMenuItems.map((item, index) => (
-              <Pressable
-                key={item.title}
-                style={({ pressed }) => [
-                  styles.menuRow,
-                  index === accountMenuItems.length - 1 && styles.menuRowLast,
-                  pressed && { opacity: 0.7 },
-                ]}
-                onPress={item.onPress}
-              >
-                <View style={styles.menuIconContainer}>
-                  <MaterialCommunityIcons name={item.icon} size={22} color={COLORS.primary} />
-                </View>
-                <View style={styles.menuTextBlock}>
-                  <AppText style={styles.menuTitle}>{item.title}</AppText>
-                  <AppText style={styles.menuSubtitle}>{item.subtitle}</AppText>
-                </View>
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={18}
-                  color={COLORS.textTertiary}
-                  style={styles.menuChevron}
-                />
-              </Pressable>
-            ))}
           </View>
         </View>
 
@@ -339,6 +300,44 @@ const ProfileScreen: React.FC = () => {
           <AppText style={styles.footerText}>{t('profile.appVersionFooter')}</AppText>
         </View>
       </ScrollView>
+
+      {/* ===== AVATAR PICKER MODAL ===== */}
+      <Modal
+        visible={avatarModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAvatarModalVisible(false)}
+      >
+        <Pressable
+          style={styles.avatarModalOverlay}
+          onPress={() => !savingAvatar && setAvatarModalVisible(false)}
+        >
+          <Pressable style={styles.avatarModalCard}>
+            <AppText style={styles.avatarModalTitle}>
+              {t('profile.changeAvatarTitle')}
+            </AppText>
+            <View style={styles.avatarModalGrid}>
+              {PRESET_AVATARS.map(avatar => {
+                const isSelected = currentAvatarKey === avatar.key;
+                return (
+                  <Pressable
+                    key={avatar.key}
+                    disabled={savingAvatar}
+                    onPress={() => handleSelectAvatar(avatar.key)}
+                    style={({ pressed }) => [
+                      styles.avatarModalOption,
+                      isSelected && styles.avatarModalOptionSelected,
+                      pressed && { opacity: 0.7 },
+                    ]}
+                  >
+                    <UserAvatar avatarUrl={toAvatarValue(avatar.key)} size={58} />
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 };

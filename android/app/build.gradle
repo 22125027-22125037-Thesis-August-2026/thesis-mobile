@@ -85,6 +85,17 @@ android {
         versionCode 1
         versionName "1.0"
         manifestPlaceholders = [usesCleartextTraffic: "true"]
+
+        // Limit native (C++) compilation to 1 job at a time to avoid clang OOM
+        // on low-RAM machines. Each clang process compiling RN/folly templates
+        // needs ~1.5-2GB; running them in parallel exhausts memory.
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_JOB_POOL_COMPILE:STRING=compile",
+                          "-DCMAKE_JOB_POOL_LINK:STRING=link",
+                          "-DCMAKE_JOB_POOLS:STRING=compile=1;link=1"
+            }
+        }
     }
     signingConfigs {
         debug {

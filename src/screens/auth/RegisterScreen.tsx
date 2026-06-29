@@ -1,4 +1,5 @@
-import { AppText, CustomButton, CustomInput } from '@/components';
+import { AppText, CustomButton, CustomInput, UserAvatar } from '@/components';
+import { PRESET_AVATARS, DEFAULT_AVATAR_KEY, toAvatarValue } from '@/constants';
 import { AuthContext } from '@/context/AuthContext';
 import { styles } from '@/screens/auth/RegisterScreen.styles';
 import { COLORS } from '@/theme';
@@ -15,7 +16,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const RegisterScreen = ({ navigation }: any) => {
@@ -29,138 +29,21 @@ const RegisterScreen = ({ navigation }: any) => {
 
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [dob, setDob] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerm, setAgreeTerm] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('TEEN');
-  const [school, setSchool] = useState('');
-  const [emergencyContact, setEmergencyContact] = useState('');
-  const [specialization, setSpecialization] = useState('');
-  const [bio, setBio] = useState('');
-  const [yearsOfExperience, setYearsOfExperience] = useState('');
-  const [consultationFee, setConsultationFee] = useState('');
-  const [linkedTeenId, setLinkedTeenId] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState<string>(DEFAULT_AVATAR_KEY);
 
   const [showPass, setShowPass] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const [emailError, setEmailError] = useState(false);
 
   const auth = useContext(AuthContext);
 
-  const getRoleSpecificPayload = (): Partial<RegisterPayload> => {
-    if (selectedRole === 'TEEN') {
-      return {
-        school: school.trim() || undefined,
-        emergencyContact: emergencyContact.trim() || undefined,
-      };
-    }
-
-    if (selectedRole === 'THERAPIST') {
-      const normalizedYears = yearsOfExperience.trim();
-      const normalizedFee = consultationFee.trim();
-
-      return {
-        specialization: specialization.trim() || undefined,
-        bio: bio.trim() || undefined,
-        yearsOfExperience: normalizedYears
-          ? Number(normalizedYears)
-          : undefined,
-        consultationFee: normalizedFee ? Number(normalizedFee) : undefined,
-      };
-    }
-
-    if (selectedRole === 'PARENT') {
-      return {
-        linkedTeenId: linkedTeenId.trim() || undefined,
-      };
-    }
-
-    return {};
-  };
-
-  const renderRoleSpecificFields = () => {
-    if (selectedRole === 'TEEN') {
-      return (
-        <>
-          <CustomInput
-            label={t('auth.registerRoleFields.teenSchoolLabel')}
-            iconName="school-outline"
-            placeholder={t('auth.registerRoleFields.teenSchoolPlaceholder')}
-            value={school}
-            onChangeText={setSchool}
-          />
-          <CustomInput
-            label={t('auth.registerRoleFields.teenEmergencyLabel')}
-            iconName="call-outline"
-            placeholder={t('auth.registerRoleFields.teenEmergencyPlaceholder')}
-            value={emergencyContact}
-            onChangeText={setEmergencyContact}
-          />
-        </>
-      );
-    }
-
-    if (selectedRole === 'THERAPIST') {
-      return (
-        <>
-          <CustomInput
-            label={t('auth.registerRoleFields.therapistSpecializationLabel')}
-            iconName="medkit-outline"
-            placeholder={t(
-              'auth.registerRoleFields.therapistSpecializationPlaceholder',
-            )}
-            value={specialization}
-            onChangeText={setSpecialization}
-          />
-          <CustomInput
-            label={t('auth.registerRoleFields.therapistBioLabel')}
-            iconName="document-text-outline"
-            placeholder={t('auth.registerRoleFields.therapistBioPlaceholder')}
-            value={bio}
-            onChangeText={setBio}
-          />
-          <CustomInput
-            label={t('auth.registerRoleFields.therapistYearsLabel')}
-            iconName="stats-chart-outline"
-            placeholder={t('auth.registerRoleFields.therapistYearsPlaceholder')}
-            value={yearsOfExperience}
-            onChangeText={setYearsOfExperience}
-          />
-          <CustomInput
-            label={t('auth.registerRoleFields.therapistFeeLabel')}
-            iconName="cash-outline"
-            placeholder={t('auth.registerRoleFields.therapistFeePlaceholder')}
-            value={consultationFee}
-            onChangeText={setConsultationFee}
-          />
-        </>
-      );
-    }
-
-    if (selectedRole === 'PARENT') {
-      return (
-        <CustomInput
-          label={t('auth.registerRoleFields.parentLinkedTeenIdLabel')}
-          iconName="link-outline"
-          placeholder={t(
-            'auth.registerRoleFields.parentLinkedTeenIdPlaceholder',
-          )}
-          value={linkedTeenId}
-          onChangeText={setLinkedTeenId}
-        />
-      );
-    }
-
-    return null;
-  };
-
   const handleRegister = async () => {
     setEmailError(false);
 
-    if (!fullName.trim() || !email || !password || !confirmPassword) {
+    if (!fullName.trim() || !email || !password) {
       Alert.alert(
         t('auth.common.errorTitle'),
         t('auth.register.validationError'),
@@ -173,14 +56,6 @@ const RegisterScreen = ({ navigation }: any) => {
       return;
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert(
-        t('auth.common.errorTitle'),
-        t('auth.register.passwordMismatch'),
-      );
-      return;
-    }
-
     if (!agreeTerm) {
       Alert.alert(
         t('auth.common.notificationTitle'),
@@ -190,40 +65,12 @@ const RegisterScreen = ({ navigation }: any) => {
     }
 
     try {
-      const roleSpecificPayload = getRoleSpecificPayload();
-
-      if (
-        selectedRole === 'THERAPIST' &&
-        yearsOfExperience.trim() &&
-        Number.isNaN(Number(yearsOfExperience.trim()))
-      ) {
-        Alert.alert(
-          t('auth.common.errorTitle'),
-          t('auth.register.invalidYearsOfExperience'),
-        );
-        return;
-      }
-
-      if (
-        selectedRole === 'THERAPIST' &&
-        consultationFee.trim() &&
-        Number.isNaN(Number(consultationFee.trim()))
-      ) {
-        Alert.alert(
-          t('auth.common.errorTitle'),
-          t('auth.register.invalidConsultationFee'),
-        );
-        return;
-      }
-
       const payload: RegisterPayload = {
         fullName: fullName.trim(),
         email: email.trim(),
         password,
         role: selectedRole,
-        phoneNumber: phoneNumber.trim() || undefined,
-        dob: dob.trim() || undefined,
-        ...roleSpecificPayload,
+        avatarUrl: toAvatarValue(selectedAvatar),
       };
 
       await auth?.register(payload);
@@ -272,22 +119,6 @@ const RegisterScreen = ({ navigation }: any) => {
             />
 
             <CustomInput
-              label={t('auth.register.phoneLabel')}
-              iconName="call-outline"
-              placeholder={t('auth.register.phonePlaceholder')}
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-            />
-
-            <CustomInput
-              label={t('auth.register.dobLabel')}
-              iconName="calendar-outline"
-              placeholder={t('auth.register.dobPlaceholder')}
-              value={dob}
-              onChangeText={setDob}
-            />
-
-            <CustomInput
               label={t('auth.register.emailLabel')}
               iconName="mail-outline"
               placeholder={t('auth.register.emailPlaceholder')}
@@ -307,16 +138,31 @@ const RegisterScreen = ({ navigation }: any) => {
               onTogglePassword={() => setShowPass(!showPass)}
             />
 
-            <CustomInput
-              label={t('auth.register.confirmPasswordLabel')}
-              iconName="lock-closed-outline"
-              placeholder={t('auth.register.confirmPasswordPlaceholder')}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              isPassword={true}
-              isPasswordVisible={showConfirmPass}
-              onTogglePassword={() => setShowConfirmPass(!showConfirmPass)}
-            />
+            {/* Chọn ảnh đại diện mẫu */}
+            <AppText style={styles.roleSectionTitle}>
+              {t('auth.register.chooseAvatar')}
+            </AppText>
+            <View style={styles.avatarRow}>
+              {PRESET_AVATARS.map(avatar => {
+                const isSelected = selectedAvatar === avatar.key;
+                return (
+                  <TouchableOpacity
+                    key={avatar.key}
+                    activeOpacity={0.85}
+                    onPress={() => setSelectedAvatar(avatar.key)}
+                    style={[
+                      styles.avatarOption,
+                      isSelected && styles.avatarOptionSelected,
+                    ]}
+                  >
+                    <UserAvatar
+                      avatarUrl={toAvatarValue(avatar.key)}
+                      size={52}
+                    />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
             <AppText style={styles.roleSectionTitle}>
               {t('auth.register.roleSectionTitle')}
@@ -352,8 +198,6 @@ const RegisterScreen = ({ navigation }: any) => {
                 );
               })}
             </View>
-
-            {renderRoleSpecificFields()}
 
             {/* Checkbox Điều khoản */}
             <View style={styles.checkboxContainer}>
@@ -396,24 +240,6 @@ const RegisterScreen = ({ navigation }: any) => {
               onPress={handleRegister}
               isLoading={auth?.isLoading}
             />
-
-            {/* Hoặc */}
-            <AppText style={styles.orText}>{t('auth.register.orText')}</AppText>
-
-            {/* Nút Social Dài */}
-            <TouchableOpacity style={styles.socialBtnLong}>
-              <FontAwesome name="google" size={20} color={COLORS.google} />
-              <AppText style={styles.socialBtnText}>
-                {t('auth.register.continueWithGoogle')}
-              </AppText>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.socialBtnLong}>
-              <FontAwesome name="facebook" size={20} color={COLORS.facebook} />
-              <AppText style={styles.socialBtnText}>
-                {t('auth.register.continueWithFacebook')}
-              </AppText>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

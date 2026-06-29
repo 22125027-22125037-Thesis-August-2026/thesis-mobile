@@ -7,7 +7,6 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Terms: undefined;
-  ProfileEdit: undefined;
   Home: undefined;
   ParentExperience: undefined;
   AdminExperience: undefined;

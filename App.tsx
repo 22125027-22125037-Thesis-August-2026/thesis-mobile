@@ -64,7 +64,6 @@ import {
   VideoConsultationScreen,
   WaitingRoomScreen,
 } from '@/screens';
-import ProfileEditScreen from '@/screens/profile/ProfileEditScreen';
 import FAQScreen from '@/screens/profile/FAQScreen';
 import AboutScreen from '@/screens/profile/AboutScreen';
 import ContactScreen from '@/screens/profile/ContactScreen';
@@ -331,7 +330,6 @@ const AppNav: React.FC = () => {
         {userToken ? (
           <>
             {renderRoleBasedRoutes(userInfo?.role)}
-            <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
             <Stack.Screen name="FAQ" component={FAQScreen} />
             <Stack.Screen name="About" component={AboutScreen} />
             <Stack.Screen name="Contact" component={ContactScreen} />

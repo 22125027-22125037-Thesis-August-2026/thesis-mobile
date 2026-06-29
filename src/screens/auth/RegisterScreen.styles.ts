@@ -110,6 +110,22 @@ export const styles = StyleSheet.create({
     color: COLORS.primaryDark,
     fontWeight: '700',
   },
+  // Lưới chọn ảnh đại diện mẫu
+  avatarRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 16,
+  },
+  avatarOption: {
+    borderWidth: 2,
+    borderColor: 'transparent',
+    borderRadius: 30,
+    padding: 2,
+  },
+  avatarOptionSelected: {
+    borderColor: COLORS.primary,
+  },
   linkText: {
     color: COLORS.primary,
     fontWeight: '700',
@@ -126,28 +142,5 @@ export const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: '700',
     marginLeft: 5,
-  },
-  orText: {
-    textAlign: 'center',
-    color: COLORS.textTertiary,
-    marginVertical: 20,
-    fontSize: FONT_SIZES.sm,
-  },
-  socialBtnLong: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.surfaceRaised,
-    borderWidth: 1,
-    borderColor: COLORS.borderSubtle,
-    borderRadius: 16,
-    height: 52,
-    marginBottom: 12,
-  },
-  socialBtnText: {
-    marginLeft: 10,
-    color: COLORS.text,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '500',
   },
 });

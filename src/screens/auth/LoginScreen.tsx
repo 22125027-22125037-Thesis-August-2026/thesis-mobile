@@ -4,7 +4,6 @@ import {
   Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CustomButton, CustomInput, AppText } from '@/components';
 import { COLORS } from '@/theme';
 import { AuthContext } from '@/context/AuthContext';
@@ -92,29 +91,6 @@ const LoginScreen = () => {
               onPress={handleLogin}
               isLoading={auth?.isLoading}
             />
-
-            <View style={styles.dividerRow}>
-              <View style={styles.dividerLine} />
-              <AppText style={styles.dividerText}>{t('auth.login.orContinueWith')}</AppText>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <View style={styles.socialContainer}>
-              {[
-                { icon: 'facebook', color: COLORS.facebook, a11yLabel: t('auth.login.a11ySocialFacebook') },
-                { icon: 'google', color: COLORS.google, a11yLabel: t('auth.login.a11ySocialGoogle') },
-                { icon: 'instagram', color: COLORS.instagram, a11yLabel: t('auth.login.a11ySocialInstagram') },
-              ].map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.socialButton}
-                  accessibilityLabel={item.a11yLabel}
-                  accessibilityRole="button"
-                >
-                  <FontAwesome name={item.icon} size={20} color={item.color} />
-                </TouchableOpacity>
-              ))}
-            </View>
 
             <View style={styles.footer}>
               <AppText style={styles.footerText}>

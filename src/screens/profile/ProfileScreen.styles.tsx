@@ -83,6 +83,19 @@ export const styles = StyleSheet.create({
     marginTop: -48,
     marginBottom: SPACING.sm,
   },
+  avatarEditBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: SPACING.sm + 2,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.surfaceRaised,
+  },
   avatar: {
     width: 96,
     height: 96,
@@ -262,6 +275,43 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: COLORS.accentNegative,
+  },
+
+  // ===== AVATAR PICKER MODAL =====
+  avatarModalOverlay: {
+    flex: 1,
+    backgroundColor: COLORS.overlayDark45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+  },
+  avatarModalCard: {
+    width: '100%',
+    backgroundColor: COLORS.surfaceRaised,
+    borderRadius: BORDER_RADIUS.card,
+    padding: SPACING.lg,
+  },
+  avatarModalTitle: {
+    fontSize: FONT_SIZES.md,
+    fontWeight: '700',
+    color: COLORS.text,
+    textAlign: 'center',
+    marginBottom: SPACING.lg,
+  },
+  avatarModalGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 14,
+  },
+  avatarModalOption: {
+    borderWidth: 2,
+    borderColor: 'transparent',
+    borderRadius: 33,
+    padding: 2,
+  },
+  avatarModalOptionSelected: {
+    borderColor: COLORS.primary,
   },
 
   // ===== FOOTER =====
