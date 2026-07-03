@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Production default: cleartext (HTTP/WS) is forbidden. The app reaches
+         the backend only over HTTPS/WSS (umatter-apcs.duckdns.org). A debug
+         source-set override (src/debug/res/xml/) re-enables cleartext so Metro
+         and the local HTTP backend work during development. -->
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

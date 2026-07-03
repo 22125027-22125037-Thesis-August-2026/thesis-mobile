@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:635438266344:android:f113d2f46025da142e565d",
+        "android_client_info": {
+          "package_name": "com.apcsthesisteam.umatter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDavj5xXykO7cI-7KQa12j6LYjUpMy53cM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:635438266344:android:83340db35ba6aff12e565d",
         "android_client_info": {
           "package_name": "com.thesisapp"

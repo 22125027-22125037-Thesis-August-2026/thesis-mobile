@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Debug builds only: allow cleartext so the Metro bundler
+         (http://10.0.2.2:8081 / localhost) and a local HTTP backend work in
+         development. This file is NOT included in release builds. -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

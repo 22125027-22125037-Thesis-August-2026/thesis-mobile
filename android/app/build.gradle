@@ -79,13 +79,11 @@ android {
 
     namespace "com.thesisapp"
     defaultConfig {
-        applicationId "com.thesisapp"
+        applicationId "com.apcsthesisteam.umatter"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 2
         versionName "1.0"
-        manifestPlaceholders = [usesCleartextTraffic: "true"]
-
         // Limit native (C++) compilation to 1 job at a time to avoid clang OOM
         // on low-RAM machines. Each clang process compiling RN/folly templates
         // needs ~1.5-2GB; running them in parallel exhausts memory.
@@ -116,11 +114,15 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            // Dev builds allow cleartext (Metro bundler + local HTTP backend).
+            manifestPlaceholders = [usesCleartextTraffic: "true"]
         }
         release {
             signingConfig project.hasProperty('UMATTER_UPLOAD_STORE_FILE') ? signingConfigs.release : signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            // Release builds forbid cleartext — all traffic must be HTTPS/WSS.
+            manifestPlaceholders = [usesCleartextTraffic: "false"]
         }
     }
 }
