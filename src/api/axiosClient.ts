@@ -7,7 +7,7 @@ import i18next from 'i18next';
 // builds MUST use HTTPS so all traffic is encrypted in transit — required for
 // Google Play (sensitive health data) and enforced by the release manifest.
 export const BASE_URL = __DEV__
-  ? 'http://140.245.124.163:8080'
+  ? 'http://85.211.241.204:8080'
   : 'https://umatter-apcs.duckdns.org';
 
 // TODO: REMOVE HARDCODED TOKEN AFTER UI TESTING
