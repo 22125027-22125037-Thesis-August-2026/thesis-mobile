@@ -11,8 +11,7 @@ import { COLORS, SPACING } from '@/theme';
 import BreathingMiniDashboard from './BreathingMiniDashboard';
 import DiaryMiniDashboard from './DiaryMiniDashboard';
 import NutritionMiniDashboard from './NutritionMiniDashboard';
-import SleepMiniDashboard from './SleepMiniDashboard';
-import StepsMiniDashboard from './StepsMiniDashboard';
+import SleepStepsMiniDashboard from './SleepStepsMiniDashboard';
 import SupportMiniDashboard from './SupportMiniDashboard';
 import TreasureMiniDashboard from './TreasureMiniDashboard';
 
@@ -41,9 +40,19 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
       <View ref={treasureTarget.ref} onLayout={treasureTarget.onLayout} collapsable={false}>
         <TreasureMiniDashboard />
       </View>
-      <SleepMiniDashboard hours={data.sleep.hours} avg={data.sleep.avg} />
+      <DiaryMiniDashboard moods={data.diary.moods} streak={data.diary.streak} />
+      <View ref={nutritionTarget.ref} onLayout={nutritionTarget.onLayout} collapsable={false}>
+        <NutritionMiniDashboard
+          waterLiters={data.nutrition.waterLiters}
+          waterGoal={data.nutrition.waterGoal}
+          weekScore={data.nutrition.weekScore}
+          status={data.nutrition.status}
+        />
+      </View>
       <View ref={stepsTarget.ref} onLayout={stepsTarget.onLayout} collapsable={false}>
-        <StepsMiniDashboard
+        <SleepStepsMiniDashboard
+          hours={data.sleep.hours}
+          avg={data.sleep.avg}
           days={data.steps.days}
           today={data.steps.today}
           goal={data.steps.goal}
@@ -54,15 +63,6 @@ const MiniDashboardsSection: React.FC<MiniDashboardsSectionProps> = ({ data }) =
           minutes={data.breathing.minutes}
           today={data.breathing.today}
           goalMinutes={data.breathing.goalMinutes}
-        />
-      </View>
-      <DiaryMiniDashboard moods={data.diary.moods} streak={data.diary.streak} />
-      <View ref={nutritionTarget.ref} onLayout={nutritionTarget.onLayout} collapsable={false}>
-        <NutritionMiniDashboard
-          waterLiters={data.nutrition.waterLiters}
-          waterGoal={data.nutrition.waterGoal}
-          weekScore={data.nutrition.weekScore}
-          status={data.nutrition.status}
         />
       </View>
       <View ref={supportTarget.ref} onLayout={supportTarget.onLayout} collapsable={false}>

@@ -183,8 +183,9 @@ const styles = StyleSheet.create({
   upcomingTimeDateRow: {
     marginTop: 14,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    gap: 8,
   },
   upcomingTimeText: {
     fontSize: 16,

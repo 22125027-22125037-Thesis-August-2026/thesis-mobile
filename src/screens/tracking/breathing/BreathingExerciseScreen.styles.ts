@@ -87,11 +87,11 @@ export const styles = StyleSheet.create({
   // Breathing
   roundLabel: {
     color: COLORS.white,
-    fontSize: FONT_SIZES.sm,
+    fontSize: FONT_SIZES.md,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
-    opacity: 0.85,
+    opacity: 0.95,
   },
   orbWrap: {
     width: ORB_SIZE + 80,
@@ -115,8 +115,10 @@ export const styles = StyleSheet.create({
   },
   phaseText: {
     color: COLORS.white,
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
   skipButton: {
     paddingVertical: SPACING.sm,
@@ -146,10 +148,10 @@ export const styles = StyleSheet.create({
   },
   promptText: {
     color: COLORS.text,
-    fontSize: FONT_SIZES.md,
-    lineHeight: 26,
+    fontSize: FONT_SIZES.lg,
+    lineHeight: 30,
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   promptDots: {
     flexDirection: 'row',

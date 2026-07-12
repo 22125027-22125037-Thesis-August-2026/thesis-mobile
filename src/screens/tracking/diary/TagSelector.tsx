@@ -8,6 +8,8 @@ interface TagSelectorProps {
   selected: string[];
   onToggle: (tag: string) => void;
   disabled?: boolean;
+  /** Màu nhấn khi tag được chọn. Mặc định dùng buttonPrimary (đen). */
+  color?: string;
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({
@@ -15,14 +17,23 @@ const TagSelector: React.FC<TagSelectorProps> = ({
   selected,
   onToggle,
   disabled,
+  color,
 }) => (
   <View style={styles.container}>
     {tags.map(tag => {
       const isSelected = selected.includes(tag);
+      const selectedColorStyle =
+        isSelected && color
+          ? { backgroundColor: color, borderColor: color }
+          : null;
       return (
         <Pressable
           key={tag}
-          style={[styles.chip, isSelected && styles.chipSelected]}
+          style={[
+            styles.chip,
+            isSelected && styles.chipSelected,
+            selectedColorStyle,
+          ]}
           onPress={() => onToggle(tag)}
           disabled={disabled}
         >

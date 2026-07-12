@@ -544,9 +544,15 @@ const TreasureBoxScreen: React.FC = () => {
               <AppText style={styles.comfortCategory}>
                 {comfortCategory.label}
               </AppText>
-              <AppText style={styles.comfortContent}>
-                {comfortTreasure.content}
-              </AppText>
+              <ScrollView
+                style={styles.comfortContentScroll}
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+                showsVerticalScrollIndicator={false}
+              >
+                <AppText style={styles.comfortContent}>
+                  {comfortTreasure.content}
+                </AppText>
+              </ScrollView>
 
               {comfortTreasure.mediaUrl &&
                 comfortTreasure.mediaType === 'IMAGE' && (

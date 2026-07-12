@@ -536,6 +536,7 @@ const DiaryEntryScreen: React.FC = () => {
                         selected={selectedTags}
                         onToggle={handleToggleTag}
                         disabled={isSubmitting}
+                        color={category.color}
                       />
                     </View>
                   </React.Fragment>

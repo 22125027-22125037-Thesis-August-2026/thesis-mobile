@@ -765,6 +765,16 @@
       "steps": "Steps",
       "complete": "Amazing! All done today 🎉"
     },
+    "trophy": {
+      "title": "Journal streak trophies",
+      "longestStreak": "Longest streak: {{count}} days",
+      "empty": "Keep going — your first trophy is just 3 days away!",
+      "starter": "Spark",
+      "glow": "Glow",
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold"
+    },
     "celebration": {
       "earned": "You earned it today! 🎉",
       "progress": "{{count}}/4 categories",

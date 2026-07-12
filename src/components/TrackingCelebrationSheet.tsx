@@ -42,6 +42,89 @@ const resolveTier = (count: number): Tier => {
   return 'none';
 };
 
+const CONFETTI_COLORS = [
+  '#F2B400',
+  '#26C6DA',
+  '#E5707E',
+  '#66BB6A',
+  '#9B7EDE',
+  '#FF8A65',
+];
+const CONFETTI_COUNT = 14;
+
+/** Confetti/tia sáng toả ra quanh badge khi đạt cúp — thuần Animated, không cần lib. */
+const ConfettiBurst: React.FC<{ trigger: number }> = ({ trigger }) => {
+  const progress = useRef(new Animated.Value(0)).current;
+
+  const particles = React.useMemo(
+    () =>
+      Array.from({ length: CONFETTI_COUNT }).map((_, i) => {
+        const angle = (Math.PI * 2 * i) / CONFETTI_COUNT + Math.random() * 0.4;
+        const distance = 80 + Math.random() * 55;
+        return {
+          key: i,
+          tx: Math.cos(angle) * distance,
+          ty: Math.sin(angle) * distance,
+          color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+          size: 6 + Math.round(Math.random() * 6),
+          rounded: i % 2 === 0,
+        };
+      }),
+    [],
+  );
+
+  useEffect(() => {
+    if (trigger === 0) return;
+    progress.setValue(0);
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 900,
+      useNativeDriver: true,
+    }).start();
+  }, [trigger, progress]);
+
+  return (
+    <View pointerEvents="none" style={styles.confettiLayer}>
+      {particles.map(p => (
+        <Animated.View
+          key={p.key}
+          style={{
+            position: 'absolute',
+            width: p.size,
+            height: p.size,
+            borderRadius: p.rounded ? p.size / 2 : 2,
+            backgroundColor: p.color,
+            opacity: progress.interpolate({
+              inputRange: [0, 0.7, 1],
+              outputRange: [1, 1, 0],
+            }),
+            transform: [
+              {
+                translateX: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, p.tx],
+                }),
+              },
+              {
+                translateY: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, p.ty],
+                }),
+              },
+              {
+                scale: progress.interpolate({
+                  inputRange: [0, 0.2, 1],
+                  outputRange: [0, 1, 0.7],
+                }),
+              },
+            ],
+          }}
+        />
+      ))}
+    </View>
+  );
+};
+
 interface CategoryInfo {
   key: keyof Omit<CelebrationStatus, 'count'>;
   icon: string;
@@ -70,6 +153,7 @@ const TrackingCelebrationSheet: React.FC<TrackingCelebrationSheetProps> = ({
   const slideAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.6)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
+  const [burstTrigger, setBurstTrigger] = React.useState(0);
 
   const tier = resolveTier(status.count);
   const hasTier = tier !== 'none';
@@ -80,6 +164,9 @@ const TrackingCelebrationSheet: React.FC<TrackingCelebrationSheetProps> = ({
       slideAnim.setValue(0);
       scaleAnim.setValue(0.6);
       progressAnim.setValue(0);
+      if (hasTier) {
+        setBurstTrigger(prev => prev + 1);
+      }
 
       Animated.parallel([
         Animated.spring(slideAnim, {
@@ -155,24 +242,25 @@ const TrackingCelebrationSheet: React.FC<TrackingCelebrationSheetProps> = ({
           <View style={styles.handle} />
 
           {/* Trophy badge */}
-          <Animated.View
-            style={[styles.badgeWrapper, { transform: [{ scale: scaleAnim }] }]}
-          >
-            <View
-              style={[
-                styles.trophyBadge,
-                hasTier
-                  ? { backgroundColor: tierCfg!.ringColor }
-                  : styles.trophyBadgeNone,
-              ]}
-            >
-              <MaterialCommunityIcons
-                name={hasTier ? 'trophy' : 'trophy-outline'}
-                size={44}
-                color={hasTier ? tierCfg!.color : COLORS.textTertiary}
-              />
-            </View>
-          </Animated.View>
+          <View style={styles.badgeWrapper}>
+            {hasTier && <ConfettiBurst trigger={burstTrigger} />}
+            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+              <View
+                style={[
+                  styles.trophyBadge,
+                  hasTier
+                    ? { backgroundColor: tierCfg!.ringColor }
+                    : styles.trophyBadgeNone,
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name={hasTier ? 'trophy' : 'trophy-outline'}
+                  size={44}
+                  color={hasTier ? tierCfg!.color : COLORS.textTertiary}
+                />
+              </View>
+            </Animated.View>
+          </View>
 
           {/* Heading */}
           {hasTier ? (
@@ -279,6 +367,14 @@ const styles = StyleSheet.create({
   },
   badgeWrapper: {
     marginBottom: SPACING.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confettiLayer: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
   },
   trophyBadge: {
     width: 96,

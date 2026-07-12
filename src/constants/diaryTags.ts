@@ -2,6 +2,7 @@ export type TagCategory = {
   id: string;
   label: string;
   icon: string;
+  color: string;
   tags: string[];
 };
 
@@ -10,6 +11,7 @@ export const DIARY_TAG_CATEGORIES: TagCategory[] = [
     id: 'activities',
     label: 'Hoạt động',
     icon: 'lightning-bolt-outline',
+    color: '#00897B',
     tags: [
       'Học tập',
       'Làm việc',
@@ -29,12 +31,14 @@ export const DIARY_TAG_CATEGORIES: TagCategory[] = [
     id: 'social',
     label: 'Ở cùng',
     icon: 'account-group-outline',
+    color: '#E5707E',
     tags: ['Gia đình', 'Bạn bè', 'Người yêu', 'Đồng nghiệp', 'Mình ên'],
   },
   {
     id: 'topics',
     label: 'Chủ đề',
     icon: 'tag-multiple-outline',
+    color: '#9B7EDE',
     tags: [
       'Tài chính',
       'Sức khỏe',
@@ -50,6 +54,7 @@ export const DIARY_TAG_CATEGORIES: TagCategory[] = [
     id: 'body',
     label: 'Cơ thể',
     icon: 'heart-pulse',
+    color: '#66BB6A',
     tags: [
       'Đầy năng lượng',
       'Mệt mỏi',
@@ -64,6 +69,7 @@ export const DIARY_TAG_CATEGORIES: TagCategory[] = [
     id: 'weather',
     label: 'Thời tiết',
     icon: 'weather-sunny',
+    color: '#FFB300',
     tags: ['Nắng đẹp', 'Trời mưa', 'Oi bức', 'Mát mẻ', 'Lạnh'],
   },
 ];

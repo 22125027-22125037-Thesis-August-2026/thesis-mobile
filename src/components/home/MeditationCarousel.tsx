@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,6 +10,7 @@ import Svg, { Defs, LinearGradient as SvgLinearGradient, Rect, Stop } from 'reac
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components';
+import VideoPlayerModal from '@/components/VideoPlayerModal';
 import {
   MEDITATION_EXERCISES,
   MeditationExercise,
@@ -20,22 +20,17 @@ import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 const CARD_WIDTH = 158;
 const CARD_HEIGHT = 200;
 
-const openMeditation = async (url: string): Promise<void> => {
-  try {
-    await Linking.openURL(url);
-  } catch (err) {
-    console.warn('[MeditationCarousel] Failed to open url', url, err);
-  }
-};
-
-const MeditationCard: React.FC<{ item: MeditationExercise }> = ({ item }) => {
+const MeditationCard: React.FC<{
+  item: MeditationExercise;
+  onPress: (item: MeditationExercise) => void;
+}> = ({ item, onPress }) => {
   const { t } = useTranslation();
   const gradientId = `med-grad-${item.id}`;
 
   return (
     <Pressable
       style={styles.card}
-      onPress={() => void openMeditation(item.youtubeUrl)}
+      onPress={() => onPress(item)}
     >
       <Svg
         style={StyleSheet.absoluteFillObject}
@@ -83,6 +78,7 @@ const MeditationCard: React.FC<{ item: MeditationExercise }> = ({ item }) => {
 
 const MeditationCarousel: React.FC = () => {
   const { t } = useTranslation();
+  const [activeUrl, setActiveUrl] = useState<string | null>(null);
 
   return (
     <View style={styles.section}>
@@ -102,9 +98,19 @@ const MeditationCarousel: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
       >
         {MEDITATION_EXERCISES.map(item => (
-          <MeditationCard key={item.id} item={item} />
+          <MeditationCard
+            key={item.id}
+            item={item}
+            onPress={selected => setActiveUrl(selected.youtubeUrl)}
+          />
         ))}
       </ScrollView>
+
+      <VideoPlayerModal
+        visible={activeUrl !== null}
+        youtubeUrl={activeUrl}
+        onClose={() => setActiveUrl(null)}
+      />
     </View>
   );
 };

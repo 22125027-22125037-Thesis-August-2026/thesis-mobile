@@ -397,12 +397,16 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.6,
     marginBottom: SPACING.sm,
   },
+  comfortContentScroll: {
+    alignSelf: 'stretch',
+    maxHeight: 160,
+    marginBottom: SPACING.xl,
+  },
   comfortContent: {
     fontSize: FONT_SIZES.lg,
     color: COLORS.text,
     textAlign: 'center',
     lineHeight: 30,
-    marginBottom: SPACING.xl,
   },
   comfortActions: {
     width: '100%',
@@ -566,7 +570,7 @@ export const styles = StyleSheet.create({
   },
   comfortMediaImage: {
     width: '100%',
-    height: 180,
+    height: 120,
     borderRadius: BORDER_RADIUS.lg,
     marginBottom: SPACING.lg,
     backgroundColor: COLORS.borderSubtle,

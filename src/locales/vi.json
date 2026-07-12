@@ -765,6 +765,16 @@
       "steps": "Bước chân",
       "complete": "Tuyệt vời! Hoàn thành hôm nay 🎉"
     },
+    "trophy": {
+      "title": "Cúp streak nhật ký",
+      "longestStreak": "Streak dài nhất: {{count}} ngày",
+      "empty": "Cố lên nhé — cúp đầu tiên chỉ cách bạn 3 ngày!",
+      "starter": "Nhen nhóm",
+      "glow": "Bừng sáng",
+      "bronze": "Cúp đồng",
+      "silver": "Cúp bạc",
+      "gold": "Cúp vàng"
+    },
     "celebration": {
       "earned": "Bạn đã đạt được hôm nay! 🎉",
       "progress": "{{count}}/4 hạng mục",
@@ -859,7 +869,7 @@
       "step4Subtitle": "Điều này giúp hệ thống ưu tiên danh sách chuyên gia phù hợp với bạn.",
       "step5Title": "Hiện tại, bạn có đang suy nghĩ về việc làm hại bản thân hoặc người khác không?",
       "step5Subtitle": "Nếu bạn cần hỗ trợ khẩn cấp, hãy liên hệ dịch vụ y tế ngay lập tức.",
-      "step6Title": "Diều gì khiến bạn tìm đến trị liệu hôm nay?",
+      "step6Title": "Điều gì khiến bạn tìm đến trị liệu hôm nay?",
       "step6Subtitle": "Bạn có thể chọn nhiều hơn một lý do.",
       "step7Title": "Hôm nay bạn đang cảm thấy như thế nào?",
       "step7Subtitle": "Chọn mức độ cho từng trạng thái từ ít đến nhiều.",

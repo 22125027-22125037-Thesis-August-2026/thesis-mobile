@@ -1,26 +1,44 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 import AppText from './AppText';
 
-type TrophyTier = 'bronze' | 'silver' | 'gold';
+type TrophyTier = 'starter' | 'glow' | 'bronze' | 'silver' | 'gold';
 
 interface TrophyDescriptor {
   tier: TrophyTier;
   threshold: number;
   color: string;
   ringColor: string;
+  icon: string;
   labelKey: string;
 }
 
 const TROPHY_TIERS: TrophyDescriptor[] = [
   {
+    tier: 'starter',
+    threshold: 3,
+    color: '#A1887F',
+    ringColor: '#EDE3DE',
+    icon: 'seed-outline',
+    labelKey: 'profile.trophy.starter',
+  },
+  {
+    tier: 'glow',
+    threshold: 5,
+    color: '#26C6DA',
+    ringColor: '#D4F3F7',
+    icon: 'star-shooting',
+    labelKey: 'profile.trophy.glow',
+  },
+  {
     tier: 'bronze',
     threshold: 7,
     color: '#CD7F32',
     ringColor: '#F4D9B8',
+    icon: 'trophy',
     labelKey: 'profile.trophy.bronze',
   },
   {
@@ -28,6 +46,7 @@ const TROPHY_TIERS: TrophyDescriptor[] = [
     threshold: 14,
     color: '#9AA0A6',
     ringColor: '#E4E6EB',
+    icon: 'trophy',
     labelKey: 'profile.trophy.silver',
   },
   {
@@ -35,6 +54,7 @@ const TROPHY_TIERS: TrophyDescriptor[] = [
     threshold: 30,
     color: '#F2B400',
     ringColor: '#FFEFB8',
+    icon: 'trophy-award',
     labelKey: 'profile.trophy.gold',
   },
 ];
@@ -74,12 +94,16 @@ const TrophyShowcase: React.FC<TrophyShowcaseProps> = ({ longestCount }) => {
           />
           <AppText style={styles.emptyText}>
             {t('profile.trophy.empty', {
-              defaultValue: 'Keep going — your first trophy is at 7 days!',
+              defaultValue: 'Cố lên nhé — cúp đầu tiên chỉ cách bạn 3 ngày!',
             })}
           </AppText>
         </View>
       ) : (
-        <View style={styles.trophyRow}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.trophyRow}
+        >
           {earnedTrophies.map(trophy => (
             <View key={trophy.tier} style={styles.trophyItem}>
               <View
@@ -89,7 +113,7 @@ const TrophyShowcase: React.FC<TrophyShowcaseProps> = ({ longestCount }) => {
                 ]}
               >
                 <MaterialCommunityIcons
-                  name="trophy"
+                  name={trophy.icon}
                   size={28}
                   color={trophy.color}
                 />
@@ -105,7 +129,7 @@ const TrophyShowcase: React.FC<TrophyShowcaseProps> = ({ longestCount }) => {
               </AppText>
             </View>
           ))}
-        </View>
+        </ScrollView>
       )}
     </View>
   );
@@ -137,12 +161,13 @@ const styles = StyleSheet.create({
   },
   trophyRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     paddingVertical: SPACING.xs,
+    gap: SPACING.md,
+    paddingHorizontal: SPACING.xs,
   },
   trophyItem: {
     alignItems: 'center',
-    flex: 1,
+    width: 68,
   },
   trophyBadge: {
     width: 56,
