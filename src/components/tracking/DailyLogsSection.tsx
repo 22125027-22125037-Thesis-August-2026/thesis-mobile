@@ -6,12 +6,18 @@ import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components';
+import { scopeAllows } from '@/api/dataAccessGrantApi';
 import { RootStackParamList } from '@/navigation';
 import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 
 interface DailyLogsSectionProps {
   targetProfileId: string;
   isOwnProfile: boolean;
+  /**
+   * When viewing someone else's data (isOwnProfile=false), the CSV scope they granted. Only the
+   * cards their grant covers are shown. Ignored for your own profile (you always see everything).
+   */
+  grantedScope?: string;
 }
 
 type NavProp = NavigationProp<RootStackParamList>;
@@ -19,9 +25,15 @@ type NavProp = NavigationProp<RootStackParamList>;
 const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
   targetProfileId,
   isOwnProfile,
+  grantedScope,
 }) => {
   const navigation = useNavigation<NavProp>();
   const { t } = useTranslation();
+
+  // On your own profile every card shows; on a friend's, only the categories their grant covers.
+  const canSeeSleep = isOwnProfile || scopeAllows(grantedScope, 'READ_SLEEP');
+  const canSeeDiary = isOwnProfile || scopeAllows(grantedScope, 'READ_JOURNAL');
+  const canSeeFood = isOwnProfile || scopeAllows(grantedScope, 'READ_FOOD');
 
   const handleSleepPress = useCallback(() => {
     navigation.navigate('SleepMain', isOwnProfile ? undefined : { viewProfileId: targetProfileId });
@@ -49,6 +61,7 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
       </View>
 
       {/* Sleep Card */}
+      {canSeeSleep && (
       <Pressable
         style={styles.logCard}
         onPress={handleSleepPress}
@@ -73,8 +86,10 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
           color={COLORS.textSecondary}
         />
       </Pressable>
+      )}
 
       {/* Diary Card */}
+      {canSeeDiary && (
       <Pressable
         style={styles.logCard}
         onPress={handleDiaryPress}
@@ -95,8 +110,10 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
           color={COLORS.textSecondary}
         />
       </Pressable>
+      )}
 
       {/* Food Card */}
+      {canSeeFood && (
       <Pressable
         style={styles.logCard}
         onPress={handleFoodPress}
@@ -117,6 +134,7 @@ const DailyLogsSection: React.FC<DailyLogsSectionProps> = ({
           color={COLORS.textSecondary}
         />
       </Pressable>
+      )}
     </View>
   );
 };

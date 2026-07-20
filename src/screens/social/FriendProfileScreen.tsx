@@ -13,7 +13,8 @@ import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navig
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { dataAccessGrantApi, socialApi } from '@/api';
-import type { GrantStatusResponse } from '@/api/dataAccessGrantApi';
+import type { GrantStatusResponse, TrackingCategory } from '@/api/dataAccessGrantApi';
+import { buildScopeCsv } from '@/api/dataAccessGrantApi';
 import { AppText } from '@/components';
 import { playSoftHaptic } from '@/utils';
 import { DailyLogsSection } from '@/components/tracking';
@@ -23,8 +24,16 @@ import { BORDER_RADIUS, COLORS, FONT_SIZES, SPACING } from '@/theme';
 type FriendProfileRoute = RouteProp<RootStackParamList, 'FriendProfile'>;
 type RootNavigation = NavigationProp<RootStackParamList>;
 
-const GRANT_SCOPE = 'READ_ALL' as const;
 const GRANT_DURATION_DAYS = 30;
+
+// The tracking categories a user can share with a friend/parent, matching the cards the grantee can
+// then view (DailyLogsSection). A grant carries the SELECTED subset, so a user can share, e.g., sleep
+// and food but not their journal.
+const SHAREABLE_CATEGORIES: { token: TrackingCategory; label: string }[] = [
+  { token: 'READ_SLEEP', label: 'Giấc ngủ' },
+  { token: 'READ_FOOD', label: 'Ăn uống' },
+  { token: 'READ_JOURNAL', label: 'Nhật ký' },
+];
 
 const FriendProfileScreen: React.FC = () => {
   const navigation = useNavigation<RootNavigation>();
@@ -36,6 +45,9 @@ const FriendProfileScreen: React.FC = () => {
   const [isStatusLoading, setIsStatusLoading] = useState(true);
   const [isConfirmGrantVisible, setIsConfirmGrantVisible] = useState(false);
   const [isGranting, setIsGranting] = useState(false);
+  const [selectedScopes, setSelectedScopes] = useState<TrackingCategory[]>(
+    SHAREABLE_CATEGORIES.map(c => c.token),
+  );
   const [isUnfriendModalVisible, setIsUnfriendModalVisible] = useState(false);
   const [isUnfriending, setIsUnfriending] = useState(false);
 
@@ -61,14 +73,25 @@ const FriendProfileScreen: React.FC = () => {
     }
   }, [navigation]);
 
+  const toggleScope = useCallback((token: TrackingCategory) => {
+    setSelectedScopes(prev =>
+      prev.includes(token) ? prev.filter(t => t !== token) : [...prev, token],
+    );
+  }, []);
+
   const handleConfirmGrant = useCallback(async () => {
+    if (selectedScopes.length === 0) {
+      Alert.alert('Chọn dữ liệu', 'Hãy chọn ít nhất một loại dữ liệu để chia sẻ.');
+      return;
+    }
     playSoftHaptic();
     setIsGranting(true);
     try {
       const expiresAt = new Date(
         Date.now() + GRANT_DURATION_DAYS * 24 * 60 * 60 * 1000,
       ).toISOString();
-      await dataAccessGrantApi.grantAccess(friendProfileId, GRANT_SCOPE, expiresAt);
+      const accessScope = buildScopeCsv(selectedScopes);
+      await dataAccessGrantApi.grantAccess(friendProfileId, accessScope, expiresAt);
       setIsConfirmGrantVisible(false);
       await loadGrantStatus();
     } catch (err) {
@@ -77,7 +100,7 @@ const FriendProfileScreen: React.FC = () => {
     } finally {
       setIsGranting(false);
     }
-  }, [friendProfileId, loadGrantStatus]);
+  }, [friendProfileId, loadGrantStatus, selectedScopes]);
 
   const handleRevokePermission = useCallback(async () => {
     try {
@@ -177,7 +200,11 @@ const FriendProfileScreen: React.FC = () => {
             Dữ liệu theo dõi của {friendName}
           </AppText>
           {theyGaveAccess ? (
-            <DailyLogsSection targetProfileId={friendProfileId} isOwnProfile={false} />
+            <DailyLogsSection
+              targetProfileId={friendProfileId}
+              isOwnProfile={false}
+              grantedScope={grantStatus?.theirGrant?.accessScope}
+            />
           ) : (
             <View style={styles.lockedCard}>
               <MaterialCommunityIcons name="lock-outline" size={32} color={COLORS.textSecondary} />
@@ -211,16 +238,31 @@ const FriendProfileScreen: React.FC = () => {
             </View>
             <AppText style={styles.sheetTitle}>Chia sẻ dữ liệu theo dõi?</AppText>
             <AppText style={styles.sheetBody}>
-              Bạn có chắc chắn muốn chia sẻ dữ liệu Holistic Tracking (bao gồm nhật ký cá nhân, chỉ số
-              dinh dưỡng và dữ liệu giấc ngủ) với{' '}
-              <AppText style={styles.sheetNameHighlight}>{friendName}</AppText> không?
+              Chọn loại dữ liệu bạn muốn chia sẻ với{' '}
+              <AppText style={styles.sheetNameHighlight}>{friendName}</AppText>. Chỉ những mục bạn chọn
+              mới hiển thị với họ.
             </AppText>
+            <View style={styles.scopeList}>
+              {SHAREABLE_CATEGORIES.map(({ token, label }) => {
+                const isSelected = selectedScopes.includes(token);
+                return (
+                  <Pressable
+                    key={token}
+                    style={styles.scopeRow}
+                    onPress={() => toggleScope(token)}>
+                    <MaterialCommunityIcons
+                      name={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                      size={24}
+                      color={isSelected ? COLORS.primary : COLORS.textSecondary}
+                    />
+                    <AppText style={styles.scopeLabel}>{label}</AppText>
+                  </Pressable>
+                );
+              })}
+            </View>
             <View style={styles.bulletList}>
               <AppText style={styles.bulletText}>
-                • Lưu ý: Việc chia sẻ này giúp đối phương theo dõi sát sao lộ trình sức khỏe của bạn.
-              </AppText>
-              <AppText style={styles.bulletText}>
-                • Quyền riêng tư: bạn có toàn quyền thu hồi quyền truy cập.
+                • Quyền riêng tư: bạn có toàn quyền thu hồi quyền truy cập bất cứ lúc nào.
               </AppText>
             </View>
             <View style={styles.sheetButtons}>
@@ -453,6 +495,22 @@ const styles = StyleSheet.create({
   sheetNameHighlight: {
     fontWeight: '700',
     color: COLORS.textPrimary,
+  },
+  scopeList: {
+    width: '100%',
+    gap: SPACING.xs,
+    marginBottom: SPACING.md,
+  },
+  scopeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    paddingVertical: SPACING.sm,
+  },
+  scopeLabel: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textPrimary,
+    fontWeight: '500',
   },
   bulletList: {
     width: '100%',

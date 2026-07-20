@@ -31,7 +31,8 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { useTranslation } from 'react-i18next';
-import { aiApi } from '@/api';
+import { aiApi, dataAccessGrantApi } from '@/api';
+import { AI_COMPANION_PROFILE_ID, READ_ALL } from '@/api/dataAccessGrantApi';
 import {
   CHAT_SENDER,
   ERROR_MESSAGE_TEXT,
@@ -115,7 +116,46 @@ const ChatScreen: React.FC = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [crisisDetected, setCrisisDetected] = useState<boolean>(false);
   const [showQuickReplies, setShowQuickReplies] = useState<boolean>(true);
+  // AI grounding consent: whether the user has granted the AI companion access to their tracking
+  // data. Off by default (default-deny) — the AI still chats, just without personal context.
+  const [aiGrantActive, setAiGrantActive] = useState<boolean>(false);
+  const [isTogglingAiGrant, setIsTogglingAiGrant] = useState<boolean>(false);
   const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    dataAccessGrantApi
+      .getGrantStatus(AI_COMPANION_PROFILE_ID)
+      .then(status => {
+        if (!cancelled) {
+          setAiGrantActive(status.iGaveThemAccess);
+        }
+      })
+      .catch(err => console.error('[ChatScreen] load AI grant status failed:', err));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleToggleAiGrant = useCallback(async () => {
+    playSoftHaptic();
+    setIsTogglingAiGrant(true);
+    try {
+      if (aiGrantActive) {
+        await dataAccessGrantApi.revokeAccess(AI_COMPANION_PROFILE_ID);
+        setAiGrantActive(false);
+      } else {
+        // READ_ALL, no expiry — grounding persists until the user turns it off.
+        await dataAccessGrantApi.grantAccess(AI_COMPANION_PROFILE_ID, READ_ALL, null);
+        setAiGrantActive(true);
+      }
+    } catch (err) {
+      console.error('[ChatScreen] toggle AI grant failed:', err);
+      Alert.alert('Lỗi', 'Không thể cập nhật quyền chia sẻ dữ liệu. Vui lòng thử lại.');
+    } finally {
+      setIsTogglingAiGrant(false);
+    }
+  }, [aiGrantActive]);
 
   const quickReplies = [
     t('chat.room.quickReply1'),
@@ -366,6 +406,37 @@ const ChatScreen: React.FC = () => {
             </View>
           </View>
         </View>
+
+        {/* ===== AI DATA-SHARING CONSENT BANNER ===== */}
+        <Pressable
+          onPress={handleToggleAiGrant}
+          disabled={isTogglingAiGrant}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            backgroundColor: aiGrantActive ? '#EAF3FF' : COLORS.inputBackground,
+          }}>
+          <MaterialCommunityIcons
+            name={aiGrantActive ? 'shield-check' : 'shield-off-outline'}
+            size={20}
+            color={aiGrantActive ? COLORS.primary : COLORS.textSecondary}
+          />
+          <AppText style={{ flex: 1, fontSize: 12, color: COLORS.textSecondary }}>
+            {aiGrantActive
+              ? 'Đang chia sẻ dữ liệu theo dõi với trợ lý để nhận lời khuyên cá nhân hóa.'
+              : 'Chia sẻ dữ liệu theo dõi để trợ lý thấu hiểu bạn hơn (không bắt buộc).'}
+          </AppText>
+          {isTogglingAiGrant ? (
+            <ActivityIndicator size="small" color={COLORS.primary} />
+          ) : (
+            <AppText style={{ fontSize: 12, fontWeight: '700', color: COLORS.primary }}>
+              {aiGrantActive ? 'Tắt' : 'Bật'}
+            </AppText>
+          )}
+        </Pressable>
 
         {/* ===== CHAT AREA ===== */}
         <View style={styles.chatArea}>
