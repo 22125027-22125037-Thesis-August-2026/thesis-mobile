@@ -25,6 +25,7 @@ import {
   getAppointmentDetail,
   getTherapistAvailableSlots,
   getTherapistDetails,
+  isCompletedAppointmentStatus,
   TherapistAvailableSlot,
   TherapistDetail,
 } from '@/api';
@@ -248,7 +249,7 @@ const WaitingRoomScreen: React.FC = () => {
     if (!appointmentId) {
       return;
     }
-    if (status === 'COMPLETED' || status === 'CANCELLED') {
+    if ((status && isCompletedAppointmentStatus(status)) || status === 'CANCELLED') {
       return;
     }
     const timer = setInterval(() => {
@@ -341,7 +342,7 @@ const WaitingRoomScreen: React.FC = () => {
 
   const isAwaitingApproval = status === 'REQUESTED';
   const isCancelledStatus = status === 'CANCELLED';
-  const isCompletedStatus = status === 'COMPLETED';
+  const isCompletedStatus = !!status && isCompletedAppointmentStatus(status);
   const statusAllowsJoin = status ? STATUSES_THAT_CAN_JOIN.includes(status) : false;
   const statusAllowsCancel = status ? STATUSES_THAT_CAN_CANCEL.includes(status) : false;
   const canJoin =

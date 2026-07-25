@@ -32,7 +32,19 @@ const VARIANTS: Record<AppointmentStatus, Variant> = {
     icon: 'videocam-outline',
     i18nKey: 'booking.status.inProgress',
   },
-  COMPLETED: {
+  PATIENT_COMPLETE: {
+    bg: '#E2E3E5',
+    fg: '#383D41',
+    icon: 'checkmark-done-outline',
+    i18nKey: 'booking.status.completed',
+  },
+  PROFESSIONAL_COMPLETE: {
+    bg: '#E2E3E5',
+    fg: '#383D41',
+    icon: 'checkmark-done-outline',
+    i18nKey: 'booking.status.completed',
+  },
+  OVERALL_COMPLETE: {
     bg: '#E2E3E5',
     fg: '#383D41',
     icon: 'checkmark-done-outline',

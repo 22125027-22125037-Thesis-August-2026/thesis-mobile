@@ -26,7 +26,10 @@ import styles from '@/screens/booking/AppointmentsHistoryScreen.styles';
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'AppointmentsHistory'>;
 // type AppointmentsHistoryRouteProp = RouteProp<RootStackParamList, 'AppointmentsHistory'>;
 
-type AppointmentStatus = therapistApi.AppointmentHistoryStatus;
+// UI-level tab: "COMPLETED" here means any of the three completion variants
+// the backend can return (patient reviewed and/or therapist finalized a
+// note) -- see therapistApi.COMPLETED_APPOINTMENT_STATUSES.
+type TabKey = 'COMPLETED' | 'CANCELLED';
 
 const formatAppointmentTime = (startDatetime: string): string => {
   const date = new Date(startDatetime);
@@ -61,7 +64,7 @@ const AppointmentsHistoryScreen: React.FC = () => {
   const profileId = auth?.userInfo?.profileId;
   const { t } = useTranslation();
 
-  const [activeStatus, setActiveStatus] = useState<AppointmentStatus>('COMPLETED');
+  const [activeTab, setActiveTab] = useState<TabKey>('COMPLETED');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [appointments, setAppointments] = useState<therapistApi.AppointmentHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -95,8 +98,12 @@ const AppointmentsHistoryScreen: React.FC = () => {
   }, [fetchHistory]);
 
   const filteredAppointments = useMemo(() => {
-    return appointments.filter(appointment => appointment.status === activeStatus);
-  }, [appointments, activeStatus]);
+    return appointments.filter(appointment =>
+      activeTab === 'COMPLETED'
+        ? therapistApi.isCompletedAppointmentStatus(appointment.status)
+        : appointment.status === 'CANCELLED',
+    );
+  }, [appointments, activeTab]);
 
   const toggleExpanded = (id: string) => {
     setExpandedIds(prev => {
@@ -271,19 +278,19 @@ const AppointmentsHistoryScreen: React.FC = () => {
 
         <View style={styles.tabContainer}>
           <TouchableOpacity
-            style={[styles.tabButton, activeStatus === 'COMPLETED' ? styles.tabButtonActive : null]}
+            style={[styles.tabButton, activeTab === 'COMPLETED' ? styles.tabButtonActive : null]}
             activeOpacity={0.85}
-            onPress={() => setActiveStatus('COMPLETED')}>
-            <Text style={[styles.tabText, activeStatus === 'COMPLETED' ? styles.tabTextActive : null]}>
+            onPress={() => setActiveTab('COMPLETED')}>
+            <Text style={[styles.tabText, activeTab === 'COMPLETED' ? styles.tabTextActive : null]}>
               Đã hoàn thành
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.tabButton, activeStatus === 'CANCELLED' ? styles.tabButtonActive : null]}
+            style={[styles.tabButton, activeTab === 'CANCELLED' ? styles.tabButtonActive : null]}
             activeOpacity={0.85}
-            onPress={() => setActiveStatus('CANCELLED')}>
-            <Text style={[styles.tabText, activeStatus === 'CANCELLED' ? styles.tabTextActive : null]}>
+            onPress={() => setActiveTab('CANCELLED')}>
+            <Text style={[styles.tabText, activeTab === 'CANCELLED' ? styles.tabTextActive : null]}>
               Đã hủy
             </Text>
           </TouchableOpacity>
