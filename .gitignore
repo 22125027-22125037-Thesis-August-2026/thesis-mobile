@@ -213,5 +213,9 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-App.tsx
-App.tsx
+
+# Build artifacts and crash logs
+*.apk
+*.aab
+hs_err_pid*.log
+replay_pid*.log

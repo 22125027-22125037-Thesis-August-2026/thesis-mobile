@@ -1,0 +1,144 @@
+====================================================================
+ UMATTER MOBILE APP
+ BUILD AND RUN GUIDE (HuongDanSuDung)
+====================================================================
+
+This file explains how to compile and run the application only. For
+environment setup, tool versions, and library installation, see
+HuongDanCaiDat.txt first.
+
+
+1. PREREQUISITES
+--------------------------------------------------------------------
+Before continuing, make sure that:
+
+  - All tools listed in HuongDanCaiDat.txt are installed (Node,
+    JDK, Android SDK, NDK).
+  - "npm ci" has been run successfully in the project root, so that
+    the node_modules folder exists.
+  - android/local.properties has been created and points to your
+    Android SDK.
+  - A target device is available:
+      * A physical Android device with USB debugging enabled and
+        connected by USB, or
+      * An Android emulator built for the arm64-v8a image (see the
+        ABI note in HuongDanCaiDat.txt).
+  - The device is visible to adb. You can check this by running:
+
+      adb devices
+
+    The device should appear in the list with status "device".
+
+
+2. RUN IN DEVELOPMENT MODE (DEBUG)
+--------------------------------------------------------------------
+Two terminals are needed.
+
+  Terminal 1, start the Metro bundler (must stay running):
+
+      npm start
+
+  Terminal 2, build, install and launch the debug app:
+
+      npm run android
+
+  The second command compiles the native Android project, installs
+  the APK on the connected device or emulator, and opens the app,
+  which connects back to the Metro bundler from terminal 1 for the
+  JavaScript bundle.
+
+  Note: the first build after a clean checkout typically takes
+  20 to 40 minutes, because the native C++ code (New Architecture)
+  must be compiled from scratch. This is expected and is not a
+  frozen process. Subsequent builds are much faster thanks to
+  Gradle's build cache.
+
+
+3. BUILD A RELEASE APK
+--------------------------------------------------------------------
+To produce a standalone release APK (does not require Metro to be
+running afterwards):
+
+      cd android
+      gradlew.bat assembleRelease        (Windows CMD)
+      .\gradlew assembleRelease           (Windows PowerShell)
+      ./gradlew assembleRelease           (macOS / Linux)
+
+  The resulting file is located at:
+
+      android/app/build/outputs/apk/release/app-release.apk
+
+  Two notes about this step:
+
+    - The convenience script "npm run build:android" defined in
+      package.json runs "cd android && gradlew assembleRelease".
+      This syntax works in Windows CMD but fails in Windows
+      PowerShell, because PowerShell 5.1 does not support the "&&"
+      operator and requires a ".\" prefix to run a local script.
+      For this reason, run the gradlew commands directly as shown
+      above rather than through the npm script when using
+      PowerShell.
+
+    - The production signing key is not included in this package.
+      android/app/build.gradle falls back to signing release builds
+      with the debug key automatically when the release signing
+      properties are not present, so the command above will still
+      complete and produce an installable APK.
+
+
+4. INSTALL THE APK ON A DEVICE
+--------------------------------------------------------------------
+With a device connected and visible to adb:
+
+      adb install -r android/app/build/outputs/apk/release/app-release.apk
+
+  Alternatively, copy the APK file to the device by any other means
+  (file transfer, cloud storage, email) and open it on the device to
+  install it. The device may need "install from unknown sources"
+  enabled depending on its Android version and source of the file.
+
+
+5. OTHER USEFUL BUILD COMMANDS
+--------------------------------------------------------------------
+      npm run lint                  Run ESLint over the project.
+
+      cd android
+      gradlew.bat clean              (Windows CMD)
+      .\gradlew clean                 (Windows PowerShell)
+      ./gradlew clean                 (macOS / Linux)
+                                     Remove previous Gradle build
+                                     output, useful if a build
+                                     fails in a way that looks like
+                                     stale cache.
+
+      npm start -- --reset-cache    Restart Metro with its cache
+                                     cleared, useful if changes are
+                                     not being picked up.
+
+
+6. TROUBLESHOOTING
+--------------------------------------------------------------------
+  Error: INSTALL_FAILED_NO_MATCHING_ABIS
+    Cause: the target device or emulator is not arm64. See the ABI
+    note in HuongDanCaiDat.txt section 6.
+
+  Error: SDK location not found
+    Cause: android/local.properties is missing or does not point to
+    a valid Android SDK path. See section 3 of HuongDanCaiDat.txt.
+
+  Error: Unsupported class file major version
+    Cause: the installed JDK is older than required. Install JDK 17
+    or newer, or use the JDK bundled with Android Studio.
+
+  Metro is running but the app cannot connect to it
+    Try: adb reverse tcp:8081 tcp:8081
+    (needed for some physical devices connected by USB)
+
+  Gradle build runs out of memory
+    Increase org.gradle.jvmargs in android/gradle.properties, for
+    example -Xmx4096m can be raised if enough RAM is available.
+
+
+====================================================================
+ End of HuongDanSuDung.txt.
+====================================================================

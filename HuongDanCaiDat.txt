@@ -1,0 +1,256 @@
+====================================================================
+ UMATTER MOBILE APP
+ INSTALLATION GUIDE (HuongDanCaiDat)
+====================================================================
+
+1. OVERVIEW
+--------------------------------------------------------------------
+uMatter is a bare React Native CLI application (React Native 0.83.1,
+not Expo). It is a mobile client only. The backend services (auth,
+tracking, social, notification, etc.) run on a remote server and are
+not part of this source package.
+
+Only the Android platform is fully configured and supported in this
+project. The ios/ folder contains the standard React Native project
+skeleton, but CocoaPods has never been installed for it (no
+Podfile.lock, no GoogleService-Info.plist), so it will not build out
+of the box.
+
+This package contains source code only. All third party libraries
+have been removed and must be installed with npm as described in
+section 4. Build caches, compiled binaries (APK), and IDE generated
+files have also been removed since they are not needed to build the
+project from source.
+
+
+2. REQUIRED TOOLS AND ENVIRONMENT
+--------------------------------------------------------------------
+Install the following before opening the project:
+
+  Component              Required version         Notes
+  ----------------------------------------------------------------
+  Node.js                20.x or newer             Required by
+                                                    package.json
+                                                    "engines" field.
+                                                    Download from
+                                                    https://nodejs.org
+
+  npm                     bundled with Node         This project uses
+                                                    npm only. Do not
+                                                    use yarn or pnpm,
+                                                    there is no
+                                                    yarn.lock or
+                                                    pnpm-lock.yaml.
+
+  JDK (Java)              17 or newer               Required to run
+                                                    Gradle 9 and the
+                                                    Android Gradle
+                                                    Plugin. This is
+                                                    the most common
+                                                    setup mistake:
+                                                    if you see an
+                                                    error such as
+                                                    "Unsupported
+                                                    class file major
+                                                    version", your
+                                                    JDK is too old.
+                                                    Android Studio
+                                                    ships its own
+                                                    bundled JDK 17+
+                                                    which can be
+                                                    used instead of
+                                                    a separate
+                                                    install.
+
+  Android Studio          Recent stable release     Used to install
+                                                    the Android SDK
+                                                    components below
+                                                    and to manage
+                                                    emulators.
+
+  Android SDK Platform    API 36                    compileSdk and
+                                                    targetSdk are
+                                                    both 36. Minimum
+                                                    supported device
+                                                    version is API 28
+                                                    (Android 9.0).
+
+  Android Build Tools     35.0.0                    Install through
+                                                    Android Studio
+                                                    SDK Manager.
+
+  Android NDK             27.1.12297006             Required, this
+                                                    project compiles
+                                                    native C++ code.
+                                                    Install the exact
+                                                    version through
+                                                    Android Studio
+                                                    SDK Manager,
+                                                    SDK Tools tab,
+                                                    Show Package
+                                                    Details.
+
+  Gradle                  9.0.0                     Do not install
+                                                    manually. The
+                                                    Gradle wrapper
+                                                    (gradlew /
+                                                    gradlew.bat)
+                                                    included in the
+                                                    android/ folder
+                                                    downloads it
+                                                    automatically on
+                                                    first run.
+
+  Kotlin                  2.1.20                    Managed by
+                                                    Gradle, no manual
+                                                    install needed.
+
+  RAM                     8 GB or more recommended  The native build
+                                                    is memory heavy.
+                                                    Gradle in this
+                                                    project is already
+                                                    configured with a
+                                                    4 GB heap and a
+                                                    limited number of
+                                                    parallel workers
+                                                    to reduce the risk
+                                                    of out of memory
+                                                    errors on modest
+                                                    machines.
+
+An Android device (physical, USB debugging enabled) or an emulator
+image is also required to run the app. See the note about CPU
+architecture in section 6.
+
+
+3. ANDROID SDK CONFIGURATION
+--------------------------------------------------------------------
+The file android/local.properties is machine specific and is
+intentionally NOT included in this package. Create it yourself
+after installing the Android SDK:
+
+  1. Create a file named "local.properties" inside the android/
+     folder (same folder as build.gradle).
+  2. Add a single line pointing to your SDK installation, for
+     example on Windows:
+
+       sdk.dir=C:\\Users\\YourName\\AppData\\Local\\Android\\Sdk
+
+     On macOS/Linux:
+
+       sdk.dir=/Users/YourName/Library/Android/sdk
+
+     Use double backslashes on Windows as shown above.
+
+  Alternatively, you can set the ANDROID_HOME environment variable
+  instead of creating local.properties.
+
+
+4. INSTALLING LIBRARIES (REQUIRED STEP)
+--------------------------------------------------------------------
+This package does not include the node_modules folder. All
+dependencies are declared in package.json and locked to exact
+versions in package-lock.json. To install them:
+
+  1. Open a terminal in the project root folder (the folder that
+     contains package.json).
+  2. Run:
+
+       npm ci
+
+     "npm ci" is recommended over "npm install" because it installs
+     the exact versions recorded in package-lock.json, which
+     guarantees the same dependency tree used during development.
+     If npm ci is not available in your npm version, "npm install"
+     can be used instead.
+
+  3. An internet connection is required. The first install
+     typically takes a few minutes and downloads roughly 1.5 GB
+     into node_modules (this is normal for a React Native project
+     with this many native modules).
+
+  4. This project also runs "patch-package" automatically after
+     install (via the "postinstall" script). No patches are
+     currently defined, so this step is harmless and can be
+     ignored if it prints nothing.
+
+No other manual library installation step is required. Native
+Android dependencies (Kotlin/Java libraries used by native modules)
+are declared in android/app/build.gradle and are downloaded
+automatically by Gradle the first time the project is built.
+
+
+5. MAIN LIBRARIES USED IN THIS PROJECT
+--------------------------------------------------------------------
+The full list is in package.json. Main groups:
+
+  - Core framework: react 19.2.0, react-native 0.83.1
+  - Navigation: @react-navigation/native, native-stack, bottom-tabs
+    (v7)
+  - Networking: axios (REST), @stomp/stompjs (WebSocket, used for
+    real time chat)
+  - Push notifications: @react-native-firebase/app,
+    @react-native-firebase/messaging (v24), @notifee/react-native
+    (v9, local/scheduled notifications)
+  - UI and media: react-native-svg, react-native-calendars,
+    react-native-chart-kit, react-native-vector-icons,
+    react-native-video, react-native-webview,
+    react-native-youtube-iframe
+  - Internationalization: i18next, react-i18next (Vietnamese and
+    English)
+  - Storage and security: @react-native-async-storage/async-storage,
+    crypto-js, react-native-pure-jwt
+
+All of the above are installed automatically by "npm ci" in
+section 4. No additional download or manual configuration is
+needed for these.
+
+
+6. SPECIAL CONFIGURATION NOTES
+--------------------------------------------------------------------
+  - New Architecture (Fabric / TurboModules) is enabled for this
+    project, and the Hermes JavaScript engine is used.
+
+  - The project is currently configured to build only the arm64-v8a
+    ABI (see android/gradle.properties,
+    reactNativeArchitectures=arm64-v8a). This means:
+      * Installing the app on a standard x86_64 emulator image will
+        fail with an error similar to
+        "INSTALL_FAILED_NO_MATCHING_ABIS".
+      * To run the app, use one of the following:
+          a) A physical Android device (most phones are arm64), or
+          b) An emulator image built for arm64-v8a, or
+          c) Edit android/gradle.properties and change
+             reactNativeArchitectures to
+             "armeabi-v7a,arm64-v8a,x86,x86_64" to build all ABIs
+             (this increases build time and APK size).
+
+  - Firebase is already configured through
+    android/app/google-services.json, which is included in this
+    package. No additional Firebase setup is required to build the
+    app. This file only contains a public client identifier for the
+    Firebase project, not a private credential.
+
+  - Two custom native modules are included: a step counter (uses the
+    ACTIVITY_RECOGNITION permission and the device step sensor) and
+    a home screen mood widget. Both require a physical device to be
+    tested fully, since emulators may not provide the required
+    sensors.
+
+  - The app connects to a remote backend server. In debug builds it
+    points to a development server; in release builds it points to
+    the production HTTPS domain. See src/api/axiosClient.ts for the
+    exact addresses. The backend server is not part of this package
+    and must be reachable over the network for the app to function
+    beyond its offline screens.
+
+  - iOS is not supported by this package as distributed. Building
+    for iOS would additionally require Xcode, CocoaPods (Ruby
+    bundler, see the included Gemfile), and a
+    GoogleService-Info.plist file, none of which are set up here.
+
+
+====================================================================
+ End of HuongDanCaiDat.txt. See HuongDanSuDung.txt for build and
+ run instructions.
+====================================================================
