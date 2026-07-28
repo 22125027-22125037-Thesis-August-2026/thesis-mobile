@@ -231,8 +231,23 @@ export type AppointmentStatus =
   | 'REQUESTED'
   | 'UPCOMING'
   | 'IN_PROGRESS'
-  | 'COMPLETED'
+  | 'PATIENT_COMPLETE'
+  | 'PROFESSIONAL_COMPLETE'
+  | 'OVERALL_COMPLETE'
   | 'CANCELLED';
+
+// Any of the three completion variants a backend appointment can land in
+// once the session is over (patient reviewed and/or therapist finalized a
+// note). Use this instead of comparing against a single "COMPLETED" value.
+export const COMPLETED_APPOINTMENT_STATUSES: AppointmentStatus[] = [
+  'PATIENT_COMPLETE',
+  'PROFESSIONAL_COMPLETE',
+  'OVERALL_COMPLETE',
+];
+
+export function isCompletedAppointmentStatus(status: AppointmentStatus): boolean {
+  return (COMPLETED_APPOINTMENT_STATUSES as string[]).includes(status);
+}
 
 export type AppointmentMode = 'VIDEO' | 'TEXT' | 'CHAT';
 
@@ -321,7 +336,11 @@ export interface UpcomingAppointment {
   reason?: string;
 }
 
-export type AppointmentHistoryStatus = 'COMPLETED' | 'CANCELLED';
+export type AppointmentHistoryStatus =
+  | 'PATIENT_COMPLETE'
+  | 'PROFESSIONAL_COMPLETE'
+  | 'OVERALL_COMPLETE'
+  | 'CANCELLED';
 
 export interface AppointmentHistoryEntry {
   appointmentId: string;
@@ -348,7 +367,7 @@ export interface UnreviewedAppointment {
   location: string;
   slotId: string;
   mode: AppointmentMode;
-  status: 'COMPLETED';
+  status: 'PROFESSIONAL_COMPLETE';
   startDatetime: string;
 }
 
