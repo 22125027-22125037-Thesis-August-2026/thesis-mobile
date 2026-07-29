@@ -4,7 +4,9 @@ Everything you need to publish **uMatter** (`com.apcsthesisteam.umatter`) to Goo
 **Vietnam + South Korea**. Work top‑to‑bottom. Items marked ⛔ are blockers.
 
 - **App name:** uMatter
-- **Package:** `com.apcsthesisteam.umatter`  ·  **versionCode** 2  ·  **versionName** 1.0
+- **Package:** `com.apcsthesisteam.umatter`  ·  **versionCode** 4  ·  **versionName** 1.1
+  (versionCode 2 / 1.0 is published to Closed testing; versionCode 3 was already consumed
+  and can't be reused — codes are never reusable)
 - **Category:** Health & Fitness
 - **Contact email:** apcsthesisteam@gmail.com
 - **Privacy policy URL:** `https://umatter-apcs.duckdns.org/legal/privacy.html`
@@ -275,10 +277,17 @@ Provide in **App access → All functionality → Add instructions**:
 
 ## 10. Closed-test tracker (live)
 
-**Status:** Closed testing **version 2** submitted — *In review* (quick checks passed,
-awaiting Google reviewers). Package `com.apcsthesisteam.umatter`, versionCode **2**,
-countries **Vietnam + South Korea**. The `FOREGROUND_SERVICE_MEDIA_PROJECTION`
-permission was removed in v2, so no media-projection declaration/video is required.
+**Status:** versionCode **2** is live on the *uMatter Closed Testing* track (released
+3 Jul 2026, available to testers) and on Internal testing. versionCode **3** was consumed
+(already uploaded) and cannot be reused. versionCode **4** (versionName 1.1) is built and
+signed — adds the confetti trophy burst, the YouTube meditation player, and the split
+appointment-completion statuses — and is ready to upload as the next closed-testing
+release. Package `com.apcsthesisteam.umatter`, countries **Vietnam + South Korea**. The
+`FOREGROUND_SERVICE_MEDIA_PROJECTION` permission was removed in v2, so no
+media-projection declaration/video is required.
+
+> Play permanently reserves a version code once it is uploaded, so every new build must
+> increment `versionCode` in `android/app/build.gradle`. Next build after this one = 5.
 
 ### 12-tester / 14-day window (personal-account gate)
 
