@@ -114,6 +114,9 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            // Distinct package id so a dev build installs side-by-side with the Play Store
+            // closed-testing build (com.apcsthesisteam.umatter) instead of colliding with it.
+            applicationIdSuffix ".dev"
             // Dev builds allow cleartext (Metro bundler + local HTTP backend).
             manifestPlaceholders = [usesCleartextTraffic: "true"]
         }
