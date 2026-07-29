@@ -279,6 +279,8 @@ const DiaryEntryScreen: React.FC = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // Tags and the note are both optional in the UI, but the API rejects blank
+  // content — fall back to the emotion label, same as the home mood card.
   const buildContent = (): string => {
     const parts: string[] = [];
     if (selectedTags.length > 0) {
@@ -286,6 +288,9 @@ const DiaryEntryScreen: React.FC = () => {
     }
     if (quickNote.trim()) {
       parts.push(`Note: ${quickNote.trim()}`);
+    }
+    if (parts.length === 0) {
+      return `Cảm xúc hôm nay: ${PLUTCHIK_EMOTIONS[selectedEmotion].label}`;
     }
     return parts.join(' | ');
   };
@@ -296,7 +301,8 @@ const DiaryEntryScreen: React.FC = () => {
 
     const emotion = PLUTCHIK_EMOTIONS[selectedEmotion];
     const diaryPayload = {
-      title,
+      // Omit an untouched title entirely — the API rejects a blank one on update.
+      title: title.trim() || undefined,
       content: buildContent(),
       moodTag: emotion.moodTag,
       positivityScore: emotion.score,
@@ -322,7 +328,8 @@ const DiaryEntryScreen: React.FC = () => {
       // Show celebration sheet; navigate back after it closes
       setCelebrationStatus(markCategoryLogged('diary'));
       setShowCelebration(true);
-    } catch {
+    } catch (error) {
+      console.error('[DiaryEntry] Failed to save entry:', error);
       Alert.alert(t('entry.errorTitle'), t('entry.errorCreateDiary'));
     } finally {
       setIsSubmitting(false);
