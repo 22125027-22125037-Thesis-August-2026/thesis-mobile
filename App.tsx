@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, DeviceEventEmitter, View } from 'react-native';
+import { ActivityIndicator, AppState, DeviceEventEmitter, View } from 'react-native';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -24,7 +24,9 @@ import { AppText } from '@/components';
 import { TourOverlay } from '@/components/tour';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
 import { TourProvider } from '@/context/TourContext';
+import { STEPS_DAILY_GOAL } from '@/hooks/useHomeDashboardData';
 import { listenForForegroundNotifications } from '@/services/notifications';
+import { syncRecentDays } from '@/services/stepTracker';
 import { rescheduleFocusModeIfNeeded } from '@/utils/focusModeNotifications';
 import {
   WidgetBridge,
@@ -248,6 +250,22 @@ const AppNav: React.FC = () => {
   useEffect(() => {
     void rescheduleFocusModeIfNeeded();
   }, []);
+
+  // Reconcile today + the last 7 days of steps on app open and whenever the app
+  // returns to the foreground, so a day the user skipped opening the app still
+  // gets back-filled from Health Connect's historical daily totals.
+  useEffect(() => {
+    if (!auth?.userToken) return;
+    const profileId = auth.userInfo?.profileId ?? '';
+    const run = (): void => {
+      void syncRecentDays(profileId, 7, STEPS_DAILY_GOAL);
+    };
+    run();
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') run();
+    });
+    return () => subscription.remove();
+  }, [auth?.userToken, auth?.userInfo?.profileId]);
 
   const handleTarget = useCallback(
     (target: string | null | undefined): void => {

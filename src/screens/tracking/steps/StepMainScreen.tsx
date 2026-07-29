@@ -32,9 +32,10 @@ import { STEPS_DAILY_GOAL } from '@/hooks/useHomeDashboardData';
 import { RootStackParamList } from '@/navigation';
 import {
   getTodaySteps,
+  requestHealthConnectPermission,
   requestPermission,
   subscribe,
-  syncTodaySteps,
+  syncRecentDays,
 } from '@/services/stepTracker';
 import { COLORS, SPACING } from '@/theme';
 import { StepLogResponse } from '@/types';
@@ -134,6 +135,8 @@ const StepMainScreen: React.FC = () => {
 
       if (isOwnProfile) {
         await requestPermission();
+        // Ask once for Health Connect so the last-7-days back-fill can run.
+        await requestHealthConnectPermission();
 
         const initialToday = await getTodaySteps();
         if (isMounted) setTodaySteps(initialToday);
@@ -143,8 +146,8 @@ const StepMainScreen: React.FC = () => {
           if (isMounted) setTodaySteps(live);
         });
 
-        // Push today's count to the backend (safe to call on mount).
-        await syncTodaySteps(goal);
+        // Push today + back-fill the last 7 days to the backend.
+        await syncRecentDays(profileId, 7, goal);
       }
 
       await fetchWeek();
@@ -157,18 +160,18 @@ const StepMainScreen: React.FC = () => {
       isMounted = false;
       unsubscribe?.();
     };
-  }, [fetchWeek, goal, isOwnProfile]);
+  }, [fetchWeek, goal, isOwnProfile, profileId]);
 
   const handleRefresh = useCallback(async (): Promise<void> => {
     setIsRefreshing(true);
     if (isOwnProfile) {
       const live = await getTodaySteps();
       setTodaySteps(live);
-      await syncTodaySteps(goal);
+      await syncRecentDays(profileId, 7, goal);
     }
     await fetchWeek();
     setIsRefreshing(false);
-  }, [fetchWeek, goal, isOwnProfile]);
+  }, [fetchWeek, goal, isOwnProfile, profileId]);
 
   const weekTrend = useMemo<number[]>(() => {
     // Latest log per weekday (Mon..Sun) within the current week.

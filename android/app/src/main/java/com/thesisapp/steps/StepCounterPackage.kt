@@ -7,7 +7,10 @@ import com.facebook.react.uimanager.ViewManager
 
 class StepCounterPackage : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
-        listOf(StepCounterModule(reactContext))
+        listOf(
+            StepCounterModule(reactContext),
+            HealthConnectModule(reactContext),
+        )
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
         emptyList()
