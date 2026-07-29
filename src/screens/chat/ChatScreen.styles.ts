@@ -242,6 +242,9 @@ export const styles = StyleSheet.create({
   // ===== INPUT BAR =====
   inputSafeArea: {
     backgroundColor: COLORS.surfaceRaised,
+    // `edges={['bottom']}` is additive, so this stacks on top of the system inset.
+    // Keeps the bar off the screen edge even where that inset resolves to zero.
+    paddingBottom: SPACING.sm,
   },
   inputToolbar: {
     flexDirection: 'row',
