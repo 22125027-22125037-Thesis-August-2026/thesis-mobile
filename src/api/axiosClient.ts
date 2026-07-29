@@ -3,12 +3,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import i18next from 'i18next';
 
-// Dev builds talk to the VM over plain HTTP (Metro / local testing); release
-// builds MUST use HTTPS so all traffic is encrypted in transit — required for
-// Google Play (sensitive health data) and enforced by the release manifest.
-export const BASE_URL = __DEV__
-  ? 'http://85.211.241.204:8080'
-  : 'https://umatter-apcs.duckdns.org';
+// Release builds always go over HTTPS through Caddy (required for Google Play, sensitive
+// health data — cleartext is forbidden at the manifest level for release).
+
+export const BASE_URL = __DEV__ ? 'https://umatter-apcs.duckdns.org' : 'https://umatter-apcs.duckdns.org';
 
 // TODO: REMOVE HARDCODED TOKEN AFTER UI TESTING
 const HARDCODED_TEST_TOKEN = '';
