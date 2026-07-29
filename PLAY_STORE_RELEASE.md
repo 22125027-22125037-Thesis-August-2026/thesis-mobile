@@ -212,31 +212,20 @@ Fill this in **App content → Content ratings**. Answer honestly:
 | Content ratings | Complete questionnaire (Section 4) |
 | Government apps | No |
 | Financial features | No |
-| Health apps | ⛔ **Required** — see below. Complete the Health declaration
-  honestly: you connect users to therapists but are **not** a licensed provider
-  yourself. |
+| Health apps | If prompted (therapy/health features), complete the Health
+  declaration honestly: you connect users to therapists but are **not** a
+  licensed provider yourself. |
 | News app | No |
 | Data safety | Section 3 |
 
-### ⛔ Health Connect declaration (required from the build that adds steps back-fill)
-
-The app now requests `android.permission.health.READ_STEPS` so the step tracker can
-back-fill days the user never opened the app. Any `android.permission.health.*`
-permission is **restricted**: Play blocks the release until the *Health apps
-declaration* form (App content → Health apps) is filled in and approved. Uploading a
-build with the permission and no approved declaration gets the release rejected, so
-submit the form **before** promoting the build.
-
-What to say on the form:
-- **Health Connect data types requested:** *Steps* — read only. No write access, no
-  other data type.
-- **Why:** the hardware step counter only reports a single cumulative since-boot
-  value, so it cannot reconstruct a day the app was closed. Health Connect's daily
-  totals let the user's step history stay complete.
-- **How the data is used:** shown to the user in their own step history and stored on
-  the uMatter backend against their profile. Not shared with third parties, not used
-  for ads, not used to train models.
-- Users can decline: the app degrades to today's live sensor count only.
+> **Deliberately not integrated: Health Connect.** Reading step history needs
+> `android.permission.health.READ_STEPS`, and any `android.permission.health.*`
+> permission is restricted — Play blocks the release until the *Health apps
+> declaration* form is filled in and approved. We do not want the app classed as a
+> health app, so the step tracker uses only the hardware step counter
+> (`ACTIVITY_RECOGNITION`, a normal runtime permission). Trade-off: a day the user
+> never opens the app cannot be recovered, because the sensor exposes only a single
+> cumulative since-boot value.
 
 ---
 

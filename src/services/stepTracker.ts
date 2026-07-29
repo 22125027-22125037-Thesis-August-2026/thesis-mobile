@@ -2,23 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PermissionsAndroid, Platform } from 'react-native';
 
 import { stepsApi } from '@/api';
-import { HealthConnect } from '@/native/HealthConnect';
 import { StepCounter } from '@/native/StepCounter';
 
 const BASELINE_STORAGE_KEY = '@steps/daily_baseline';
-const HC_PROMPTED_STORAGE_KEY = '@steps/health_connect_prompted';
 
 const STEP_SENSOR_SOURCE = 'DEVICE_SENSOR';
-const HEALTH_CONNECT_SOURCE = 'HEALTH_CONNECT';
-
-// How many trailing calendar days (including today) to reconcile on app open.
-const RECENT_SYNC_DAYS = 7;
-
-const addDays = (date: Date, delta: number): Date => {
-  const next = new Date(date);
-  next.setDate(next.getDate() + delta);
-  return next;
-};
 
 interface DailyBaseline {
   date: string; // YYYY-MM-DD (local calendar date)
@@ -151,118 +139,10 @@ export const syncTodaySteps = async (
   }
 };
 
-/** Whether Health Connect (the historical per-day source) is usable here. */
-export const isHealthConnectAvailable = (): Promise<boolean> =>
-  HealthConnect.isAvailable();
-
-/**
- * Prompts for Health Connect's READ_STEPS permission. No-op (returns false) on
- * iOS or when Health Connect is unavailable; resolves true immediately if the
- * permission was already granted.
- *
- * Health Connect gives no "don't ask again" signal, so asking on every screen
- * mount would re-open the system sheet after the user declined. The first ask is
- * remembered and later ones are skipped unless `force` is set (use that for an
- * explicit user action, e.g. a "connect Health Connect" button).
- */
-export const requestHealthConnectPermission = async (
-  { force = false }: { force?: boolean } = {},
-): Promise<boolean> => {
-  if (!isAndroid()) return false;
-  if (!(await HealthConnect.isAvailable())) return false;
-  if (await HealthConnect.hasPermission()) return true;
-
-  if (!force) {
-    try {
-      if (await AsyncStorage.getItem(HC_PROMPTED_STORAGE_KEY)) return false;
-      await AsyncStorage.setItem(HC_PROMPTED_STORAGE_KEY, '1');
-    } catch (err) {
-      console.log('[stepTracker] health connect prompt flag failed:', err);
-    }
-  }
-
-  return HealthConnect.requestPermission();
-};
-
-/**
- * Reconciles the last `days` calendar days (including today) with the backend so
- * a day the app was never opened still gets recorded:
- *   - today      -> live hardware sensor value (always available)
- *   - prior days -> Health Connect's per-day totals (the only on-device source
- *                   of historical daily step counts)
- *
- * Existing backend values are read first and a day is only written when the new
- * total is strictly higher, so a correct value is never regressed by a lower or
- * empty Health Connect reading. Safe to call on every app open. No-op on iOS.
- */
-export const syncRecentDays = async (
-  profileId: string,
-  days: number = RECENT_SYNC_DAYS,
-  goal?: number,
-): Promise<void> => {
-  if (!isAndroid()) return;
-
-  // Always capture today's live count first — this path works even without
-  // Health Connect, preserving the previous behaviour as a baseline.
-  await syncTodaySteps(goal);
-
-  try {
-    if (!(await HealthConnect.isAvailable())) return;
-    if (!(await HealthConnect.hasPermission())) return;
-
-    const today = new Date();
-    const startKey = toLocalDateKey(addDays(today, -(days - 1)));
-    const endKey = toLocalDateKey(today);
-
-    const daily = await HealthConnect.getDailySteps(startKey, endKey);
-    if (daily.length === 0) return;
-
-    // Existing backend totals so we never overwrite an already-correct day with
-    // a lower Health Connect value (keyed by entryDate, keeping the max seen).
-    const existing = new Map<string, number>();
-    if (profileId) {
-      try {
-        const logs = await stepsApi.getStepLogsInRange(profileId, startKey, endKey);
-        for (const log of logs) {
-          if (!log.entryDate) continue;
-          const prev = existing.get(log.entryDate) ?? 0;
-          if (log.stepCount > prev) existing.set(log.entryDate, log.stepCount);
-        }
-      } catch (err) {
-        console.log('[stepTracker] range fetch failed:', err);
-      }
-    }
-
-    const sensorToday = await getTodaySteps();
-
-    for (const { date, count } of daily) {
-      // Today: trust the live sensor if it is ahead of Health Connect.
-      const target =
-        date === endKey ? Math.max(Math.round(count), sensorToday) : Math.round(count);
-      const current = existing.get(date) ?? 0;
-      if (target <= current) continue; // never regress an existing value
-
-      await stepsApi.upsertStepLog({
-        stepCount: target,
-        entryDate: date,
-        source: date === endKey ? STEP_SENSOR_SOURCE : HEALTH_CONNECT_SOURCE,
-        // Sent for every day, not just today: the backend resets an omitted goal
-        // to its own default, which would silently rewrite the goal on back-filled days.
-        ...(goal !== undefined ? { goal } : {}),
-      });
-    }
-  } catch (err) {
-    console.log('[stepTracker] syncRecentDays failed:', err);
-  }
-};
-
 export const stepTracker = {
   requestPermission,
   isAvailable,
   getTodaySteps,
   subscribe,
   syncTodaySteps,
-  syncRecentDays,
-  isHealthConnectAvailable,
-  requestHealthConnectPermission,
 };
