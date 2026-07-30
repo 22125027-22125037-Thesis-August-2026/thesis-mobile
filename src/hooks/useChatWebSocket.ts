@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TextDecoder, TextEncoder } from 'text-encoding';
+
+import { refreshAccessToken } from '@/api/axiosClient';
+
+// Same key axiosClient persists the rotated access token under.
+const ACCESS_TOKEN_KEY = 'userToken';
 
 // React Native runtime may miss these globals; STOMP relies on them.
 const globalScope = globalThis as unknown as {
@@ -78,9 +84,16 @@ export const useChatWebSocket = ({
   const [isConnected, setIsConnected] = useState(false);
   const clientRef = useRef<Client | null>(null);
   const subscriptionRef = useRef<StompSubscription | null>(null);
+  const tokenRef = useRef<string | null>(token);
+  const didForceRefreshRef = useRef(false);
+
+  // Kept in a ref so a token rotation refreshes the CONNECT header without
+  // tearing down a healthy socket (the effect only re-runs on login/logout).
+  tokenRef.current = token;
+  const hasToken = !!token;
 
   useEffect(() => {
-    if (!token) {
+    if (!hasToken) {
       console.warn('WebSocket: No token available, skipping connection');
       setIsConnected(false);
       return;
@@ -88,22 +101,34 @@ export const useChatWebSocket = ({
 
     console.log('WebSocket: Attempting connection', {
       brokerURL: brokerUrl,
-      hasToken: !!token,
+      hasToken,
     });
 
     const client = new Client({
       brokerURL: brokerUrl,
       reconnectDelay: 5000,
       connectHeaders: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${tokenRef.current ?? ''}`,
       },
       forceBinaryWSFrames: true,
       appendMissingNULLonIncoming: true,
       debug: (str) => {
         console.log('[STOMP DEBUG]:', str); // <--- ADD THIS LINE
       },
+      // Re-read the token on *every* attempt, including reconnects. Access
+      // tokens last 15 min and axiosClient rotates them into AsyncStorage
+      // without going through React state, so a client that captured its
+      // header once would replay an expired JWT forever — the broker rejects
+      // each CONNECT and the UI sits on "Connecting…".
+      beforeConnect: async () => {
+        const storedToken = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
+        client.connectHeaders = {
+          Authorization: `Bearer ${storedToken ?? tokenRef.current ?? ''}`,
+        };
+      },
       onConnect: () => {
         console.log('STOMP connected successfully', { brokerURL: brokerUrl });
+        didForceRefreshRef.current = false;
         setIsConnected(true);
 
         subscriptionRef.current?.unsubscribe();
@@ -128,6 +153,22 @@ export const useChatWebSocket = ({
           headers: frame.headers,
           brokerURL: brokerUrl,
         });
+
+        // The stored token can be stale too (e.g. a session restored at cold
+        // start before any REST call has rotated it). Force one rotation and
+        // let stompjs's own reconnect pick it up via beforeConnect.
+        //
+        // We rotate on *any* ERROR frame rather than sniffing it for auth
+        // wording: social-api declares a SocialStompErrorHandler but never
+        // registers it, so a rejected CONNECT arrives as the generic
+        // "Failed to send message to ExecutorSubscribableChannel[...]" with an
+        // empty body — there is no 401 to match on. Strictly once per
+        // connected-streak: refresh tokens rotate on use, so a retry storm
+        // would trip the backend's reuse-detection and revoke the session.
+        if (!didForceRefreshRef.current) {
+          didForceRefreshRef.current = true;
+          void refreshAccessToken();
+        }
       },
       onWebSocketClose: () => {
         console.log('WebSocket closed - will attempt reconnection', {
@@ -158,7 +199,7 @@ export const useChatWebSocket = ({
       setIsConnected(false);
       void client.deactivate();
     };
-  }, [brokerUrl, subscriptionDestination, token]);
+  }, [brokerUrl, hasToken, subscriptionDestination]);
 
   const sendMessage = useCallback(
     (channelId: string, content: string): boolean => {

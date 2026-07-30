@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18next from 'i18next';
 import axios from 'axios';
-import { axiosClient, setLogoutHandler } from '@/api';
+import { axiosClient, setAccessTokenHandler, setLogoutHandler } from '@/api';
 import { resetNotificationCache } from '@/api/notificationApi';
 import {
   syncDeviceTokenAfterLogin,
@@ -264,6 +264,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     hasBootstrappedRef.current = true;
     isLoggedIn();
     setLogoutHandler(logout);
+    // Access tokens expire after 15 min and axiosClient rotates them on the
+    // next 401/403. Without this, `userToken` keeps the token we started with
+    // and every consumer of it (chat's STOMP CONNECT frame) authenticates with
+    // a corpse while REST requests carry on fine.
+    setAccessTokenHandler(setUserToken);
   }, []);
 
   return (

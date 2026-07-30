@@ -1,5 +1,10 @@
 export { aiApi } from '@/api/aiApi';
-export { default as axiosClient, setLogoutHandler } from '@/api/axiosClient';
+export {
+  default as axiosClient,
+  setLogoutHandler,
+  setAccessTokenHandler,
+  refreshAccessToken,
+} from '@/api/axiosClient';
 import * as breathingApi from '@/api/breathingApi';
 import * as dataAccessGrantApi from '@/api/dataAccessGrantApi';
 import * as diaryApi from '@/api/diaryApi';

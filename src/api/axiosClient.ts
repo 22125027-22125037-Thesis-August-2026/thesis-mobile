@@ -99,6 +99,17 @@ export const setLogoutHandler = (handler: () => void) => {
   logoutHandler = handler;
 };
 
+// --- Access-token rotation notification ----------------------------------
+// The refresh below writes the rotated access token straight to AsyncStorage,
+// which React state cannot see. Anything holding the token in state (AuthContext,
+// and through it the chat WebSocket's STOMP CONNECT frame) would otherwise keep
+// replaying the expired one long after REST calls have moved on.
+let accessTokenHandler: ((token: string) => void) | null = null;
+
+export const setAccessTokenHandler = (handler: (token: string) => void) => {
+  accessTokenHandler = handler;
+};
+
 // --- Refresh-token rotation (single-flight) ------------------------------
 // The access token now expires in ~15 min, so 401s are routine. On a 401 we
 // rotate via POST /auth/refresh, persist the *new* refresh token, and replay
@@ -134,6 +145,7 @@ const performRefresh = async (): Promise<string | null> => {
       writes.push([REFRESH_TOKEN_KEY, newRefresh]);
     }
     await AsyncStorage.multiSet(writes);
+    accessTokenHandler?.(newAccess);
     return newAccess;
   } catch {
     // Bad/expired/reused refresh token — caller will fall through to logout.
@@ -150,6 +162,12 @@ const getRefreshedAccessToken = (): Promise<string | null> => {
   }
   return refreshPromise;
 };
+
+// Lets non-axios transports (the chat WebSocket) rotate the access token when
+// *their* auth fails, since they never see a 401 response. Shares the
+// single-flight promise above, so it can never double-spend a refresh token.
+export const refreshAccessToken = (): Promise<string | null> =>
+  getRefreshedAccessToken();
 
 axiosClient.interceptors.response.use(
   response => {
