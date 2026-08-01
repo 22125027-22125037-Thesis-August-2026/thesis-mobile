@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Pressable,
   TextInput,
@@ -29,7 +30,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONTS } from '@/theme';
 import { RootStackParamList } from '@/navigation';
 import { DiaryEntryResponse } from '@/types';
-import { calculateStreakFromCreatedAt } from '@/utils';
+import { calculateStreakFromCreatedAt, formatDiaryContent, normalizeVietnamese } from '@/utils';
 import { styles } from './DiaryOverviewScreen.styles';
 
 // ===== UTILITY FUNCTIONS =====
@@ -69,15 +70,6 @@ const isDateInRange = (
   return true;
 };
 
-const formatContentForDisplay = (content: string | null | undefined): string => {
-  if (!content) return '';
-  const full = content.match(/^Tags: (.*?) \| Note: ([\s\S]*)$/);
-  if (full) return `${full[1]} · ${full[2]}`;
-  const tagsOnly = content.match(/^Tags: (.*)$/);
-  if (tagsOnly) return tagsOnly[1];
-  return content;
-};
-
 // ===== MAIN COMPONENT =====
 
 const DiaryOverviewScreen: React.FC = () => {
@@ -105,7 +97,10 @@ const DiaryOverviewScreen: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+    // Was `[]` — stale-closure bug: refetching after switching profiles (viewProfileId) or on
+    // first sign-in (userInfo becoming available) silently reused whichever ids were captured
+    // on the very first render.
+  }, [viewProfileId, userInfo?.profileId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -118,14 +113,22 @@ const DiaryOverviewScreen: React.FC = () => {
   const filteredEntries = useMemo(() => {
     let filtered = entries;
 
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        entry =>
-          entry.title?.toLowerCase().includes(query) ||
-          entry.content?.toLowerCase().includes(query),
-      );
+    // Search filter — accent-insensitive (so "buon" matches "buồn") and matched against the
+    // human-readable content (not the raw "Tags: ... | Note: ..." encoding, which would make
+    // searching "tags" or "note" match every entry). Every whitespace-separated token in the
+    // query must match somewhere in the title+content, so "buon vui" finds an entry containing
+    // both words in any order.
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
+      const queryTokens = normalizeVietnamese(trimmedQuery)
+        .split(/\s+/)
+        .filter(Boolean);
+      filtered = filtered.filter(entry => {
+        const haystack = normalizeVietnamese(
+          `${entry.title ?? ''} ${formatDiaryContent(entry.content)}`,
+        );
+        return queryTokens.every(token => haystack.includes(token));
+      });
     }
 
     // Date range filter
@@ -146,6 +149,36 @@ const DiaryOverviewScreen: React.FC = () => {
       return;
     }
     navigation.navigate('DiaryEntry', { entryId });
+  };
+
+  const deleteEntry = useCallback(
+    async (entryId: string): Promise<void> => {
+      const previous = entries;
+      setEntries(prev => prev.filter(entry => entry.id !== entryId));
+      try {
+        await diaryApi.deleteDiaryEntry(entryId);
+      } catch (error) {
+        console.error('[DiaryOverview] Failed to delete entry:', error);
+        setEntries(previous);
+        Alert.alert(t('overview.deleteError'));
+      }
+    },
+    [entries, t],
+  );
+
+  const handleDeleteEntry = (entryId: string): void => {
+    Alert.alert(
+      t('overview.deleteTitle'),
+      t('overview.deleteMessage'),
+      [
+        { text: t('overview.deleteCancel'), style: 'cancel' },
+        {
+          text: t('overview.deleteConfirm'),
+          style: 'destructive',
+          onPress: () => void deleteEntry(entryId),
+        },
+      ],
+    );
   };
 
   const handleNewEntry = () => {
@@ -241,10 +274,19 @@ const DiaryOverviewScreen: React.FC = () => {
                 <AppText style={styles.entryTitle}>{item.title}</AppText>
               )}
             </View>
+            {!viewProfileId && (
+              <Pressable
+                hitSlop={8}
+                style={styles.deleteButton}
+                onPress={() => handleDeleteEntry(item.id)}
+              >
+                <Feather name="trash-2" size={18} color={COLORS.textSecondary} />
+              </Pressable>
+            )}
           </View>
 
           <AppText style={styles.entryContent} numberOfLines={2}>
-            {formatContentForDisplay(item.content)}
+            {formatDiaryContent(item.content)}
           </AppText>
         </Pressable>
       </View>

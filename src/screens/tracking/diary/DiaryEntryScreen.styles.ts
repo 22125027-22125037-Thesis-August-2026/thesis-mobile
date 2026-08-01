@@ -39,9 +39,17 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.journalBackground,
   },
   screenTitle: {
+    flex: 1,
     fontSize: FONT_SIZES.xl,
     fontWeight: '700',
     color: COLORS.textPrimary,
+  },
+  headerDeleteButton: {
+    width: 46,
+    height: 46,
+    borderRadius: BORDER_RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   section: {
     rowGap: SPACING.sm,
@@ -194,12 +202,32 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.sm,
     paddingBottom: SPACING.xs,
   },
+  previewImageWrap: {
+    width: 64,
+    height: 64,
+  },
   previewImage: {
     width: 64,
     height: 64,
     borderRadius: BORDER_RADIUS.md,
     borderWidth: SPACING.borderWidth,
     borderColor: COLORS.borderSubtle,
+  },
+  previewImageBroken: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.inputBackground,
+  },
+  previewImageRemove: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.textPrimary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   // ── Submit ────────────────────────────────────────────────────────────────────

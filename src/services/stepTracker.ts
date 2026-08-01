@@ -4,13 +4,20 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import { stepsApi } from '@/api';
 import { StepCounter } from '@/native/StepCounter';
 
-const BASELINE_STORAGE_KEY = '@steps/daily_baseline';
+// v2: the v1 key could get corrupted by a native timeout that resolved a fake "0 steps"
+// reading, which this file's old reboot-detection logic then mistook for a real device
+// reboot — re-anchoring the baseline to 0 and reporting the full since-boot step count as
+// "today". Bumping the key discards any such corrupted value already on users' devices.
+const BASELINE_STORAGE_KEY = '@steps/daily_baseline_v2';
 
 const STEP_SENSOR_SOURCE = 'DEVICE_SENSOR';
 
 interface DailyBaseline {
   date: string; // YYYY-MM-DD (local calendar date)
   baseline: number; // cumulative sensor value at the start of `date`
+  // Last computed today-step count, shown when the sensor is momentarily unavailable so the
+  // UI doesn't fall back to a stale/incorrect value.
+  lastTodaySteps: number;
 }
 
 // Uses local calendar date (not UTC), matching useHomeDashboardData.ts so the
@@ -28,9 +35,14 @@ const readBaseline = async (): Promise<DailyBaseline | null> => {
   try {
     const raw = await AsyncStorage.getItem(BASELINE_STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as DailyBaseline;
+    const parsed = JSON.parse(raw) as Partial<DailyBaseline>;
     if (typeof parsed.date === 'string' && typeof parsed.baseline === 'number') {
-      return parsed;
+      return {
+        date: parsed.date,
+        baseline: parsed.baseline,
+        lastTodaySteps:
+          typeof parsed.lastTodaySteps === 'number' ? parsed.lastTodaySteps : 0,
+      };
     }
     return null;
   } catch {
@@ -51,25 +63,47 @@ const writeBaseline = async (baseline: DailyBaseline): Promise<void> => {
  * applying a stored daily baseline:
  *   - new day            -> baseline = current cumulative
  *   - device rebooted     -> (current < baseline) baseline = current
- * todaySteps = current - baseline. Persists the baseline when it changes.
+ * todaySteps = current - baseline. Persists the baseline (and last resolved
+ * today-step count) only when something actually changed.
+ *
+ * `cumulative` is null when the native side couldn't get a sensor reading (e.g. the user is
+ * standing still and no cached value exists yet) — in that case the baseline is left
+ * completely untouched and the last known today-step count is returned instead. Treating a
+ * missing reading as a real 0 previously caused false "device reboot" detection, which
+ * re-anchored the baseline to 0 and made the next real reading report the full since-boot
+ * step count as "today".
  */
-const resolveTodaySteps = async (cumulative: number): Promise<number> => {
+const resolveTodaySteps = async (cumulative: number | null): Promise<number> => {
   const todayKey = toLocalDateKey(new Date());
   const stored = await readBaseline();
 
+  if (cumulative === null) {
+    return stored && stored.date === todayKey ? stored.lastTodaySteps : 0;
+  }
+
   let baseline = stored?.baseline ?? cumulative;
+  let todaySteps: number;
 
   if (!stored || stored.date !== todayKey) {
     // First reading today: anchor the baseline to the current cumulative value.
     baseline = cumulative;
-    await writeBaseline({ date: todayKey, baseline });
+    todaySteps = 0;
   } else if (cumulative < baseline) {
     // Cumulative counter reset (device rebooted): re-anchor to current value.
     baseline = cumulative;
-    await writeBaseline({ date: todayKey, baseline });
+    todaySteps = 0;
+  } else {
+    todaySteps = cumulative - baseline;
   }
 
-  return Math.max(0, cumulative - baseline);
+  const unchanged =
+    stored && stored.date === todayKey && stored.baseline === baseline &&
+    stored.lastTodaySteps === todaySteps;
+  if (!unchanged) {
+    await writeBaseline({ date: todayKey, baseline, lastTodaySteps: todaySteps });
+  }
+
+  return todaySteps;
 };
 
 /**

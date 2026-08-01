@@ -7,7 +7,9 @@ import {
 
 type StepCounterNative = {
   isStepCountingAvailable: () => Promise<boolean>;
-  getCurrentStepCount: () => Promise<number>;
+  // null when the sensor hasn't produced a reading yet (e.g. user standing still and no
+  // cached value exists) — distinct from a real reading of 0 steps since boot.
+  getCurrentStepCount: () => Promise<number | null>;
   startUpdates: () => Promise<void>;
   stopUpdates: () => Promise<void>;
   // Present so NativeEventEmitter does not warn (no-ops on the native side).
@@ -44,14 +46,17 @@ export const StepCounter = {
     }
   },
 
-  /** Cumulative steps since the device last booted. */
-  getCurrentStepCount: async (): Promise<number> => {
-    if (!native) return 0;
+  /**
+   * Cumulative steps since the device last booted, or null if no reading is
+   * available yet (never a real 0 — callers must not treat null as zero).
+   */
+  getCurrentStepCount: async (): Promise<number | null> => {
+    if (!native) return null;
     try {
       return await native.getCurrentStepCount();
     } catch (err) {
       logError('getCurrentStepCount', err);
-      return 0;
+      return null;
     }
   },
 

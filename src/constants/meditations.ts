@@ -1,6 +1,8 @@
-// Placeholder catalogue for the home-screen "Thiền & thư giãn" carousel.
-// URLs are general guided-meditation videos chosen as defaults — swap them for
-// curated/licensed content before release.
+// Catalogue for the home-screen "Thiền & thư giãn" carousel. Every video is a guided
+// meditation/breathing practice narrated in Vietnamese by a Vietnamese creator, verified live
+// via the YouTube oEmbed endpoint (https://www.youtube.com/oembed?url=...) before being added
+// here. `minutes` is a best-effort estimate (from the title or typical session length for that
+// channel) since oEmbed doesn't expose exact duration.
 export type MeditationExercise = {
   id: string;
   titleKey: string;
@@ -17,21 +19,24 @@ export const MEDITATION_EXERCISES: MeditationExercise[] = [
     id: 'breath478',
     titleKey: 'home.meditation.items.breath478.title',
     categoryKey: 'home.meditation.items.breath478.category',
-    minutes: 5,
+    minutes: 10,
     icon: 'air-purifier',
     gradient: ['#4FC3F7', '#29B6F6', '#0288D1'],
     tint: 'rgba(2,136,209,0.20)',
-    youtubeUrl: 'https://www.youtube.com/watch?v=YRPh_GaiL8s',
+    // "10 Phút Tập Thở 478 Mỗi Ngày Cực Tốt Cho Phổi, Tăng Cường Sinh Lực" — Kim Ba Yoga
+    youtubeUrl: 'https://www.youtube.com/watch?v=VkJwbuJjn2c',
   },
   {
     id: 'bodyScan',
     titleKey: 'home.meditation.items.bodyScan.title',
     categoryKey: 'home.meditation.items.bodyScan.category',
-    minutes: 10,
+    minutes: 15,
     icon: 'meditation',
     gradient: ['#A5D6A7', '#66BB6A', '#2E7D32'],
     tint: 'rgba(46,125,50,0.20)',
-    youtubeUrl: 'https://www.youtube.com/watch?v=15q-N-_kkrU',
+    // "Thầy Minh Niệm | Thiền buông thư 04: Kết nối với sự màu nhiệm của chính mình" —
+    // official Minh Niệm channel
+    youtubeUrl: 'https://www.youtube.com/watch?v=duI72bHMUq4',
   },
   {
     id: 'morning',
@@ -41,26 +46,29 @@ export const MEDITATION_EXERCISES: MeditationExercise[] = [
     icon: 'weather-sunset-up',
     gradient: ['#FFCC80', '#FFB74D', '#F57C00'],
     tint: 'rgba(245,124,0,0.20)',
-    youtubeUrl: 'https://www.youtube.com/watch?v=j734gLbQFbU',
+    // "Thiền định cho buổi sáng tràn đầy năng lượng tích cực" — Breath.vn
+    youtubeUrl: 'https://www.youtube.com/watch?v=pHKnAQuw67A',
   },
   {
     id: 'sleep',
     titleKey: 'home.meditation.items.sleep.title',
     categoryKey: 'home.meditation.items.sleep.category',
-    minutes: 15,
+    minutes: 20,
     icon: 'moon-waning-crescent',
     gradient: ['#B39DDB', '#9575CD', '#5E35B1'],
     tint: 'rgba(94,53,177,0.20)',
-    youtubeUrl: 'https://www.youtube.com/watch?v=aEqlQvczMJQ',
+    // "Thiền Ngủ Ngon, Cho Người Khó Ngủ Về Đêm, Ngủ Ngay Sau 5 Phút | Thiền Ngủ Kim Ba"
+    youtubeUrl: 'https://www.youtube.com/watch?v=xummeRAZVto',
   },
   {
     id: 'calmAnxiety',
     titleKey: 'home.meditation.items.calmAnxiety.title',
     categoryKey: 'home.meditation.items.calmAnxiety.category',
-    minutes: 7,
+    minutes: 5,
     icon: 'heart-pulse',
     gradient: ['#FFAB91', '#FF8A65', '#E64A19'],
     tint: 'rgba(230,74,25,0.20)',
-    youtubeUrl: 'https://www.youtube.com/watch?v=O-6f5wQXSu8',
+    // "Hít Thở Giảm Stress, Luyện Thử 5 Phút Tĩnh Tâm An Nhiên Ngủ Cực Ngon" — Kim Ba Yoga
+    youtubeUrl: 'https://www.youtube.com/watch?v=lj7LjnS6prc',
   },
 ];

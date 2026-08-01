@@ -21,6 +21,7 @@
     "contentLabel": "What are you thinking? Write it down...",
     "contentPlaceholder": "Share your thoughts, feelings, or the beautiful things you noticed today. There's no right or wrong! 💫",
     "addPhoto": "Add Photo",
+    "removePhoto": "Remove photo",
     "submitButton": "Save emotion",
     "counter": "{{count}}/500",
     "selectionLimitTitle": "Selection limit",
@@ -31,7 +32,13 @@
     "successTitle": "Success!",
     "successDiaryId": "Diary entry ID: {{id}}",
     "errorTitle": "Error",
-    "errorCreateDiary": "Failed to create diary entry."
+    "errorCreateDiary": "Failed to create diary entry.",
+    "deleteButton": "Delete entry",
+    "deleteTitle": "Delete this entry?",
+    "deleteMessage": "The entry and all its attached photos will be permanently deleted. This can't be undone.",
+    "deleteConfirm": "Delete",
+    "deleteCancel": "Cancel",
+    "deleteError": "Couldn't delete the entry. Please try again."
   },
   "dashboard": {
     "loading": "Loading journal entries...",
@@ -64,6 +71,11 @@
     "emptyStateSearchResult": "No journal entries found with that search term",
     "emptyStateNoEntries": "No journal entries for this day",
     "newEntryButton": "Write journal now",
+    "deleteTitle": "Delete this entry?",
+    "deleteMessage": "The entry and all its attached photos will be permanently deleted. This can't be undone.",
+    "deleteConfirm": "Delete",
+    "deleteCancel": "Cancel",
+    "deleteError": "Couldn't delete the entry. Please try again.",
     "weekdayMon": "Mon",
     "weekdayTue": "Tue",
     "weekdayWed": "Wed",
@@ -687,7 +699,7 @@
       "minutesShort": "{{n}}m",
       "items": {
         "breath478": { "title": "4-7-8 Breathing", "category": "Breathwork" },
-        "bodyScan": { "title": "Body Scan", "category": "Mindfulness" },
+        "bodyScan": { "title": "Relaxation", "category": "Mindfulness" },
         "morning": { "title": "Sunrise", "category": "Morning" },
         "sleep": { "title": "Sleep Well", "category": "Bedtime" },
         "calmAnxiety": { "title": "Calm Anxiety", "category": "Calming" }

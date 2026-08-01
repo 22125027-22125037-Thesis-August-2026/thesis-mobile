@@ -3,10 +3,13 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
   ActivityIndicator,
+  AppState,
+  AppStateStatus,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -157,6 +160,33 @@ const StepMainScreen: React.FC = () => {
       isMounted = false;
       unsubscribe?.();
     };
+  }, [fetchWeek, goal, isOwnProfile]);
+
+  // Re-sync when the app returns to the foreground: the sensor keeps counting while
+  // backgrounded (or across midnight, if the screen was left open/backgrounded overnight), but
+  // without a live subscriber nothing updates `todaySteps` or re-fetches the week in the
+  // meantime — a stale count could otherwise sit on screen indefinitely.
+  const appStateRef = useRef(AppState.currentState);
+  useEffect(() => {
+    if (!isOwnProfile) return undefined;
+
+    const handleAppStateChange = (nextState: AppStateStatus): void => {
+      const cameToForeground =
+        appStateRef.current.match(/inactive|background/) && nextState === 'active';
+      appStateRef.current = nextState;
+
+      if (!cameToForeground) return;
+
+      void (async () => {
+        const live = await getTodaySteps();
+        setTodaySteps(live);
+        await syncTodaySteps(goal);
+        await fetchWeek();
+      })();
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
   }, [fetchWeek, goal, isOwnProfile]);
 
   const handleRefresh = useCallback(async (): Promise<void> => {

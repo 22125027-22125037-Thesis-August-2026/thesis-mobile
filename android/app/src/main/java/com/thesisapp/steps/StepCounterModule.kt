@@ -88,12 +88,21 @@ class StepCounterModule(reactContext: ReactApplicationContext) :
 
         manager.registerListener(oneShot, sensor, SensorManager.SENSOR_DELAY_UI)
 
-        // Fallback: TYPE_STEP_COUNTER only delivers an event when steps change, so
-        // resolve with 0 if nothing arrives shortly (e.g. user standing still).
+        // Fallback: TYPE_STEP_COUNTER only delivers an event when steps change (e.g. user
+        // standing still), so nothing may arrive within the window below. Resolve with the
+        // cached cumulative count if we have one; otherwise resolve null (NOT 0.0 — a real
+        // reading of "0 since boot" is indistinguishable from "we don't actually know yet",
+        // and JS treats an unexpectedly low value as a sensor/device reboot and re-anchors its
+        // daily baseline to it, which previously caused the next real reading to be reported as
+        // the full since-boot step count for "today").
         handler.postDelayed({
             if (resolved.compareAndSet(false, true)) {
                 manager.unregisterListener(oneShot)
-                promise.resolve(if (lastKnownCount >= 0) lastKnownCount.toDouble() else 0.0)
+                if (lastKnownCount >= 0) {
+                    promise.resolve(lastKnownCount.toDouble())
+                } else {
+                    promise.resolve(null)
+                }
             }
         }, 2000)
     }

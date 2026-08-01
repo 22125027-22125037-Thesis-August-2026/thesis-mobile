@@ -27,6 +27,7 @@ import { RootStackParamList } from '@/navigation';
 import { COLORS, FONTS, SPACING } from '@/theme';
 import { FoodLogRequest, FoodLogResponse } from '@/types';
 import {
+  buildAxisScale,
   CelebrationStatus,
   endOfWeekSunday,
   isSameDate,
@@ -260,6 +261,17 @@ const FoodMainScreen: React.FC = () => {
   const chartValues = useMemo(
     () => weekTrend.map(day => day.rating),
     [weekTrend],
+  );
+  // Fixed axis top (a clean multiple of the segment count) instead of chart-kit's default of
+  // scaling to Math.max(data) — see buildAxisScale for why that produces duplicate/misaligned
+  // Y-axis labels for small integer counts like meals-per-day.
+  const mealChartScale = useMemo(
+    () => buildAxisScale(chartValues, { step: 1, segments: 4, minTop: 4 }),
+    [chartValues],
+  );
+  const waterChartScale = useMemo(
+    () => buildAxisScale(chartData.datasets[0].data, { step: 0.5, segments: 4, minTop: 2 }),
+    [chartData],
   );
   const averageMealCount = useMemo(() => {
     const meaningfulCounts = weeklyLogs
@@ -497,7 +509,8 @@ const FoodMainScreen: React.FC = () => {
                   width={chartWidth}
                   height={220}
                   fromZero
-                  segments={4}
+                  fromNumber={mealChartScale.top}
+                  segments={mealChartScale.segments}
                   yAxisSuffix=""
                   withDots
                   withShadow={false}
@@ -553,6 +566,8 @@ const FoodMainScreen: React.FC = () => {
                   width={chartWidth}
                   height={230}
                   fromZero
+                  fromNumber={waterChartScale.top}
+                  segments={waterChartScale.segments}
                   yAxisLabel=""
                   yAxisSuffix="L"
                   showValuesOnTopOfBars

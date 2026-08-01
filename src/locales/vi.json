@@ -21,6 +21,7 @@
     "contentLabel": "Bạn đang nghĩ gì? Hãy viết ra đây nhé...",
     "contentPlaceholder": "Hãy chia sẻ suy nghĩ, cảm xúc, hoặc những điều tốt đẹp bạn nhận thấy hôm nay. Không có gì là sai cả! 💫",
     "addPhoto": "Thêm ảnh",
+    "removePhoto": "Xóa ảnh",
     "submitButton": "Ghi lại cảm xúc",
     "counter": "{{count}}/500",
     "selectionLimitTitle": "Giới hạn chọn",
@@ -31,7 +32,13 @@
     "successTitle": "Thành công!",
     "successDiaryId": "ID nhật ký: {{id}}",
     "errorTitle": "Lỗi",
-    "errorCreateDiary": "Không thể tạo mục nhật ký."
+    "errorCreateDiary": "Không thể tạo mục nhật ký.",
+    "deleteButton": "Xóa nhật ký",
+    "deleteTitle": "Xóa nhật ký này?",
+    "deleteMessage": "Nhật ký và toàn bộ ảnh đính kèm sẽ bị xóa vĩnh viễn. Bạn không thể hoàn tác.",
+    "deleteConfirm": "Xóa",
+    "deleteCancel": "Hủy",
+    "deleteError": "Không thể xóa nhật ký. Vui lòng thử lại."
   },
   "dashboard": {
     "loading": "Đang tải nhật ký cảm xúc...",
@@ -64,6 +71,11 @@
     "emptyStateSearchResult": "Không tìm thấy nhật ký với từ khóa này",
     "emptyStateNoEntries": "Chưa có nhật ký cho ngày này",
     "newEntryButton": "Viết nhật ký ngay",
+    "deleteTitle": "Xóa nhật ký này?",
+    "deleteMessage": "Nhật ký và toàn bộ ảnh đính kèm sẽ bị xóa vĩnh viễn. Bạn không thể hoàn tác.",
+    "deleteConfirm": "Xóa",
+    "deleteCancel": "Hủy",
+    "deleteError": "Không thể xóa nhật ký. Vui lòng thử lại.",
     "weekdayMon": "Hai",
     "weekdayTue": "Ba",
     "weekdayWed": "Tư",
@@ -687,7 +699,7 @@
       "minutesShort": "{{n}}p",
       "items": {
         "breath478": { "title": "Thở 4-7-8", "category": "Hô hấp" },
-        "bodyScan": { "title": "Quét cơ thể", "category": "Chánh niệm" },
+        "bodyScan": { "title": "Buông thư", "category": "Chánh niệm" },
         "morning": { "title": "Bình minh", "category": "Khởi đầu" },
         "sleep": { "title": "Ngủ ngon", "category": "Trước khi ngủ" },
         "calmAnxiety": { "title": "Giảm lo âu", "category": "Bình tĩnh" }

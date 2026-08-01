@@ -267,6 +267,10 @@ export const styles = StyleSheet.create({
     flex: 1,
     gap: SPACING.xxs,
   },
+  deleteButton: {
+    padding: SPACING.xxs,
+    marginLeft: SPACING.sm,
+  },
   cardMeta: {
     flexDirection: 'row',
     alignItems: 'center',

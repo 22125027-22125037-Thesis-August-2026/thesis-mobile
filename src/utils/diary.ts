@@ -1,5 +1,49 @@
 import { DiaryEntryResponse } from '@/types';
 
+export interface ParsedDiaryContent {
+  tags: string[];
+  note: string;
+}
+
+/**
+ * Parses the diary "content" field's encoded format — "Tags: a, b | Note: text", "Tags: a, b"
+ * (no note), "Note: text" (no tags), or plain free text from entries written before this
+ * encoding existed. Shared by the edit screen (to hydrate the form) and the overview list (to
+ * render a preview), so both stay in sync.
+ *
+ * The "Note: text" branch matters: without it, an entry saved with no tags round-trips through
+ * edit as content "Note: xxx" -> parsed as raw note "Note: xxx" (falls through to the last
+ * branch) -> re-saved as "Note: Note: xxx", doubling the prefix on every edit.
+ */
+export const parseDiaryContent = (raw: string | null | undefined): ParsedDiaryContent => {
+  if (!raw) return { tags: [], note: '' };
+
+  const full = raw.match(/^Tags: (.*?) \| Note: ([\s\S]*)$/);
+  if (full) {
+    return { tags: full[1].split(', ').filter(Boolean), note: full[2] };
+  }
+
+  const tagsOnly = raw.match(/^Tags: (.*)$/);
+  if (tagsOnly) {
+    return { tags: tagsOnly[1].split(', ').filter(Boolean), note: '' };
+  }
+
+  const noteOnly = raw.match(/^Note: ([\s\S]*)$/);
+  if (noteOnly) {
+    return { tags: [], note: noteOnly[1] };
+  }
+
+  return { tags: [], note: raw };
+};
+
+/** Human-readable rendering of a diary entry's content, for list previews. */
+export const formatDiaryContent = (content: string | null | undefined): string => {
+  const { tags, note } = parseDiaryContent(content);
+  if (tags.length > 0 && note) return `${tags.join(', ')} · ${note}`;
+  if (tags.length > 0) return tags.join(', ');
+  return note;
+};
+
 const toLocalDateKey = (date: Date): string => {
   const y = date.getFullYear();
   const m = `${date.getMonth() + 1}`.padStart(2, '0');

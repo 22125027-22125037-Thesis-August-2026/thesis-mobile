@@ -4,6 +4,7 @@
 import axios from 'axios';
 import axiosClient from '@/api/axiosClient';
 import { MatchingFormData } from '@/types';
+import { normalizeVietnamese } from '@/utils';
 
 type MatchingChoice = string;
 
@@ -103,16 +104,8 @@ const COMMUNICATION_STYLE_MAP: Record<MatchingChoice, string> = {
   'ket hop ca hai': 'combined',
 };
 
-const normalizeString = (value: string): string =>
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[đĐ]/g, 'd')
-    .toLowerCase()
-    .trim();
-
 const mapChoiceToBoolean = (value: string): boolean => {
-  const normalized = normalizeString(value);
+  const normalized = normalizeVietnamese(value);
   return BINARY_TO_BOOLEAN_MAP[normalized] ?? false;
 };
 
@@ -120,32 +113,32 @@ const toMatchingPreferencesPayload = (
   data: MatchingFormData,
 ): MatchingPreferencesPayload => ({
   has_prior_counseling: mapChoiceValue(
-    normalizeString(data.hasPriorCounseling),
+    normalizeVietnamese(data.hasPriorCounseling),
     PRIOR_COUNSELING_MAP,
-    normalizeString(data.hasPriorCounseling),
+    normalizeVietnamese(data.hasPriorCounseling),
   ),
   gender: mapChoiceValue(
-    normalizeString(data.gender),
+    normalizeVietnamese(data.gender),
     GENDER_MAP,
-    normalizeString(data.gender),
+    normalizeVietnamese(data.gender),
   ),
   age: data.age.trim(),
   sexual_orientation: mapChoiceValue(
-    normalizeString(data.sexualOrientation),
+    normalizeVietnamese(data.sexualOrientation),
     SEXUAL_ORIENTATION_MAP,
-    normalizeString(data.sexualOrientation),
+    normalizeVietnamese(data.sexualOrientation),
   ),
   is_lgbtq_priority: mapChoiceToBoolean(data.isLgbtqPriority),
   self_harm_thought: mapChoiceValue(
-    normalizeString(data.selfHarmThought),
+    normalizeVietnamese(data.selfHarmThought),
     { yes: 'yes', no: 'no', co: 'yes', khong: 'no' },
-    normalizeString(data.selfHarmThought),
+    normalizeVietnamese(data.selfHarmThought),
   ),
   reasons: data.reasons.map(reason =>
     mapChoiceValue(
-      normalizeString(reason),
+      normalizeVietnamese(reason),
       REASONS_MAP,
-      normalizeString(reason),
+      normalizeVietnamese(reason),
     ),
   ),
   mood_levels: {
@@ -154,9 +147,9 @@ const toMatchingPreferencesPayload = (
     fatigue: data.moodLevels.fatigue,
   },
   communication_style: mapChoiceValue(
-    normalizeString(data.communicationStyle),
+    normalizeVietnamese(data.communicationStyle),
     COMMUNICATION_STYLE_MAP,
-    normalizeString(data.communicationStyle),
+    normalizeVietnamese(data.communicationStyle),
   ),
 });
 

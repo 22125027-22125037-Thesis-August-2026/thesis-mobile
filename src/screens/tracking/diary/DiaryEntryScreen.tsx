@@ -28,7 +28,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-import { diaryApi } from '@/api';
+import { diaryApi, mediaApi } from '@/api';
 import { TrackingCelebrationSheet } from '@/components';
 import { AuthContext } from '@/context/AuthContext';
 import {
@@ -48,7 +48,9 @@ import { WidgetBridge } from '@/native/WidgetBridge';
 import {
   CelebrationStatus,
   markCategoryLogged,
+  parseDiaryContent,
   playSoftHaptic,
+  resolveMediaUrl,
 } from '@/utils';
 import { styles } from '@/screens/tracking/diary/DiaryEntryScreen.styles';
 import TagSelector from './TagSelector';
@@ -75,17 +77,10 @@ const EMOTION_BACKGROUNDS: Record<PlutchikEmotion, string> = {
 };
 
 
-const parseContent = (raw: string): { tags: string[]; note: string } => {
-  const full = raw.match(/^Tags: (.*?) \| Note: ([\s\S]*)$/);
-  if (full) {
-    return { tags: full[1].split(', ').filter(Boolean), note: full[2] };
-  }
-  const tagsOnly = raw.match(/^Tags: (.*)$/);
-  if (tagsOnly) {
-    return { tags: tagsOnly[1].split(', ').filter(Boolean), note: '' };
-  }
-  return { tags: [], note: raw };
-};
+// Stable per-attachment identity for React keys and broken-image tracking: server-saved
+// attachments use their MediaAttachment id, freshly-picked local ones use their (unique) uri.
+const attachmentKey = (attachment: AttachmentFile, index: number): string =>
+  attachment.id ?? `${attachment.uri}-${index}`;
 
 const DiaryEntryScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -103,8 +98,16 @@ const DiaryEntryScreen: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [quickNote, setQuickNote] = useState<string>('');
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+  // Ids of previously-saved attachments the user removed while editing — deleted from the
+  // server (DELETE /api/v1/tracking/media/{id}) on submit. New (not-yet-saved) attachments
+  // just drop out of `attachments` directly, no id yet.
+  const [removedAttachmentIds, setRemovedAttachmentIds] = useState<string[]>([]);
+  // Attachment URIs that failed to load, so the preview can show a placeholder instead of a
+  // silently empty frame.
+  const [brokenImageUris, setBrokenImageUris] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoadingEntry, setIsLoadingEntry] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [entryDate, setEntryDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
@@ -139,8 +142,8 @@ const DiaryEntryScreen: React.FC = () => {
   }, [selectedEmotion]);
 
   const canSubmit = useMemo(
-    () => !isSubmitting && !isLoadingEntry,
-    [isSubmitting, isLoadingEntry],
+    () => !isSubmitting && !isLoadingEntry && !isDeleting,
+    [isSubmitting, isLoadingEntry, isDeleting],
   );
 
   useEffect(() => {
@@ -169,14 +172,27 @@ const DiaryEntryScreen: React.FC = () => {
           setEntryDate(new Date(entry.entryDate));
         }
 
-        const { tags, note } = parseContent(entry.content ?? '');
+        const { tags, note } = parseDiaryContent(entry.content ?? '');
         setSelectedTags(tags.filter(tag => ALL_DIARY_TAGS.includes(tag)));
         setQuickNote(note);
 
-        const mappedAttachments: AttachmentFile[] = (entry.attachments ?? []).map(
-          a => ({ uri: a.fileUrl, name: a.fileName, type: 'image/jpeg' }),
-        );
+        const mappedAttachments: AttachmentFile[] = (entry.attachments ?? []).map(a => ({
+          id: a.id,
+          uri: resolveMediaUrl(a.fileUrl) ?? '',
+          name: a.fileName,
+          type: 'image/jpeg',
+        }));
         setAttachments(mappedAttachments);
+        // Attachments whose fileUrl couldn't be resolved (legacy rows never actually saved to
+        // storage) are known-broken up front — show the placeholder immediately instead of
+        // waiting on a doomed <Image> load. Keys are computed against `mappedAttachments`'
+        // own indices (before filtering) so they match what the render pass computes later.
+        const preBroken = mappedAttachments
+          .map((a, index) => attachmentKey(a, index))
+          .filter((_key, index) => !mappedAttachments[index].uri);
+        if (preBroken.length > 0) {
+          setBrokenImageUris(prev => new Set([...prev, ...preBroken]));
+        }
       } catch (error) {
         console.error('[DiaryEntry] Failed to fetch entry detail:', error);
       } finally {
@@ -247,6 +263,20 @@ const DiaryEntryScreen: React.FC = () => {
     setAttachments(prev => [...prev, ...toAppend]);
   };
 
+  /**
+   * Drops an attachment from the draft so another photo can be picked in its place. A
+   * previously-saved (server-side) attachment is also queued for deletion via
+   * DELETE /api/v1/tracking/media/{id} on submit; a freshly-picked local one just disappears.
+   */
+  const handleRemoveAttachment = (index: number): void => {
+    playSoftHaptic();
+    const removed = attachments[index];
+    if (removed?.id) {
+      setRemovedAttachmentIds(prev => [...prev, removed.id as string]);
+    }
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleDateChange = (event: any, selectedDate?: Date): void => {
     if (Platform.OS === 'android') setShowDatePicker(false);
     if (selectedDate) {
@@ -308,12 +338,28 @@ const DiaryEntryScreen: React.FC = () => {
       positivityScore: emotion.score,
       entryDate: formatDateForAPI(),
     };
-    const imageUris = attachments.map(a => a.uri);
+    // Only newly-picked attachments are uploaded — server-saved ones already exist and PUT is
+    // now additive (it no longer wipes existing attachments), so re-sending them would just
+    // duplicate them. Removals are handled separately via DELETE /media/{id} below.
+    const newImageUris = attachments.filter(a => !a.id).map(a => a.uri);
 
     try {
       await (entryId
-        ? diaryApi.updateDiaryEntry(entryId, diaryPayload, imageUris)
-        : diaryApi.createDiaryEntry(diaryPayload, imageUris));
+        ? diaryApi.updateDiaryEntry(entryId, diaryPayload, newImageUris)
+        : diaryApi.createDiaryEntry(diaryPayload, newImageUris));
+
+      if (removedAttachmentIds.length > 0) {
+        // Best-effort: the entry itself already saved successfully, so a failed cleanup of a
+        // removed photo shouldn't block the user from proceeding.
+        const results = await Promise.allSettled(
+          removedAttachmentIds.map(id => mediaApi.deleteMediaAttachment(id)),
+        );
+        results.forEach(result => {
+          if (result.status === 'rejected') {
+            console.error('[DiaryEntry] Failed to delete removed attachment:', result.reason);
+          }
+        });
+      }
 
       void WidgetBridge.cacheLastMood(emotion.moodTag, new Date().toISOString());
       void WidgetBridge.requestRefresh();
@@ -323,6 +369,8 @@ const DiaryEntryScreen: React.FC = () => {
       setSelectedTags([]);
       setQuickNote('');
       setAttachments([]);
+      setRemovedAttachmentIds([]);
+      setBrokenImageUris(new Set());
       setEntryDate(new Date());
 
       // Show celebration sheet; navigate back after it closes
@@ -334,6 +382,32 @@ const DiaryEntryScreen: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const confirmDelete = async (): Promise<void> => {
+    if (!entryId) return;
+    setIsDeleting(true);
+    try {
+      await diaryApi.deleteDiaryEntry(entryId);
+      navigation?.goBack();
+    } catch {
+      Alert.alert(t('entry.errorTitle'), t('entry.deleteError'));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteEntry = (): void => {
+    if (!entryId) return;
+    playSoftHaptic();
+    Alert.alert(
+      t('entry.deleteTitle'),
+      t('entry.deleteMessage'),
+      [
+        { text: t('entry.deleteCancel'), style: 'cancel' },
+        { text: t('entry.deleteConfirm'), style: 'destructive', onPress: () => void confirmDelete() },
+      ],
+    );
   };
 
   return (
@@ -374,6 +448,19 @@ const DiaryEntryScreen: React.FC = () => {
               <AppText style={styles.screenTitle}>
                 {entryId ? t('entry.editTitle') : t('entry.screenTitle')}
               </AppText>
+              {!!entryId && (
+                <Pressable
+                  style={styles.headerDeleteButton}
+                  onPress={handleDeleteEntry}
+                  disabled={isSubmitting || isLoadingEntry || isDeleting}
+                >
+                  {isDeleting ? (
+                    <ActivityIndicator size="small" color={COLORS.textSecondary} />
+                  ) : (
+                    <Feather name="trash-2" size={20} color={COLORS.textSecondary} />
+                  )}
+                </Pressable>
+              )}
             </View>
 
             {/* Emotion Grid */}
@@ -594,13 +681,41 @@ const DiaryEntryScreen: React.FC = () => {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.attachmentsPreviewRow}
                   >
-                    {attachments.map((file, index) => (
-                      <Image
-                        key={`${file.name}-${index}`}
-                        source={{ uri: file.uri }}
-                        style={styles.previewImage}
-                      />
-                    ))}
+                    {attachments.map((file, index) => {
+                      const key = attachmentKey(file, index);
+                      const isBroken = !file.uri || brokenImageUris.has(key);
+                      return (
+                        <View key={key} style={styles.previewImageWrap}>
+                          {isBroken ? (
+                            <View
+                              style={[styles.previewImage, styles.previewImageBroken]}
+                            >
+                              <Feather
+                                name="image"
+                                size={20}
+                                color={COLORS.textTertiary}
+                              />
+                            </View>
+                          ) : (
+                            <Image
+                              source={{ uri: file.uri }}
+                              style={styles.previewImage}
+                              onError={() =>
+                                setBrokenImageUris(prev => new Set(prev).add(key))
+                              }
+                            />
+                          )}
+                          <Pressable
+                            hitSlop={8}
+                            style={styles.previewImageRemove}
+                            disabled={isSubmitting}
+                            onPress={() => handleRemoveAttachment(index)}
+                          >
+                            <Feather name="x" size={12} color={COLORS.white} />
+                          </Pressable>
+                        </View>
+                      );
+                    })}
                   </ScrollView>
                 )}
               </View>
