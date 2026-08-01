@@ -1,8 +1,8 @@
 // Catalogue for the home-screen "Thiền & thư giãn" carousel. Every video is a guided
 // meditation/breathing practice narrated in Vietnamese by a Vietnamese creator, verified live
 // via the YouTube oEmbed endpoint (https://www.youtube.com/oembed?url=...) before being added
-// here. `minutes` is a best-effort estimate (from the title or typical session length for that
-// channel) since oEmbed doesn't expose exact duration.
+// here. `minutes` is the video's actual runtime (lengthSeconds pulled from the watch page,
+// rounded to the nearest minute) — keep it in sync if a URL below is ever swapped out.
 export type MeditationExercise = {
   id: string;
   titleKey: string;
@@ -30,7 +30,7 @@ export const MEDITATION_EXERCISES: MeditationExercise[] = [
     id: 'bodyScan',
     titleKey: 'home.meditation.items.bodyScan.title',
     categoryKey: 'home.meditation.items.bodyScan.category',
-    minutes: 15,
+    minutes: 32,
     icon: 'meditation',
     gradient: ['#A5D6A7', '#66BB6A', '#2E7D32'],
     tint: 'rgba(46,125,50,0.20)',
@@ -42,7 +42,7 @@ export const MEDITATION_EXERCISES: MeditationExercise[] = [
     id: 'morning',
     titleKey: 'home.meditation.items.morning.title',
     categoryKey: 'home.meditation.items.morning.category',
-    minutes: 8,
+    minutes: 11,
     icon: 'weather-sunset-up',
     gradient: ['#FFCC80', '#FFB74D', '#F57C00'],
     tint: 'rgba(245,124,0,0.20)',
@@ -53,7 +53,7 @@ export const MEDITATION_EXERCISES: MeditationExercise[] = [
     id: 'sleep',
     titleKey: 'home.meditation.items.sleep.title',
     categoryKey: 'home.meditation.items.sleep.category',
-    minutes: 20,
+    minutes: 60,
     icon: 'moon-waning-crescent',
     gradient: ['#B39DDB', '#9575CD', '#5E35B1'],
     tint: 'rgba(94,53,177,0.20)',
@@ -64,7 +64,7 @@ export const MEDITATION_EXERCISES: MeditationExercise[] = [
     id: 'calmAnxiety',
     titleKey: 'home.meditation.items.calmAnxiety.title',
     categoryKey: 'home.meditation.items.calmAnxiety.category',
-    minutes: 5,
+    minutes: 10,
     icon: 'heart-pulse',
     gradient: ['#FFAB91', '#FF8A65', '#E64A19'],
     tint: 'rgba(230,74,25,0.20)',
