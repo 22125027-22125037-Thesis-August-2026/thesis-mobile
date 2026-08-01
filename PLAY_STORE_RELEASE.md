@@ -4,7 +4,9 @@ Everything you need to publish **uMatter** (`com.apcsthesisteam.umatter`) to Goo
 **Vietnam + South Korea**. Work top‑to‑bottom. Items marked ⛔ are blockers.
 
 - **App name:** uMatter
-- **Package:** `com.apcsthesisteam.umatter`  ·  **versionCode** 2  ·  **versionName** 1.0
+- **Package:** `com.apcsthesisteam.umatter`  ·  **versionCode** 4  ·  **versionName** 1.1
+  (versionCode 2 / 1.0 is published to Closed testing; versionCode 3 was already consumed
+  and can't be reused — codes are never reusable)
 - **Category:** Health & Fitness
 - **Contact email:** apcsthesisteam@gmail.com
 - **Privacy policy URL:** `https://umatter-apcs.duckdns.org/legal/privacy.html`
@@ -216,6 +218,15 @@ Fill this in **App content → Content ratings**. Answer honestly:
 | News app | No |
 | Data safety | Section 3 |
 
+> **Deliberately not integrated: Health Connect.** Reading step history needs
+> `android.permission.health.READ_STEPS`, and any `android.permission.health.*`
+> permission is restricted — Play blocks the release until the *Health apps
+> declaration* form is filled in and approved. We do not want the app classed as a
+> health app, so the step tracker uses only the hardware step counter
+> (`ACTIVITY_RECOGNITION`, a normal runtime permission). Trade-off: a day the user
+> never opens the app cannot be recovered, because the sensor exposes only a single
+> cumulative since-boot value.
+
 ---
 
 ## 7. App access (reviewer test account)
@@ -275,10 +286,17 @@ Provide in **App access → All functionality → Add instructions**:
 
 ## 10. Closed-test tracker (live)
 
-**Status:** Closed testing **version 2** submitted — *In review* (quick checks passed,
-awaiting Google reviewers). Package `com.apcsthesisteam.umatter`, versionCode **2**,
-countries **Vietnam + South Korea**. The `FOREGROUND_SERVICE_MEDIA_PROJECTION`
-permission was removed in v2, so no media-projection declaration/video is required.
+**Status:** versionCode **2** is live on the *uMatter Closed Testing* track (released
+3 Jul 2026, available to testers) and on Internal testing. versionCode **3** was consumed
+(already uploaded) and cannot be reused. versionCode **4** (versionName 1.1) is built and
+signed — adds the confetti trophy burst, the YouTube meditation player, and the split
+appointment-completion statuses — and is ready to upload as the next closed-testing
+release. Package `com.apcsthesisteam.umatter`, countries **Vietnam + South Korea**. The
+`FOREGROUND_SERVICE_MEDIA_PROJECTION` permission was removed in v2, so no
+media-projection declaration/video is required.
+
+> Play permanently reserves a version code once it is uploaded, so every new build must
+> increment `versionCode` in `android/app/build.gradle`. Next build after this one = 5.
 
 ### 12-tester / 14-day window (personal-account gate)
 

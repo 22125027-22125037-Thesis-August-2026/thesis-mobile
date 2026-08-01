@@ -383,8 +383,12 @@ const ChatScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {/* Android needs an explicit behavior: the app targets SDK 36, where the OS
+          forces edge-to-edge, so windowSoftInputMode="adjustResize" no longer
+          resizes the window and the IME would cover the input bar. */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}
         style={styles.container}>
 
         {/* ===== HEADER ===== */}
@@ -456,6 +460,7 @@ const ChatScreen: React.FC = () => {
               keyExtractor={item => item.id}
               inverted
               scrollEventThrottle={16}
+              keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.flatListContent}
               showsVerticalScrollIndicator={false}
             />

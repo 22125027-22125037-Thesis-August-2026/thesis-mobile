@@ -1,0 +1,5 @@
+<resources>
+    <!-- Debug source set overrides main's app_name so the dev build is visually distinct
+         from the Play Store closed-testing app on the home screen. -->
+    <string name="app_name">uMatter (Dev)</string>
+</resources>

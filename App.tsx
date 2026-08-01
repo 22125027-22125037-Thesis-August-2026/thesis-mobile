@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, DeviceEventEmitter, View } from 'react-native';
+import { ActivityIndicator, AppState, DeviceEventEmitter, View } from 'react-native';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -24,7 +24,9 @@ import { AppText } from '@/components';
 import { TourOverlay } from '@/components/tour';
 import { AuthContext, AuthProvider } from '@/context/AuthContext';
 import { TourProvider } from '@/context/TourContext';
+import { STEPS_DAILY_GOAL } from '@/hooks/useHomeDashboardData';
 import { listenForForegroundNotifications } from '@/services/notifications';
+import { syncTodaySteps } from '@/services/stepTracker';
 import { rescheduleFocusModeIfNeeded } from '@/utils/focusModeNotifications';
 import {
   WidgetBridge,
@@ -248,6 +250,21 @@ const AppNav: React.FC = () => {
   useEffect(() => {
     void rescheduleFocusModeIfNeeded();
   }, []);
+
+  // Push today's step count on app open and on every return to the foreground,
+  // not just when the steps screen is opened — otherwise a day spent walking
+  // without visiting that screen never reaches the backend.
+  useEffect(() => {
+    if (!auth?.userToken) return;
+    const run = (): void => {
+      void syncTodaySteps(STEPS_DAILY_GOAL);
+    };
+    run();
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') run();
+    });
+    return () => subscription.remove();
+  }, [auth?.userToken]);
 
   const handleTarget = useCallback(
     (target: string | null | undefined): void => {
