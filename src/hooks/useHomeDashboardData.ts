@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { breathingApi, diaryApi, foodApi, sleepApi, stepsApi } from '@/api';
 import { BREATHING_DAILY_GOAL_SECONDS } from '@/constants/breathing';
 import { MoodTag } from '@/constants/moods';
-import { getTodaySteps } from '@/services/stepTracker';
+import { getTodaySteps, syncTodaySteps } from '@/services/stepTracker';
 import {
   BreathingLogResponse,
   FoodLogResponse,
@@ -210,6 +210,15 @@ export const useHomeDashboardData = (
     try {
       const liveToday = await getTodaySteps();
       setStepsToday(Math.max(liveToday, mappedToday));
+      // This hook only ever *reads* steps — StepMainScreen is the only place that pushes a
+      // correction back via syncTodaySteps(). That means if `mappedToday` was ever corrupted
+      // server-side (e.g. by the sensor-timeout bug that used to inflate "today" to the full
+      // since-boot count), the Home dashboard's Math.max above would pin the display to that
+      // bad value forever, since it can only ratchet up — the user would have to specifically
+      // open the Steps screen to trigger a fix. Sync here too (fire-and-forget; this screen
+      // refetches on every focus, so a self-heal lands on the very next visit) so the backend
+      // record is kept honest regardless of which screen the user actually looks at.
+      void syncTodaySteps(STEPS_DAILY_GOAL);
     } catch {
       setStepsToday(mappedToday);
     }
